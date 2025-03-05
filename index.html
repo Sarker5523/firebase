@@ -1,1 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Playlist</title>
+    <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
+    <script src="https://unpkg.com/video.js/dist/video.js"></script>
+</head>
+<body>
+    <h1>Video Playlist</h1>
+    <div id="video-player">
+        <video id="player" class="video-js vjs-default-skin" controls>
+            <source src="https://www.example.com/video1.mp4" type="video/mp4">
+        </video>
+    </div>
 
+    <div id="playlist">
+        <h2>Playlist</h2>
+        <ul>
+            <li><a href="#" onclick="changeVideo('https://www.example.com/video1.mp4')">Video 1</a></li>
+            <li><a href="#" onclick="changeVideo('https://www.example.com/video2.mp4')">Video 2</a></li>
+        </ul>
+    </div>
+
+    <script>
+        var player = videojs('player');
+
+        function changeVideo(url) {
+            var player = videojs('player');
+            player.src({ type: 'video/mp4', src: url });
+            player.play();
+        }
+    </script>
+</body>
+</html>
