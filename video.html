@@ -4,210 +4,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Player</title>
-    <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
-    <script src="https://unpkg.com/video.js/dist/video.js"></script>
     <style>
-        /* General Styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #141414;
-            color: #fff;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Header & Home Button */
-        header {
-            background-color: #000;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .home-button {
-            text-decoration: none;
-            color: #ff8c00;
-            font-size: 18px;
-            font-weight: bold;
-            margin-left: 15px;
-        }
-
-        /* Search Bar */
-        .search-container {
-            flex-grow: 1;
-            text-align: center;
-        }
-
-        .search-bar {
-            width: 80%;
-            max-width: 400px;
-            padding: 8px;
-            font-size: 16px;
-            border: none;
-            border-radius: 5px;
-            outline: none;
-        }
-
-        /* Larger Video Player */
-        .video-container {
-            max-width: 1200px;
-            margin: 20px auto;
-            position: relative;
-            padding-top: 50%;
-        }
-
-        video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Mobile Adjustments */
-        @media (max-width: 768px) {
-            .video-container {
-                max-width: 95%;
-                padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            }
-        }
-
-        /* Video Details */
-        .video-details {
-            margin-top: 10px;
-            padding: 10px;
-            font-size: 14px;
-            color: #bbb;
-        }
-
-        /* Suggested Videos */
-        .suggested-videos {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .video-item {
-            width: 220px;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .video-item img {
-            width: 100%;
-            border-radius: 8px;
-            transition: transform 0.3s;
-        }
-
-        .video-item:hover img {
-            transform: scale(1.05);
-        }
-
-        .video-item h4 {
-            font-size: 14px;
-            margin: 5px 0;
-            color: #fff;
-        }
+        body { font-family: Arial, sans-serif; background-color: #141414; color: #fff; text-align: center; }
+        header { text-align: center; padding: 20px; background-color: #000; color: #ff8c00; }
+        .video-container { max-width: 900px; margin: 20px auto; }
+        .video-player { width: 100%; height: auto; max-width: 100%; }
+        #video-title { font-size: 24px; font-weight: bold; color: #fff; margin-top: 10px; }
+        .suggested-videos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
+        @media (min-width: 768px) { .suggested-videos { grid-template-columns: repeat(4, 1fr); } }
+        .video-item { cursor: pointer; text-align: center; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); }
+        .video-item img { width: 100%; height: auto; display: block; border-radius: 8px; }
+        .video-item h4 { font-size: 13px; color: #ddd; }
+        .search-bar { width: 100%; padding: 10px; margin: 20px 0; border-radius: 5px; border: none; font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <!-- Header with Home Button & Search Bar -->
     <header>
-        <a href="index.html" class="home-button">⬅ Home</a>
-        <div class="search-container">
-            <input type="text" id="search-bar" class="search-bar" placeholder="Search for videos...">
-        </div>
-        <div></div> <!-- Empty div for spacing -->
+        <h1>My OTT Platform</h1>
+        <input type="text" id="search" class="search-bar" placeholder="Search for videos..." onkeyup="searchVideos()">
     </header>
 
-    <!-- Video Player -->
     <div class="video-container">
-        <video id="defaultPlayer" class="video-js vjs-default-skin" controls>
-            <source id="videoSource" type="application/x-mpegURL">
+        <h2 id="video-title">Now Playing: </h2>
+        <video id="player" class="video-player" controls>
+            <source id="video-source" type="video/mp4">
         </video>
     </div>
 
-    <!-- Video Details -->
-    <div class="video-details" id="video-details">
-        <h3 id="video-title"></h3>
-        <p id="video-description"></p>
-    </div>
-
-    <!-- Suggested Videos -->
-    <h3>Suggested Videos</h3>
     <div class="suggested-videos" id="suggested-videos"></div>
 
     <script>
-        let allVideos = [];
-
-        // Fetch video ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const videoId = urlParams.get('id');
+        const searchInput = document.getElementById('search');
+        let allVideos = [];
 
+        // Fetch video data from JSON
         fetch('videos.json')
             .then(response => response.json())
-            .then(videos => {
-                allVideos = videos;
-                const video = videos.find(v => v.id === videoId);
+            .then(data => {
+                allVideos = data;
+                const video = allVideos.find(v => v.id == videoId);
+                
                 if (video) {
-                    // Set Video Source
-                    document.getElementById('videoSource').src = video.url;
-                    videojs('defaultPlayer').src({ type: 'application/x-mpegURL', src: video.url });
-
-                    // Set Video Details
-                    document.getElementById('video-title').textContent = video.name;
-                    document.getElementById('video-description').textContent = video.description || 'No description available.';
-
-                    // Load Suggested Videos
-                    loadSuggestedVideos(video.suggestions);
-                } else {
-                    document.getElementById('video-title').textContent = 'Video not found';
+                    document.getElementById('video-title').innerText = `Now Playing: ${video.name}`;
+                    document.getElementById('video-source').src = video.url;
+                    document.getElementById('player').load();
                 }
-            })
-            .catch(error => console.error('Error loading video:', error));
 
-        // Function to load suggested videos
-        function loadSuggestedVideos(suggestions) {
-            const suggestionsContainer = document.getElementById('suggested-videos');
-            suggestionsContainer.innerHTML = '';
-            suggestions.forEach(suggestedId => {
-                const suggestedVideo = allVideos.find(v => v.id == suggestedId);
-                if (suggestedVideo) {
+                // Display suggested videos
+                displaySuggestedVideos(video.suggestions || []);
+            })
+            .catch(error => console.error('Error loading JSON:', error));
+
+        function displaySuggestedVideos(suggestions) {
+            const suggestedVideosDiv = document.getElementById('suggested-videos');
+            suggestedVideosDiv.innerHTML = '';
+
+            suggestions.forEach(suggestionId => {
+                const video = allVideos.find(v => v.id == suggestionId);
+                if (video) {
                     const videoItem = document.createElement('div');
                     videoItem.classList.add('video-item');
                     videoItem.innerHTML = `
-                        <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}">
-                        <h4>${suggestedVideo.name}</h4>
-                        <a href="video.html?id=${suggestedVideo.id}">Watch</a>
+                        <a href="video.html?id=${video.id}">
+                            <img src="${video.thumbnail}" alt="${video.name}">
+                            <h4>${video.name}</h4>
+                        </a>
                     `;
-                    suggestionsContainer.appendChild(videoItem);
+                    suggestedVideosDiv.appendChild(videoItem);
                 }
             });
         }
 
-        // Search bar functionality
-        document.getElementById('search-bar').addEventListener('input', function() {
-            const query = this.value.toLowerCase();
-            const suggestionsContainer = document.getElementById('suggested-videos');
-            suggestionsContainer.innerHTML = '';
-
+        function searchVideos() {
+            const query = searchInput.value.toLowerCase();
             const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
+            
+            const suggestedVideosDiv = document.getElementById('suggested-videos');
+            suggestedVideosDiv.innerHTML = '';
+
             filteredVideos.forEach(video => {
                 const videoItem = document.createElement('div');
                 videoItem.classList.add('video-item');
                 videoItem.innerHTML = `
-                    <img src="${video.thumbnail}" alt="${video.name}">
-                    <h4>${video.name}</h4>
-                    <a href="video.html?id=${video.id}">Watch</a>
+                    <a href="video.html?id=${video.id}">
+                        <img src="${video.thumbnail}" alt="${video.name}">
+                        <h4>${video.name}</h4>
+                    </a>
                 `;
-                suggestionsContainer.appendChild(videoItem);
+                suggestedVideosDiv.appendChild(videoItem);
             });
-        });
+        }
     </script>
 
 </body>
