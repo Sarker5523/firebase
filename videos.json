@@ -11,7 +11,7 @@
         "id": "2",
         "name": "Video 2",
         "url": "https://example.com/path/to/video2.m3u8",
-        "thumbnail": "https://via.placeholder.com/300x170",
+        "thumbnail": "https://via.placeholder.com/300x170"
         "description": "Description for Video 2",
         "suggestions": [1, 3]
     },
