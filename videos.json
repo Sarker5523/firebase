@@ -18,7 +18,7 @@
     {
         "id": "3",
         "name": "Video 3",
-        "url": "https://example.com/path/to/video3.m3u8",
+        "url": "https://stek57-bb2b53411dc1.herokuapp.com/dl/67c88954e509b0d19fb9225a",
         "thumbnail": "https://via.placeholder.com/300x170",
         "description": "Description for Video 3",
         "suggestions": [1, 2]
