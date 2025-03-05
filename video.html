@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Video Details</title>
+  <title>Video Player</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -26,101 +26,58 @@
       margin: 0;
     }
 
-    .search-bar {
-      width: 80%;
-      max-width: 400px;
-      padding: 8px 10px;
-      margin-top: 10px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-      border: none;
-      font-size: 14px;
-      background-color: #222;
-      color: white;
-    }
-
-    .search-suggestions {
+    .home-btn {
       position: absolute;
-      background-color: #333;
-      color: white;
-      width: 80%;
-      max-width: 400px;
-      margin-top: 40px;
-      padding: 10px 0;
-      border-radius: 5px;
-      display: none;
-      z-index: 1;
-    }
-
-    .search-suggestions div {
-      padding: 8px 10px;
+      left: 10px;
+      top: 10px;
+      font-size: 16px;
+      color: #ff8c00;
       cursor: pointer;
     }
 
-    .search-suggestions div:hover {
-      background-color: #ff8c00;
-    }
-
     .video-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px;
+      text-align: center;
+      margin-top: 30px;
     }
 
     .video-player {
       width: 100%;
       max-width: 800px;
-      height: 450px;
-      margin-bottom: 20px;
-      border-radius: 8px;
-      background-color: black;
+      height: auto;
     }
 
     .video-title {
-      font-size: 30px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      text-align: center;
+      font-size: 24px;
+      margin-top: 10px;
     }
 
     .video-details {
-      text-align: left;
-      max-width: 800px;
-      margin-bottom: 30px;
       font-size: 16px;
+      margin-top: 20px;
+      text-align: left;
+      margin-left: 10px;
+      max-width: 800px;
     }
 
     .suggested-videos {
+      margin-top: 30px;
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 20px;
-      margin-top: 30px;
       padding: 0 10px;
     }
 
     .suggested-video-item {
-      cursor: pointer;
-      position: relative;
       text-align: center;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
     }
 
     .suggested-video-item img {
       width: 100%;
       height: auto;
-      display: block;
       border-radius: 8px;
     }
 
-    .suggested-video-item h4 {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      margin: 0;
-      font-size: 13px;
+    .suggested-video-item h3 {
       color: #fff;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     }
@@ -134,13 +91,15 @@
 <body>
 
   <header>
+    <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
     <h1>My OTT Platform</h1>
-    <input type="text" id="search" class="search-bar" placeholder="Search for videos..." onkeyup="searchVideos(event)">
-    <div id="search-suggestions" class="search-suggestions"></div>
   </header>
 
   <div class="video-container">
-    <div class="video-player" id="video-player"></div>
+    <video id="video-player" class="video-player" controls>
+      <source id="video-source" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
     <div class="video-title" id="video-title"></div>
     <div class="video-details" id="video-details"></div>
   </div>
@@ -148,91 +107,49 @@
   <div class="suggested-videos" id="suggested-videos"></div>
 
   <script>
-    const videoId = new URLSearchParams(window.location.search).get('id');
-    const videoTitleElement = document.getElementById('video-title');
-    const videoPlayerElement = document.getElementById('video-player');
-    const videoDetailsElement = document.getElementById('video-details');
-    const suggestedVideosElement = document.getElementById('suggested-videos');
-    const searchInput = document.getElementById('search');
-    const searchSuggestions = document.getElementById('search-suggestions');
+    // Get video id from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoId = urlParams.get('id');
+    const videoPlayer = document.getElementById('video-player');
+    const videoTitle = document.getElementById('video-title');
+    const videoDetails = document.getElementById('video-details');
+    const suggestedVideos = document.getElementById('suggested-videos');
 
-    let allVideos = [];
-
-    // Fetch video data from JSON
     fetch('videos.json')
       .then(response => response.json())
       .then(data => {
-        allVideos = data;
-        const currentVideo = data.find(video => video.id === videoId);
-        if (currentVideo) {
-          loadVideoDetails(currentVideo);
+        const video = data.find(v => v.id === videoId);
+
+        if (video) {
+          videoTitle.textContent = video.name;
+          videoDetails.textContent = video.description || 'No details available.';
+          videoPlayer.src = video.url;
+          videoPlayer.load();
+          videoPlayer.play();
+
+          // Load suggested videos
+          loadSuggestedVideos(data, video.suggestions);
         }
       })
-      .catch(error => console.error('Error loading JSON:', error));
+      .catch(error => console.error('Error loading video data:', error));
 
-    function loadVideoDetails(video) {
-      // Load the video player and title
-      videoTitleElement.innerText = video.name;
-      videoPlayerElement.innerHTML = `<video controls width="100%" height="450" src="${video.url}" type="video/mp4"></video>`;
-
-      // Video details section
-      videoDetailsElement.innerHTML = `
-        <h2>Video Details</h2>
-        <p><strong>Title:</strong> ${video.name}</p>
-        <p><strong>Description:</strong> ${video.description || 'No description available.'}</p>
-      `;
-
-      // Suggested videos
-      suggestedVideosElement.innerHTML = '';
-      if (video.suggestions && video.suggestions.length > 0) {
-        video.suggestions.forEach(id => {
-          const suggestedVideo = allVideos.find(v => v.id === id);
-          if (suggestedVideo) {
-            const videoItem = document.createElement('div');
-            videoItem.classList.add('suggested-video-item');
-            videoItem.innerHTML = `
-              <a href="video.html?id=${suggestedVideo.id}">
-                <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}">
-                <h4>${suggestedVideo.name}</h4>
-              </a>
-            `;
-            suggestedVideosElement.appendChild(videoItem);
-          }
-        });
-      }
+    function loadSuggestedVideos(allVideos, suggestions) {
+      suggestedVideos.innerHTML = '';
+      suggestions.forEach(id => {
+        const video = allVideos.find(v => v.id === id);
+        if (video) {
+          const videoItem = document.createElement('div');
+          videoItem.classList.add('suggested-video-item');
+          videoItem.innerHTML = `
+            <a href="video.html?id=${video.id}">
+              <img src="${video.thumbnail}" alt="${video.name}">
+              <h3>${video.name}</h3>
+            </a>
+          `;
+          suggestedVideos.appendChild(videoItem);
+        }
+      });
     }
-
-    function searchVideos(event) {
-      const query = searchInput.value.toLowerCase();
-      const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
-
-      // Display search suggestions as the user types
-      if (query) {
-        searchSuggestions.style.display = 'block';
-        searchSuggestions.innerHTML = '';
-        filteredVideos.slice(0, 5).forEach(video => {
-          const suggestionItem = document.createElement('div');
-          suggestionItem.innerText = video.name;
-          suggestionItem.onclick = () => window.location.href = `video.html?id=${video.id}`;
-          searchSuggestions.appendChild(suggestionItem);
-        });
-      } else {
-        searchSuggestions.style.display = 'none';
-      }
-
-      // Redirect to search-results page when Enter key is pressed
-      if (event.key === "Enter" && filteredVideos.length > 0) {
-        const queryParam = encodeURIComponent(query);
-        window.location.href = `search-results.html?q=${queryParam}`;
-      }
-    }
-
-    // Hide search suggestions when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('#search')) {
-        searchSuggestions.style.display = 'none';
-      }
-    });
   </script>
 
 </body>
