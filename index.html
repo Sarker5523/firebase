@@ -5,40 +5,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My OTT Platform</title>
     <style>
-        /* Add your styles here */
         body { font-family: Arial, sans-serif; background-color: #141414; color: #fff; }
-        header { text-align: center; padding: 20px; background-color: #000; color: #ff8c00; }
+        header { text-align: center; padding: 10px 20px; background-color: #000; color: #ff8c00; }
+        header h1 { font-size: 20px; margin: 0; }
+        .home-button { position: absolute; top: 15px; left: 15px; padding: 8px 12px; background-color: #ff8c00; color: #fff; text-decoration: none; border-radius: 5px; font-size: 14px; }
+        .home-button:hover { background-color: #e07b00; }
+        .search-bar { width: 80%; padding: 8px 10px; margin-top: 10px; margin-bottom: 10px; border-radius: 5px; border: none; font-size: 14px; }
         .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-top: 30px; }
-        .video-item { cursor: pointer; text-align: center; }
-        .video-item img { width: 100%; height: auto; }
-        .video-item h3 { color: white; }
-        .video-item a { color: #ff8c00; text-decoration: none; }
+        @media (min-width: 768px) { .video-grid { grid-template-columns: repeat(4, 1fr); } }
+        .video-item { cursor: pointer; text-align: center; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); }
+        .video-item img { width: 100%; height: auto; display: block; border-radius: 8px; }
+        .video-item h4 { font-size: 13px; color: #ddd; }
     </style>
 </head>
 <body>
 
-    <header><h1>My OTT Platform</h1></header>
+    <header>
+        <h1>My OTT Platform</h1>
+        <input type="text" id="search" class="search-bar" placeholder="Search for videos..." onkeyup="searchVideos()">
+    </header>
 
+    <!-- Home Button -->
+    <a href="index.html" class="home-button">Home</a>
+
+    <!-- Video Grid -->
     <div class="video-grid" id="video-grid"></div>
 
     <script>
+        const searchInput = document.getElementById('search');
+        let allVideos = [];
+
         // Fetch video data from JSON
         fetch('videos.json')
             .then(response => response.json())
             .then(data => {
-                const videoGrid = document.getElementById('video-grid');
-                data.forEach(video => {
-                    const videoItem = document.createElement('div');
-                    videoItem.classList.add('video-item');
-                    videoItem.innerHTML = `
-                        <img src="${video.thumbnail}" alt="${video.name}">
-                        <h3>${video.name}</h3>
-                        <a href="video.html?id=${video.id}">Watch</a>
-                    `;
-                    videoGrid.appendChild(videoItem);
-                });
+                allVideos = data;
+                displayVideos(data); // Display videos initially
             })
             .catch(error => console.error('Error loading JSON:', error));
+
+        function displayVideos(videos) {
+            const videoGrid = document.getElementById('video-grid');
+            videoGrid.innerHTML = '';
+
+            videos.forEach(video => {
+                const videoItem = document.createElement('div');
+                videoItem.classList.add('video-item');
+                videoItem.innerHTML = `
+                    <a href="video.html?id=${video.id}">
+                        <img src="${video.thumbnail}" alt="${video.name}">
+                        <h4>${video.name}</h4>
+                    </a>
+                `;
+                videoGrid.appendChild(videoItem);
+            });
+        }
+
+        function searchVideos() {
+            const query = searchInput.value.toLowerCase();
+            const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
+            displayVideos(filteredVideos);
+        }
     </script>
 
 </body>
