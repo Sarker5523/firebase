@@ -7,9 +7,129 @@
     <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
     <script src="https://unpkg.com/video.js/dist/video.js"></script>
     <style>
-        /* Your existing CSS styles */
-        #video-grid {
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #141414;
+            color: #fff;
+        }
+        header {
+            background-color: #000;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+        }
+        header h1 {
+            font-size: 36px;
+            margin: 0;
+            color: #ff8c00;
+        }
+        .navbar {
+            display: flex;
+            justify-content: center;
+            background-color: #222;
+            padding: 12px 0;
+            border-top: 1px solid #444;
+            border-bottom: 1px solid #444;
+        }
+        .navbar a {
+            text-decoration: none;
+            color: #fff;
+            margin: 0 20px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        .navbar a:hover {
+            color: #ff8c00;
+        }
+        .container {
+            padding: 30px 10px;
+            text-align: center;
+        }
+        #video-player {
+            max-width: 100%;
+            margin-bottom: 30px;
+        }
+        #featured-video {
+            max-width: 100%;
+            margin-bottom: 40px;
+        }
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            transition: grid-template-columns 0.3s ease;
+        }
+        .video-item {
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background-color: #333;
+            color: #fff;
+        }
+        .video-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
+        }
+        .video-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s ease;
+        }
+        .video-item:hover img {
+            opacity: 0.7;
+        }
+        .video-item h3 {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin: 0;
+        }
+        .video-item a {
+            color: #ff8c00;
+            font-weight: bold;
+            text-decoration: none;
+            position: absolute;
+            bottom: 10px;
+            right: 15px;
+            background-color: rgba(0, 0, 0, 0.6);
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+        .video-item a:hover {
+            background-color: rgba(255, 140, 0, 0.8);
+        }
+        .video-item:active a {
+            background-color: rgba(255, 140, 0, 1);
+        }
+        .video-grid.empty {
             display: none;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 28px;
+            }
+            .navbar a {
+                font-size: 16px;
+                margin: 0 15px;
+            }
+            .video-item h3 {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
@@ -20,15 +140,13 @@
         <h1>My OTT Platform</h1>
     </header>
 
-    <!-- Navbar Section -->
+    <!-- Navbar Section (Only Home link) -->
     <div class="navbar">
         <a href="#" id="home-link">Home</a>
-        <a href="#" id="tv-shows-link">TV Shows</a>
-        <a href="#">Movies</a>
-        <a href="#">Profile</a>
     </div>
 
     <div class="container">
+
         <!-- Featured Video Section -->
         <div id="featured-video">
             <video id="player" class="video-js vjs-default-skin" controls>
@@ -37,7 +155,7 @@
         </div>
 
         <!-- Video Grid (TV Shows) -->
-        <div class="video-grid" id="video-grid">
+        <div class="video-grid empty" id="video-grid">
             <!-- Video items will be dynamically inserted here -->
         </div>
     </div>
@@ -52,40 +170,48 @@
             player.play();
         }
 
-        // Function to load and display the video grid from the JSON file
-        function loadVideoGrid() {
-            fetch('videos.json')
-                .then(response => response.json())
-                .then(videos => {
-                    const videoGrid = document.getElementById('video-grid');
-                    videoGrid.innerHTML = ''; // Clear previous content
-
-                    // Loop through the videos data and create video items dynamically
-                    videos.forEach(video => {
-                        const videoItem = document.createElement('div');
-                        videoItem.classList.add('video-item');
-
-                        videoItem.innerHTML = `
-                            <img src="${video.thumbnail}" alt="${video.name}">
-                            <h3>${video.name}</h3>
-                            <a href="#" onclick="changeVideo('${video.url}')">Play</a>
-                        `;
-                        videoGrid.appendChild(videoItem);
-                    });
-
-                    // Show the video grid and hide the featured video section
-                    document.getElementById('featured-video').style.display = 'none';
-                    videoGrid.style.display = 'grid';  // Show the video grid
+        // Function to load videos from a CSV file
+        function loadVideosFromCSV() {
+            fetch('videos.csv')
+                .then(response => response.text())
+                .then(data => {
+                    const videoData = parseCSV(data);
+                    generateVideoGrid(videoData);
                 })
-                .catch(error => {
-                    console.error('Error loading video data:', error);
-                });
+                .catch(error => console.error('Error loading CSV file:', error));
         }
 
-        // Event listener for TV Shows link
-        document.getElementById('tv-shows-link').addEventListener('click', function() {
-            loadVideoGrid();
-        });
+        // Function to parse CSV data into an array
+        function parseCSV(data) {
+            const rows = data.split('\n').slice(1);  // Skip header row
+            return rows.map(row => {
+                const [name, url, thumbnail] = row.split(',');
+                return { name, url, thumbnail };
+            });
+        }
+
+        // Function to generate the video grid
+        function generateVideoGrid(videoData) {
+            const videoGrid = document.getElementById('video-grid');
+            videoGrid.innerHTML = '';  // Clear previous content
+
+            // Loop through the video data and create video items dynamically
+            videoData.forEach(video => {
+                const videoItem = document.createElement('div');
+                videoItem.classList.add('video-item');
+
+                videoItem.innerHTML = `
+                    <img src="${video.thumbnail}" alt="${video.name}">
+                    <h3>${video.name}</h3>
+                    <a href="#" onclick="changeVideo('${video.url}')">Play</a>
+                `;
+                videoGrid.appendChild(videoItem);
+            });
+
+            // Show the video grid and hide the featured video section
+            document.getElementById('featured-video').style.display = 'none';
+            videoGrid.style.display = 'grid';  // Show the video grid
+        }
 
         // Event listener for Home link
         document.getElementById('home-link').addEventListener('click', function() {
