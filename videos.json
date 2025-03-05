@@ -3,7 +3,7 @@
         "id": "1",
         "name": "Video 1",
         "url": "https://cdn-aws-exp.cdnamz.me/playlists/2f4fb285-9d79-495e-ac46-9d414cf65a4c/u8lmahqjne.m3u8",
-        "thumbnail": "",
+        "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBcr7hAune0xIUdnjvX6foIX-8pPZdQosa6g&usqp=CAU",
         "description": "Description for Video 1",
         "suggestions": [2, 3]
     },
