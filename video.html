@@ -3,129 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watch Video</title>
-    <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
-    <script src="https://unpkg.com/video.js/dist/video.js"></script>
+    <title>Video Player</title>
+    
+    <!-- Video.js Styles & Script -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.5.0/video-js.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.5.0/video.min.js"></script>
+
     <style>
-        body { font-family: Arial, sans-serif; background-color: #141414; color: #fff; text-align: center; }
-        header { padding: 20px; background-color: #000; color: #ff8c00; }
-        .video-container { margin: 20px auto; max-width: 800px; }
-        .hidden { display: none; }
-        .switch-btn { margin-top: 20px; padding: 10px 15px; background-color: #ff8c00; border: none; color: white; cursor: pointer; font-size: 16px; }
-        .video-info { margin-top: 20px; }
-        .controls { margin-top: 20px; }
-        select { padding: 5px; font-size: 16px; }
+        body { font-family: Arial, sans-serif; background-color: #141414; color: white; text-align: center; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .video-container { margin-bottom: 20px; }
+        .suggestions { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px; }
+        .suggestion-item { cursor: pointer; width: 150px; text-align: center; }
+        .suggestion-item img { width: 100%; border-radius: 5px; }
+        .suggestion-item h4 { font-size: 14px; color: #ff8c00; margin-top: 5px; }
+        .switch-button { background-color: #ff8c00; border: none; color: white; padding: 10px 20px; cursor: pointer; margin-bottom: 20px; }
+        .switch-button:hover { background-color: #e07b00; }
     </style>
 </head>
 <body>
 
-    <header><h1>Watch Video</h1></header>
+    <div class="container">
+        <h1 id="video-title">Loading...</h1>
 
-    <div class="video-container">
-        <!-- Default Player -->
-        <video id="defaultPlayer" width="800" height="450" controls>
-            <source id="defaultSource" src="" type="video/mp4">
-        </video>
+        <!-- Video Player Container -->
+        <div class="video-container">
+            <button class="switch-button" onclick="switchPlayer()">Switch Player</button>
 
-        <!-- Advanced Player (Hidden by Default) -->
-        <video id="advancedPlayer" class="video-js vjs-default-skin hidden" controls width="800" height="450">
-            <source id="advancedSource" src="" type="video/mp4">
-        </video>
+            <!-- Default Player -->
+            <video id="defaultPlayer" class="video-js vjs-default-skin" controls width="800" height="450" crossorigin="anonymous">
+                <source id="defaultSource" src="" type="application/x-mpegURL">
+            </video>
 
-        <!-- Switch Player Button -->
-        <button id="switchPlayer" class="switch-btn">Switch to Advanced Player</button>
-
-        <!-- Video Information -->
-        <div class="video-info">
-            <h2 id="videoTitle"></h2>
-            <p id="videoDescription"></p>
+            <!-- Alternative Player (Initially Hidden) -->
+            <video id="altPlayer" controls width="800" height="450" style="display: none;">
+                <source id="altSource" src="" type="video/mp4">
+            </video>
         </div>
 
-        <!-- Player Controls -->
-        <div class="controls">
-            <label for="quality">Quality:</label>
-            <select id="quality">
-                <option value="auto">Auto</option>
-                <option value="720p">720p</option>
-                <option value="1080p">1080p</option>
-            </select>
-            <label for="speed">Speed:</label>
-            <select id="speed">
-                <option value="1.0">1x</option>
-                <option value="1.5">1.5x</option>
-                <option value="2.0">2x</option>
-            </select>
-        </div>
+        <!-- Video Description -->
+        <p id="video-description">Loading description...</p>
+
+        <!-- Suggestions Section -->
+        <h2>Related Videos</h2>
+        <div id="suggestions" class="suggestions"></div>
     </div>
 
     <script>
         // Get video ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const videoId = urlParams.get('id');
+        let isDefaultPlayer = true;
 
         // Fetch video data from JSON
         fetch('videos.json')
             .then(response => response.json())
-            .then(data => {
-                const video = data.find(v => v.id === videoId);
+            .then(videos => {
+                const video = videos.find(v => v.id === videoId);
                 if (!video) {
-                    alert("Video not found!");
+                    document.getElementById('video-title').innerText = "Video Not Found";
                     return;
                 }
 
-                // Set video details
+                // Update video title and description
+                document.getElementById('video-title').innerText = video.name;
+                document.getElementById('video-description').innerText = video.description;
+
+                // Set video sources
                 document.getElementById('defaultSource').src = video.url;
-                document.getElementById('advancedSource').src = video.url;
-                document.getElementById('videoTitle').textContent = video.name;
-                document.getElementById('videoDescription').textContent = video.description;
+                document.getElementById('altSource').src = video.url;
+                
+                // Initialize Video.js player
+                var player = videojs('defaultPlayer', { techOrder: ['html5'], autoplay: false, controls: true });
+                player.src({ type: 'application/x-mpegURL', src: video.url });
 
-                // Load default player
-                document.getElementById('defaultPlayer').load();
+                // Load suggestions
+                const suggestionsContainer = document.getElementById('suggestions');
+                video.suggestions.forEach(suggestionId => {
+                    const suggestedVideo = videos.find(v => v.id === suggestionId);
+                    if (suggestedVideo) {
+                        const suggestionItem = document.createElement('div');
+                        suggestionItem.classList.add('suggestion-item');
+                        suggestionItem.innerHTML = `
+                            <a href="video.html?id=${suggestedVideo.id}">
+                                <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}">
+                                <h4>${suggestedVideo.name}</h4>
+                            </a>
+                        `;
+                        suggestionsContainer.appendChild(suggestionItem);
+                    }
+                });
             })
-            .catch(error => console.error('Error loading video:', error));
+            .catch(error => console.error('Error loading JSON:', error));
 
-        // Player switch functionality
-        document.getElementById('switchPlayer').addEventListener('click', function () {
+        // Function to switch between players
+        function switchPlayer() {
             const defaultPlayer = document.getElementById('defaultPlayer');
-            const advancedPlayer = document.getElementById('advancedPlayer');
+            const altPlayer = document.getElementById('altPlayer');
 
-            if (defaultPlayer.classList.contains('hidden')) {
-                defaultPlayer.classList.remove('hidden');
-                advancedPlayer.classList.add('hidden');
-                this.textContent = "Switch to Advanced Player";
+            if (isDefaultPlayer) {
+                defaultPlayer.style.display = 'none';
+                altPlayer.style.display = 'block';
+                altPlayer.play();
             } else {
-                defaultPlayer.classList.add('hidden');
-                advancedPlayer.classList.remove('hidden');
-                videojs('advancedPlayer').play();  // Ensure Video.js player starts playing
-                this.textContent = "Switch to Default Player";
+                altPlayer.style.display = 'none';
+                defaultPlayer.style.display = 'block';
+                videojs('defaultPlayer').play();
             }
-        });
-
-        // Quality change functionality (only for advanced player)
-        document.getElementById('quality').addEventListener('change', function () {
-            const quality = this.value;
-            const advancedPlayer = videojs('advancedPlayer');
-            if (quality === 'auto') {
-                advancedPlayer.src({ type: 'video/mp4', src: 'your_auto_quality_video_url.m3u8' });
-            } else {
-                advancedPlayer.src({ type: 'video/mp4', src: `your_${quality}_quality_video_url.mp4` });
-            }
-            advancedPlayer.load();
-            advancedPlayer.play();
-        });
-
-        // Speed change functionality (both players)
-        document.getElementById('speed').addEventListener('change', function () {
-            const speed = parseFloat(this.value);
-            const defaultPlayer = document.getElementById('defaultPlayer');
-            const advancedPlayer = videojs('advancedPlayer');
-            
-            if (!defaultPlayer.classList.contains('hidden')) {
-                defaultPlayer.playbackRate = speed;
-            } else {
-                advancedPlayer.playbackRate(speed);
-            }
-        });
+            isDefaultPlayer = !isDefaultPlayer;
+        }
     </script>
 
 </body>
