@@ -34,12 +34,28 @@
             margin-left: 15px;
         }
 
-        /* Responsive Video Player */
+        /* Search Bar */
+        .search-container {
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        .search-bar {
+            width: 80%;
+            max-width: 400px;
+            padding: 8px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        /* Larger Video Player */
         .video-container {
-            max-width: 900px; /* Large on Desktop */
+            max-width: 1200px;
             margin: 20px auto;
             position: relative;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            padding-top: 50%;
         }
 
         video {
@@ -53,15 +69,17 @@
         /* Mobile Adjustments */
         @media (max-width: 768px) {
             .video-container {
-                max-width: 100%;
-                padding-top: 56.25%; /* Maintain Aspect Ratio */
+                max-width: 95%;
+                padding-top: 56.25%; /* 16:9 Aspect Ratio */
             }
         }
 
         /* Video Details */
         .video-details {
-            margin-top: 20px;
+            margin-top: 10px;
             padding: 10px;
+            font-size: 14px;
+            color: #bbb;
         }
 
         /* Suggested Videos */
@@ -74,7 +92,7 @@
         }
 
         .video-item {
-            width: 200px;
+            width: 220px;
             cursor: pointer;
             text-align: center;
         }
@@ -88,15 +106,23 @@
         .video-item:hover img {
             transform: scale(1.05);
         }
+
+        .video-item h4 {
+            font-size: 14px;
+            margin: 5px 0;
+            color: #fff;
+        }
     </style>
 </head>
 <body>
 
-    <!-- Header -->
+    <!-- Header with Home Button & Search Bar -->
     <header>
         <a href="index.html" class="home-button">⬅ Home</a>
-        <h2>Now Playing</h2>
-        <div></div> <!-- Empty div to balance the flexbox -->
+        <div class="search-container">
+            <input type="text" id="search-bar" class="search-bar" placeholder="Search for videos...">
+        </div>
+        <div></div> <!-- Empty div for spacing -->
     </header>
 
     <!-- Video Player -->
@@ -117,6 +143,8 @@
     <div class="suggested-videos" id="suggested-videos"></div>
 
     <script>
+        let allVideos = [];
+
         // Fetch video ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const videoId = urlParams.get('id');
@@ -124,6 +152,7 @@
         fetch('videos.json')
             .then(response => response.json())
             .then(videos => {
+                allVideos = videos;
                 const video = videos.find(v => v.id === videoId);
                 if (video) {
                     // Set Video Source
@@ -135,25 +164,50 @@
                     document.getElementById('video-description').textContent = video.description || 'No description available.';
 
                     // Load Suggested Videos
-                    const suggestionsContainer = document.getElementById('suggested-videos');
-                    video.suggestions.forEach(suggestedId => {
-                        const suggestedVideo = videos.find(v => v.id == suggestedId);
-                        if (suggestedVideo) {
-                            const videoItem = document.createElement('div');
-                            videoItem.classList.add('video-item');
-                            videoItem.innerHTML = `
-                                <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}">
-                                <h4>${suggestedVideo.name}</h4>
-                                <a href="video.html?id=${suggestedVideo.id}">Watch</a>
-                            `;
-                            suggestionsContainer.appendChild(videoItem);
-                        }
-                    });
+                    loadSuggestedVideos(video.suggestions);
                 } else {
                     document.getElementById('video-title').textContent = 'Video not found';
                 }
             })
             .catch(error => console.error('Error loading video:', error));
+
+        // Function to load suggested videos
+        function loadSuggestedVideos(suggestions) {
+            const suggestionsContainer = document.getElementById('suggested-videos');
+            suggestionsContainer.innerHTML = '';
+            suggestions.forEach(suggestedId => {
+                const suggestedVideo = allVideos.find(v => v.id == suggestedId);
+                if (suggestedVideo) {
+                    const videoItem = document.createElement('div');
+                    videoItem.classList.add('video-item');
+                    videoItem.innerHTML = `
+                        <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}">
+                        <h4>${suggestedVideo.name}</h4>
+                        <a href="video.html?id=${suggestedVideo.id}">Watch</a>
+                    `;
+                    suggestionsContainer.appendChild(videoItem);
+                }
+            });
+        }
+
+        // Search bar functionality
+        document.getElementById('search-bar').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const suggestionsContainer = document.getElementById('suggested-videos');
+            suggestionsContainer.innerHTML = '';
+
+            const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
+            filteredVideos.forEach(video => {
+                const videoItem = document.createElement('div');
+                videoItem.classList.add('video-item');
+                videoItem.innerHTML = `
+                    <img src="${video.thumbnail}" alt="${video.name}">
+                    <h4>${video.name}</h4>
+                    <a href="video.html?id=${video.id}">Watch</a>
+                `;
+                suggestionsContainer.appendChild(videoItem);
+            });
+        });
     </script>
 
 </body>
