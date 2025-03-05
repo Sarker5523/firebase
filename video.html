@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Details</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #141414;
+            color: #fff;
+        }
+        header {
+            background-color: #000;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+        }
+        header h1 {
+            font-size: 36px;
+            margin: 0;
+            color: #ff8c00;
+        }
+        .navbar {
+            display: flex;
+            justify-content: center;
+            background-color: #222;
+            padding: 12px 0;
+            border-top: 1px solid #444;
+            border-bottom: 1px solid #444;
+        }
+        .navbar a {
+            text-decoration: none;
+            color: #fff;
+            margin: 0 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .video-container {
+            max-width: 800px;
+            margin: 30px auto;
+            text-align: center;
+        }
+        .video-container iframe {
+            width: 100%;
+            height: 450px;
+        }
+        .video-details {
+            padding: 20px;
+            background-color: #222;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+        .video-suggestions {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .video-suggestion {
+            cursor: pointer;
+            border-radius: 10px;
+            background-color: #333;
+            padding: 10px;
+            text-align: center;
+        }
+        .video-suggestion img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        .video-suggestion h3 {
+            color: white;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Video Details</h1>
+    </header>
+
+    <div class="navbar">
+        <a href="index.html">Home</a>
+    </div>
+
+    <div class="video-container" id="video-container">
+        <!-- Video content will be dynamically loaded here -->
+    </div>
+
+    <div class="video-suggestions" id="video-suggestions">
+        <!-- Suggestions will be dynamically loaded here -->
+    </div>
+
+    <script>
+        // Function to get URL parameters
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // Load video details based on ID
+        const videoId = getUrlParameter('id');
+        fetch('videos.json')
+            .then(response => response.json())
+            .then(data => {
+                const video = data.find(video => video.id === videoId);
+                if (video) {
+                    const videoContainer = document.getElementById('video-container');
+                    const suggestionsContainer = document.getElementById('video-suggestions');
+                    videoContainer.innerHTML = `
+                        <iframe src="${video.url}" frameborder="0" allowfullscreen></iframe>
+                        <div class="video-details">
+                            <h2>${video.name}</h2>
+                            <p>${video.description}</p>
+                        </div>
+                    `;
+
+                    // Load suggestions
+                    video.suggestions.forEach(suggestionId => {
+                        const suggestedVideo = data.find(v => v.id === suggestionId);
+                        if (suggestedVideo) {
+                            const suggestionItem = document.createElement('div');
+                            suggestionItem.classList.add('video-suggestion');
+                            suggestionItem.innerHTML = `
+                                <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}">
+                                <h3>${suggestedVideo.name}</h3>
+                            `;
+                            suggestionItem.onclick = () => window.location.href = `video.html?id=${suggestedVideo.id}`;
+                            suggestionsContainer.appendChild(suggestionItem);
+                        }
+                    });
+                }
+            })
+            .catch(error => console.error('Error loading JSON:', error));
+    </script>
+
+</body>
+</html>
