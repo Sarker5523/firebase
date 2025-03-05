@@ -26,13 +26,30 @@
       margin: 0;
     }
 
+    /* Home button styling */
     .home-btn {
       position: absolute;
       left: 10px;
       top: 10px;
       font-size: 16px;
       color: #ff8c00;
+      background-color: #333;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: none;
       cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .home-btn:hover {
+      background-color: #444;
+      transform: translateY(-4px);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.7);
+    }
+
+    .home-btn:focus {
+      outline: none;
     }
 
     .search-bar {
@@ -74,7 +91,8 @@
 
     .search-suggestions img {
       width: 40px;
-      height: 30px;
+      height: 40px;
+      border-radius: 50%;
       margin-right: 10px;
     }
 
