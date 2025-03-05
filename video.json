@@ -1,17 +1,4 @@
-[
-  {
-    "name": "Cherry Kiss",
-    "url": "https://cdn-aws-exp.cdnamz.me/playlists/2f4fb285-9d79-495e-ac46-9d414cf65a4c/u8lmahqjne.m3u8",
-    "thumbnail": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5GAime-7ClsqU1FwLcxiZbqdnbLIMA5VUwfCmeX-pDdSzPcYExJe0qsY&s=10"
-  },
-  {
-    "name": "Video 2",
-    "url": "https://cdn-aws-exp.cdnamz.me/playlists/ec76cf70-f897-49ff-b2ea-fa19e7379af2/u8lmahqjne.m3u8",
-    "thumbnail": "https://via.placeholder.com/300x170"
-  },
-  {
-    "name": "Video 3",
-    "url": "https://www.example.com/path/to/video3.mp4",
-    "thumbnail": "https://via.placeholder.com/300x170"
-  }
-]
+name,url,thumbnail
+"Video 1","https://cdn-aws-exp.cdnamz.me/playlists/2f4fb285-9d79-495e-ac46-9d414cf65a4c/u8lmahqjne.m3u8","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5GAime-7ClsqU1FwLcxiZbqdnbLIMA5VUwfCmeX-pDdSzPcYExJe0qsY&s=10"
+"Video 2","https://example.com/path/to/video2.m3u8","https://via.placeholder.com/300x170"
+"Video 3","https://example.com/path/to/video3.m3u8","https://via.placeholder.com/300x170"
