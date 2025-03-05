@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PHUB - Video</title>
+  <title>Video Details</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -60,107 +60,54 @@
     }
 
     header .phub-title span {
-      color: #ff8c00; /* Color for HUB */
-      background-color: #333;
-      padding: 2px 5px;
+      color: #ff8c00;
+      background-color: #000;
+      padding: 5px 10px;
       border-radius: 4px;
-    }
-
-    .video-container {
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 20px;
-      text-align: center;
+      border: 2px solid #ff8c00;
     }
 
     .video-player {
       width: 100%;
       height: auto;
-      margin-bottom: 20px;
-      max-height: 500px;
+      max-width: 900px;
+      margin: 30px auto;
     }
 
     .video-details {
-      text-align: left;
-      font-size: 14px;
-      color: #fff;
-      margin-bottom: 20px;
-    }
-
-    .video-details h2 {
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-
-    .suggestions-section {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
       margin-top: 20px;
+      text-align: left;
+      padding: 0 20px;
     }
 
-    .suggested-video {
+    .video-details h3 {
+      color: white;
+    }
+
+    .suggested-videos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+      padding: 0 20px;
+    }
+
+    .suggested-video-item {
       cursor: pointer;
       text-align: center;
     }
 
-    .suggested-video img {
+    .suggested-video-item img {
       width: 100%;
       height: auto;
       border-radius: 8px;
     }
 
-    .suggested-video h3 {
-      font-size: 16px;
+    .suggested-video-item h3 {
       color: white;
       margin-top: 10px;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     }
-
-    .search-bar {
-      width: 80%;
-      max-width: 400px;
-      padding: 8px 10px;
-      margin-top: 10px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-      border: none;
-      font-size: 14px;
-      background-color: #222;
-      color: white;
-    }
-
-    .search-suggestions {
-      position: absolute;
-      background-color: #333;
-      color: white;
-      width: 80%;
-      max-width: 400px;
-      margin-top: 40px;
-      padding: 10px 0;
-      border-radius: 5px;
-      display: none;
-      z-index: 1;
-    }
-
-    .search-suggestions div {
-      display: flex;
-      align-items: center;
-      padding: 8px 10px;
-      cursor: pointer;
-    }
-
-    .search-suggestions div:hover {
-      background-color: #ff8c00;
-    }
-
-    .search-suggestions img {
-      width: 40px;
-      height: 40px;
-      border-radius: 4px; /* Rounded corners */
-      margin-right: 10px;
-    }
-
   </style>
 </head>
 <body>
@@ -170,109 +117,23 @@
     <h1 class="phub-title">
       PH<span>UB</span>
     </h1>
-    <input type="text" id="search" class="search-bar" placeholder="Search for videos..." onkeyup="searchVideos(event)">
-    <div id="search-suggestions" class="search-suggestions"></div>
   </header>
 
-  <div class="video-container">
-    <video id="video-player" class="video-player" controls>
-      <source id="video-source" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
-
-    <div class="video-details">
-      <h2 id="video-title"></h2>
-      <p id="video-description"></p>
-    </div>
-
-    <div class="suggestions-section" id="suggestions"></div>
+  <div class="video-player">
+    <video id="video-player" controls></video>
   </div>
+
+  <div class="video-details">
+    <h3 id="video-title">Video Title</h3>
+    <p id="video-description">Description goes here.</p>
+  </div>
+
+  <div class="suggested-videos" id="suggested-videos"></div>
 
   <script>
     // Get video ID from the URL
-    const params = new URLSearchParams(window.location.search);
-    const videoId = params.get('id');
-    let allVideos = [];
+    const urlParams = new URLSearchParams(window.location.search);
+    const videoId = urlParams.get('id');
 
     // Fetch video data from JSON
-    fetch('videos.json')
-      .then(response => response.json())
-      .then(data => {
-        allVideos = data;
-        loadVideoDetails(videoId, data);
-        loadSuggestions(videoId, data);
-      })
-      .catch(error => console.error('Error loading JSON:', error));
-
-    // Load the video details based on the video ID
-    function loadVideoDetails(id, videos) {
-      const video = videos.find(v => v.id === id);
-      if (video) {
-        document.getElementById('video-source').src = video.url;
-        document.getElementById('video-title').textContent = video.name;
-        document.getElementById('video-description').textContent = video.description || "No description available.";
-        document.getElementById('video-player').load();
-      }
-    }
-
-    // Load suggested videos
-    function loadSuggestions(id, videos) {
-      const video = videos.find(v => v.id === id);
-      const suggestions = video.suggestions || [];
-      const suggestionsSection = document.getElementById('suggestions');
-      suggestionsSection.innerHTML = '';
-      
-      suggestions.forEach(suggestedId => {
-        const suggestedVideo = videos.find(v => v.id === suggestedId);
-        if (suggestedVideo) {
-          const suggestionItem = document.createElement('div');
-          suggestionItem.classList.add('suggested-video');
-          suggestionItem.innerHTML = `
-            <a href="video.html?id=${suggestedVideo.id}">
-              <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}">
-              <h3>${suggestedVideo.name}</h3>
-            </a>
-          `;
-          suggestionsSection.appendChild(suggestionItem);
-        }
-      });
-    }
-
-    function searchVideos(event) {
-      const query = document.getElementById('search').value.toLowerCase();
-      const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
-
-      // Display search suggestions as the user types
-      if (query) {
-        document.getElementById('search-suggestions').style.display = 'block';
-        document.getElementById('search-suggestions').innerHTML = '';
-        filteredVideos.slice(0, 5).forEach(video => {
-          const suggestionItem = document.createElement('div');
-          suggestionItem.innerHTML = `
-            <img src="${video.thumbnail}" alt="${video.name}">
-            ${video.name}
-          `;
-          suggestionItem.onclick = () => window.location.href = `video.html?id=${video.id}`;
-          document.getElementById('search-suggestions').appendChild(suggestionItem);
-        });
-      } else {
-        document.getElementById('search-suggestions').style.display = 'none';
-      }
-
-      // Redirect to search-results page when Enter key is pressed
-      if (event.key === "Enter" && filteredVideos.length > 0) {
-        const queryParam = encodeURIComponent(query);
-        window.location.href = `search-results.html?q=${queryParam}`;
-      }
-    }
-
-    // Hide search suggestions when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('#search')) {
-        document.getElementById('search-suggestions').style.display = 'none';
-      }
-    });
-  </script>
-
-</body>
-</html>
+   
