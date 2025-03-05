@@ -3,7 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#141414">
     <title>My OTT Platform</title>
+    
+    <!-- Link to Manifest File -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Styles -->
+    <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -16,56 +23,53 @@
             background-color: #000;
             padding: 20px;
             text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
         }
         header h1 {
-            font-size: 36px;
+            font-size: 40px;
             margin: 0;
-            color: #ff8c00;
         }
         .navbar {
             display: flex;
             justify-content: center;
             background-color: #222;
-            padding: 12px 0;
-            border-top: 1px solid #444;
-            border-bottom: 1px solid #444;
+            padding: 10px 0;
         }
         .navbar a {
             text-decoration: none;
             color: #fff;
             margin: 0 20px;
-            font-size: 18px;
-            font-weight: bold;
-            transition: color 0.3s;
+            font-size: 16px;
         }
         .navbar a:hover {
             color: #ff8c00;
         }
+        .container {
+            padding: 20px;
+        }
+        #video-player {
+            max-width: 800px;
+            margin: 20px auto;
+        }
         .video-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 20px;
-            margin-top: 30px;
         }
         .video-item {
             position: relative;
             cursor: pointer;
             overflow: hidden;
-            border-radius: 10px;
-            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            background-color: #333;
-            color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
         }
         .video-item:hover {
             transform: scale(1.05);
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.7);
         }
         .video-item img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            height: auto;
+            display: block;
             transition: opacity 0.3s ease;
         }
         .video-item:hover img {
@@ -74,55 +78,84 @@
         .video-item h3 {
             position: absolute;
             bottom: 10px;
-            left: 15px;
+            left: 10px;
             color: white;
             font-size: 18px;
-            font-weight: bold;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-        }
-        .video-item a {
-            color: #ff8c00;
-            font-weight: bold;
-            text-decoration: none;
-            position: absolute;
-            bottom: 10px;
-            right: 15px;
-            background-color: rgba(0, 0, 0, 0.6);
-            padding: 5px 10px;
-            border-radius: 4px;
         }
     </style>
 </head>
 <body>
 
+    <!-- Header Section -->
     <header>
         <h1>My OTT Platform</h1>
     </header>
 
+    <!-- Navbar Section -->
     <div class="navbar">
-        <a href="index.html">Home</a>
+        <a href="#">Home</a>
     </div>
 
-    <div class="video-grid" id="video-grid"></div>
+    <div class="container">
+        <!-- Video Grid (Movies/TV Shows) -->
+        <div id="video-grid" class="video-grid"></div>
+    </div>
+
+    <script src="https://unpkg.com/video.js/dist/video.js"></script>
 
     <script>
-        // Load video data from the JSON file
-        fetch('videos.json')
-            .then(response => response.json())
-            .then(data => {
-                const videoGrid = document.getElementById('video-grid');
-                data.forEach(video => {
-                    const videoItem = document.createElement('div');
-                    videoItem.classList.add('video-item');
-                    videoItem.innerHTML = `
-                        <img src="${video.thumbnail}" alt="${video.name}">
-                        <h3>${video.name}</h3>
-                        <a href="video.html?id=${video.id}">Watch</a>
-                    `;
-                    videoGrid.appendChild(videoItem);
+        // Fetch video data (this could be fetched from a remote file, like videos.json)
+        const videos = [
+            {
+                "id": "1",
+                "name": "Filling Stepmoms Pot Of Gold - Cherry Kiss",
+                "url": "https://cdn-aws-exp.cdnamz.me/playlists/2f4fb285-9d79-495e-ac46-9d414cf65a4c/u8lmahqjne.m3u8",
+                "thumbnail": "https://via.placeholder.com/300x170",
+                "description": "Description for Video 1",
+                "suggestions": [2, 3]
+            },
+            {
+                "id": "2",
+                "name": "Video 2",
+                "url": "https://example.com/path/to/video2.m3u8",
+                "thumbnail": "https://via.placeholder.com/300x170",
+                "description": "Description for Video 2",
+                "suggestions": [1, 3]
+            },
+            {
+                "id": "3",
+                "name": "Video 3",
+                "url": "https://example.com/path/to/video3.m3u8",
+                "thumbnail": "https://via.placeholder.com/300x170",
+                "description": "Description for Video 3",
+                "suggestions": [1, 2]
+            }
+        ];
+
+        // Dynamically create video items based on the videos array
+        const videoGrid = document.getElementById('video-grid');
+        videos.forEach(video => {
+            const videoItem = document.createElement('div');
+            videoItem.classList.add('video-item');
+            videoItem.innerHTML = `
+                <img src="${video.thumbnail}" alt="${video.name}">
+                <h3>${video.name}</h3>
+                <a href="video.html?id=${video.id}">Watch</a>
+            `;
+            videoGrid.appendChild(videoItem);
+        });
+
+        // Register the service worker for offline support
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js')
+                .then(registration => {
+                    console.log('Service Worker registered with scope: ', registration.scope);
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed: ', error);
                 });
-            })
-            .catch(error => console.error('Error loading JSON:', error));
+        }
     </script>
 
 </body>
