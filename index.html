@@ -7,85 +7,7 @@
     <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
     <script src="https://unpkg.com/video.js/dist/video.js"></script>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #141414;
-            color: #fff;
-        }
-        header {
-            background-color: #000;
-            padding: 20px;
-            text-align: center;
-        }
-        header h1 {
-            font-size: 40px;
-            margin: 0;
-        }
-        .navbar {
-            display: flex;
-            justify-content: center;
-            background-color: #222;
-            padding: 10px 0;
-        }
-        .navbar a {
-            text-decoration: none;
-            color: #fff;
-            margin: 0 20px;
-            font-size: 16px;
-        }
-        .navbar a:hover {
-            color: #ff8c00;
-        }
-        .container {
-            padding: 20px;
-        }
-        #video-player {
-            max-width: 800px;
-            margin: 20px auto;
-        }
-        #featured-video {
-            max-width: 100%;
-            margin-bottom: 40px;
-        }
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        .video-item {
-            position: relative;
-            cursor: pointer;
-            overflow: hidden;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-            transition: transform 0.3s ease;
-        }
-        .video-item:hover {
-            transform: scale(1.05);
-        }
-        .video-item img {
-            width: 100%;
-            height: auto;
-            display: block;
-            transition: opacity 0.3s ease;
-        }
-        .video-item:hover img {
-            opacity: 0.7;
-        }
-        .video-item h3 {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            color: white;
-            font-size: 18px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-        }
-        .video-item a {
-            color: #fff;
-            font-weight: bold;
-        }
+        /* Your existing CSS styles */
     </style>
 </head>
 <body>
@@ -104,7 +26,6 @@
     </div>
 
     <div class="container">
-
         <!-- Featured Video Section -->
         <div id="featured-video">
             <video id="player" class="video-js vjs-default-skin" controls>
@@ -113,31 +34,9 @@
         </div>
 
         <!-- Video Grid (Movies/TV Shows) -->
-        <div class="video-grid">
-            <!-- Video Item 1 -->
-            <div class="video-item">
-                <img src="https://via.placeholder.com/300x170" alt="Video 1">
-                <h3>Video 1</h3>
-                <a href="#" onclick="changeVideo('https://cdn-aws-exp.cdnamz.me/playlists/af3a0735-d33d-4d49-9b9f-1ee0fcfc7264/u8lmahqjne.m3u8')">Play</a>
-            </div>
-
-            <!-- Video Item 2 -->
-            <div class="video-item">
-                <img src="https://via.placeholder.com/300x170" alt="Video 2">
-                <h3>Video 2</h3>
-                <a href="#" onclick="changeVideo('https://cdn-aws-exp.cdnamz.me/playlists/ec76cf70-f897-49ff-b2ea-fa19e7379af2/u8lmahqjne.m3u8')">Play</a>
-            </div>
-
-            <!-- Video Item 3 -->
-            <div class="video-item">
-                <img src="https://via.placeholder.com/300x170" alt="Video 3">
-                <h3>Video 3</h3>
-                <a href="#" onclick="changeVideo('https://www.example.com/path/to/video3.mp4')">Play</a>
-            </div>
-
-            <!-- Add more videos as needed -->
+        <div class="video-grid" id="video-grid">
+            <!-- Video items will be dynamically inserted here -->
         </div>
-
     </div>
 
     <script>
@@ -146,10 +45,31 @@
 
         // Function to change video on click
         function changeVideo(url) {
-            var player = videojs('player');
             player.src({ type: 'video/mp4', src: url });
             player.play();
         }
+
+        // Fetch video data from the JSON file and display the video grid
+        fetch('videos.json')
+            .then(response => response.json())
+            .then(videos => {
+                const videoGrid = document.getElementById('video-grid');
+                videos.forEach(video => {
+                    const videoItem = document.createElement('div');
+                    videoItem.classList.add('video-item');
+
+                    videoItem.innerHTML = `
+                        <img src="${video.thumbnail}" alt="${video.name}">
+                        <h3>${video.name}</h3>
+                        <a href="#" onclick="changeVideo('${video.url}')">Play</a>
+                    `;
+                    videoGrid.appendChild(videoItem);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading video data:', error);
+            });
     </script>
+
 </body>
 </html>
