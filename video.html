@@ -10,12 +10,15 @@
         .video-container { max-width: 900px; margin: 20px auto; }
         .video-player { width: 100%; height: auto; max-width: 100%; }
         #video-title { font-size: 24px; font-weight: bold; color: #fff; margin-top: 10px; }
+        #video-description { font-size: 16px; color: #ccc; margin: 10px 0; }
         .suggested-videos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
         @media (min-width: 768px) { .suggested-videos { grid-template-columns: repeat(4, 1fr); } }
         .video-item { cursor: pointer; text-align: center; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); }
         .video-item img { width: 100%; height: auto; display: block; border-radius: 8px; }
         .video-item h4 { font-size: 13px; color: #ddd; }
         .search-bar { width: 100%; padding: 10px; margin: 20px 0; border-radius: 5px; border: none; font-size: 16px; }
+        .home-button { position: absolute; top: 20px; left: 20px; padding: 10px 15px; background-color: #ff8c00; color: #fff; text-decoration: none; border-radius: 5px; }
+        .home-button:hover { background-color: #e07b00; }
     </style>
 </head>
 <body>
@@ -25,11 +28,15 @@
         <input type="text" id="search" class="search-bar" placeholder="Search for videos..." onkeyup="searchVideos()">
     </header>
 
+    <!-- Home Button -->
+    <a href="index.html" class="home-button">Home</a>
+
     <div class="video-container">
         <h2 id="video-title">Now Playing: </h2>
         <video id="player" class="video-player" controls>
             <source id="video-source" type="video/mp4">
         </video>
+        <p id="video-description"></p>
     </div>
 
     <div class="suggested-videos" id="suggested-videos"></div>
@@ -51,6 +58,7 @@
                     document.getElementById('video-title').innerText = `Now Playing: ${video.name}`;
                     document.getElementById('video-source').src = video.url;
                     document.getElementById('player').load();
+                    document.getElementById('video-description').innerText = video.description || "No description available.";
                 }
 
                 // Display suggested videos
