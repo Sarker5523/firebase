@@ -8,6 +8,10 @@
     <script src="https://unpkg.com/video.js/dist/video.js"></script>
     <style>
         /* Your existing CSS styles */
+        /* Adding styles for hiding the video grid */
+        #video-grid {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -19,9 +23,9 @@
 
     <!-- Navbar Section -->
     <div class="navbar">
-        <a href="#">Home</a>
+        <a href="#" id="home-link">Home</a>
+        <a href="#" id="tv-shows-link">TV Shows</a>
         <a href="#">Movies</a>
-        <a href="#">TV Shows</a>
         <a href="#">Profile</a>
     </div>
 
@@ -33,7 +37,7 @@
             </video>
         </div>
 
-        <!-- Video Grid (Movies/TV Shows) -->
+        <!-- Video Grid (TV Shows) -->
         <div class="video-grid" id="video-grid">
             <!-- Video items will be dynamically inserted here -->
         </div>
@@ -49,26 +53,45 @@
             player.play();
         }
 
-        // Fetch video data from the JSON file and display the video grid
-        fetch('videos.json')
-            .then(response => response.json())
-            .then(videos => {
-                const videoGrid = document.getElementById('video-grid');
-                videos.forEach(video => {
-                    const videoItem = document.createElement('div');
-                    videoItem.classList.add('video-item');
+        // Function to load and display the video grid
+        function loadVideoGrid() {
+            fetch('videos.json')
+                .then(response => response.json())
+                .then(videos => {
+                    const videoGrid = document.getElementById('video-grid');
+                    videoGrid.innerHTML = ''; // Clear previous content
+                    videos.forEach(video => {
+                        const videoItem = document.createElement('div');
+                        videoItem.classList.add('video-item');
 
-                    videoItem.innerHTML = `
-                        <img src="${video.thumbnail}" alt="${video.name}">
-                        <h3>${video.name}</h3>
-                        <a href="#" onclick="changeVideo('${video.url}')">Play</a>
-                    `;
-                    videoGrid.appendChild(videoItem);
+                        videoItem.innerHTML = `
+                            <img src="${video.thumbnail}" alt="${video.name}">
+                            <h3>${video.name}</h3>
+                            <a href="#" onclick="changeVideo('${video.url}')">Play</a>
+                        `;
+                        videoGrid.appendChild(videoItem);
+                    });
+
+                    // Show the video grid and hide the featured video section
+                    document.getElementById('featured-video').style.display = 'none';
+                    videoGrid.style.display = 'grid';  // Show the video grid
+                })
+                .catch(error => {
+                    console.error('Error loading video data:', error);
                 });
-            })
-            .catch(error => {
-                console.error('Error loading video data:', error);
-            });
+        }
+
+        // Event listener for TV Shows link
+        document.getElementById('tv-shows-link').addEventListener('click', function() {
+            loadVideoGrid();
+        });
+
+        // Event listener for Home link
+        document.getElementById('home-link').addEventListener('click', function() {
+            // Show the featured video section and hide the video grid
+            document.getElementById('featured-video').style.display = 'block';
+            document.getElementById('video-grid').style.display = 'none';
+        });
     </script>
 
 </body>
