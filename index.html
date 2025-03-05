@@ -8,7 +8,6 @@
     <script src="https://unpkg.com/video.js/dist/video.js"></script>
     <style>
         /* Your existing CSS styles */
-        /* Adding styles for hiding the video grid */
         #video-grid {
             display: none;
         }
@@ -53,13 +52,15 @@
             player.play();
         }
 
-        // Function to load and display the video grid
+        // Function to load and display the video grid from the JSON file
         function loadVideoGrid() {
             fetch('videos.json')
                 .then(response => response.json())
                 .then(videos => {
                     const videoGrid = document.getElementById('video-grid');
                     videoGrid.innerHTML = ''; // Clear previous content
+
+                    // Loop through the videos data and create video items dynamically
                     videos.forEach(video => {
                         const videoItem = document.createElement('div');
                         videoItem.classList.add('video-item');
