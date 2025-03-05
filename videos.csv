@@ -1,4 +1,26 @@
-name,url,thumbnail
-"Video 1","https://cdn-aws-exp.cdnamz.me/playlists/2f4fb285-9d79-495e-ac46-9d414cf65a4c/u8lmahqjne.m3u8","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5GAime-7ClsqU1FwLcxiZbqdnbLIMA5VUwfCmeX-pDdSzPcYExJe0qsY&s=10"
-"Video 2","https://example.com/path/to/video2.m3u8","https://via.placeholder.com/300x170"
-"Video 3","https://example.com/path/to/video3.m3u8","https://via.placeholder.com/300x170"
+[
+    {
+        "id": "1",
+        "name": "Video 1",
+        "url": "https://cdn-aws-exp.cdnamz.me/playlists/2f4fb285-9d79-495e-ac46-9d414cf65a4c/u8lmahqjne.m3u8",
+        "thumbnail": "",
+        "description": "Description for Video 1",
+        "suggestions": [2, 3]
+    },
+    {
+        "id": "2",
+        "name": "Video 2",
+        "url": "https://example.com/path/to/video2.m3u8",
+        "thumbnail": "https://via.placeholder.com/300x170",
+        "description": "Description for Video 2",
+        "suggestions": [1, 3]
+    },
+    {
+        "id": "3",
+        "name": "Video 3",
+        "url": "https://example.com/path/to/video3.m3u8",
+        "thumbnail": "https://via.placeholder.com/300x170",
+        "description": "Description for Video 3",
+        "suggestions": [1, 2]
+    }
+]
