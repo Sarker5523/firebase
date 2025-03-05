@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My OTT Platform - Video</title>
+  <title>PHUB - Video</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -34,7 +34,7 @@
       font-size: 16px;
       color: #ff8c00;
       background-color: #333;
-      padding: 10px 15px;
+      padding: 8px 12px;
       border-radius: 8px;
       border: none;
       cursor: pointer;
@@ -50,6 +50,20 @@
 
     .home-btn:focus {
       outline: none;
+    }
+
+    /* PHUB title styling */
+    header .phub-title {
+      font-size: 30px;
+      font-weight: bold;
+      color: white;
+    }
+
+    header .phub-title span {
+      color: #ff8c00; /* Color for HUB */
+      background-color: #333;
+      padding: 2px 5px;
+      border-radius: 4px;
     }
 
     .video-container {
@@ -143,7 +157,7 @@
     .search-suggestions img {
       width: 40px;
       height: 40px;
-      border-radius: 50%;
+      border-radius: 4px; /* Rounded corners */
       margin-right: 10px;
     }
 
@@ -153,7 +167,9 @@
 
   <header>
     <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
-    <h1>My OTT Platform - Video</h1>
+    <h1 class="phub-title">
+      PH<span>UB</span>
+    </h1>
     <input type="text" id="search" class="search-bar" placeholder="Search for videos..." onkeyup="searchVideos(event)">
     <div id="search-suggestions" class="search-suggestions"></div>
   </header>
