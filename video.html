@@ -6,19 +6,20 @@
     <title>Video Player</title>
     <style>
         body { font-family: Arial, sans-serif; background-color: #141414; color: #fff; text-align: center; }
-        header { text-align: center; padding: 20px; background-color: #000; color: #ff8c00; }
+        header { text-align: center; padding: 10px 20px; background-color: #000; color: #ff8c00; }
+        header h1 { font-size: 20px; margin: 0; }
+        .home-button { position: absolute; top: 15px; left: 15px; padding: 8px 12px; background-color: #ff8c00; color: #fff; text-decoration: none; border-radius: 5px; font-size: 14px; }
+        .home-button:hover { background-color: #e07b00; }
+        .search-bar { width: 80%; padding: 8px 10px; margin-top: 10px; margin-bottom: 10px; border-radius: 5px; border: none; font-size: 14px; }
         .video-container { max-width: 900px; margin: 20px auto; }
         .video-player { width: 100%; height: auto; max-width: 100%; }
-        #video-title { font-size: 24px; font-weight: bold; color: #fff; margin-top: 10px; }
-        #video-description { font-size: 16px; color: #ccc; margin: 10px 0; }
+        #video-title { font-size: 22px; font-weight: bold; color: #fff; margin-top: 10px; }
+        #video-description { font-size: 14px; color: #ccc; margin: 10px 0; }
         .suggested-videos { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-top: 20px; }
         @media (min-width: 768px) { .suggested-videos { grid-template-columns: repeat(4, 1fr); } }
         .video-item { cursor: pointer; text-align: center; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); }
         .video-item img { width: 100%; height: auto; display: block; border-radius: 8px; }
         .video-item h4 { font-size: 13px; color: #ddd; }
-        .search-bar { width: 100%; padding: 10px; margin: 20px 0; border-radius: 5px; border: none; font-size: 16px; }
-        .home-button { position: absolute; top: 20px; left: 20px; padding: 10px 15px; background-color: #ff8c00; color: #fff; text-decoration: none; border-radius: 5px; }
-        .home-button:hover { background-color: #e07b00; }
     </style>
 </head>
 <body>
