@@ -4,114 +4,156 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Player</title>
-    
-    <!-- Video.js Styles & Script -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.5.0/video-js.min.css" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/8.5.0/video.min.js"></script>
-
+    <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
+    <script src="https://unpkg.com/video.js/dist/video.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #141414; color: white; text-align: center; padding: 20px; }
-        .container { max-width: 800px; margin: auto; }
-        .video-container { margin-bottom: 20px; }
-        .suggestions { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-top: 20px; }
-        .suggestion-item { cursor: pointer; width: 150px; text-align: center; }
-        .suggestion-item img { width: 100%; border-radius: 5px; }
-        .suggestion-item h4 { font-size: 14px; color: #ff8c00; margin-top: 5px; }
-        .switch-button { background-color: #ff8c00; border: none; color: white; padding: 10px 20px; cursor: pointer; margin-bottom: 20px; }
-        .switch-button:hover { background-color: #e07b00; }
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #141414;
+            color: #fff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header & Home Button */
+        header {
+            background-color: #000;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .home-button {
+            text-decoration: none;
+            color: #ff8c00;
+            font-size: 18px;
+            font-weight: bold;
+            margin-left: 15px;
+        }
+
+        /* Responsive Video Player */
+        .video-container {
+            max-width: 900px; /* Large on Desktop */
+            margin: 20px auto;
+            position: relative;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+
+        video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .video-container {
+                max-width: 100%;
+                padding-top: 56.25%; /* Maintain Aspect Ratio */
+            }
+        }
+
+        /* Video Details */
+        .video-details {
+            margin-top: 20px;
+            padding: 10px;
+        }
+
+        /* Suggested Videos */
+        .suggested-videos {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .video-item {
+            width: 200px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .video-item img {
+            width: 100%;
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        .video-item:hover img {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1 id="video-title">Loading...</h1>
+    <!-- Header -->
+    <header>
+        <a href="index.html" class="home-button">⬅ Home</a>
+        <h2>Now Playing</h2>
+        <div></div> <!-- Empty div to balance the flexbox -->
+    </header>
 
-        <!-- Video Player Container -->
-        <div class="video-container">
-            <button class="switch-button" onclick="switchPlayer()">Switch Player</button>
-
-            <!-- Default Player -->
-            <video id="defaultPlayer" class="video-js vjs-default-skin" controls width="800" height="450" crossorigin="anonymous">
-                <source id="defaultSource" src="" type="application/x-mpegURL">
-            </video>
-
-            <!-- Alternative Player (Initially Hidden) -->
-            <video id="altPlayer" controls width="800" height="450" style="display: none;">
-                <source id="altSource" src="" type="video/mp4">
-            </video>
-        </div>
-
-        <!-- Video Description -->
-        <p id="video-description">Loading description...</p>
-
-        <!-- Suggestions Section -->
-        <h2>Related Videos</h2>
-        <div id="suggestions" class="suggestions"></div>
+    <!-- Video Player -->
+    <div class="video-container">
+        <video id="defaultPlayer" class="video-js vjs-default-skin" controls>
+            <source id="videoSource" type="application/x-mpegURL">
+        </video>
     </div>
 
+    <!-- Video Details -->
+    <div class="video-details" id="video-details">
+        <h3 id="video-title"></h3>
+        <p id="video-description"></p>
+    </div>
+
+    <!-- Suggested Videos -->
+    <h3>Suggested Videos</h3>
+    <div class="suggested-videos" id="suggested-videos"></div>
+
     <script>
-        // Get video ID from URL
+        // Fetch video ID from URL
         const urlParams = new URLSearchParams(window.location.search);
         const videoId = urlParams.get('id');
-        let isDefaultPlayer = true;
 
-        // Fetch video data from JSON
         fetch('videos.json')
             .then(response => response.json())
             .then(videos => {
                 const video = videos.find(v => v.id === videoId);
-                if (!video) {
-                    document.getElementById('video-title').innerText = "Video Not Found";
-                    return;
-                }
+                if (video) {
+                    // Set Video Source
+                    document.getElementById('videoSource').src = video.url;
+                    videojs('defaultPlayer').src({ type: 'application/x-mpegURL', src: video.url });
 
-                // Update video title and description
-                document.getElementById('video-title').innerText = video.name;
-                document.getElementById('video-description').innerText = video.description;
+                    // Set Video Details
+                    document.getElementById('video-title').textContent = video.name;
+                    document.getElementById('video-description').textContent = video.description || 'No description available.';
 
-                // Set video sources
-                document.getElementById('defaultSource').src = video.url;
-                document.getElementById('altSource').src = video.url;
-                
-                // Initialize Video.js player
-                var player = videojs('defaultPlayer', { techOrder: ['html5'], autoplay: false, controls: true });
-                player.src({ type: 'application/x-mpegURL', src: video.url });
-
-                // Load suggestions
-                const suggestionsContainer = document.getElementById('suggestions');
-                video.suggestions.forEach(suggestionId => {
-                    const suggestedVideo = videos.find(v => v.id === suggestionId);
-                    if (suggestedVideo) {
-                        const suggestionItem = document.createElement('div');
-                        suggestionItem.classList.add('suggestion-item');
-                        suggestionItem.innerHTML = `
-                            <a href="video.html?id=${suggestedVideo.id}">
+                    // Load Suggested Videos
+                    const suggestionsContainer = document.getElementById('suggested-videos');
+                    video.suggestions.forEach(suggestedId => {
+                        const suggestedVideo = videos.find(v => v.id == suggestedId);
+                        if (suggestedVideo) {
+                            const videoItem = document.createElement('div');
+                            videoItem.classList.add('video-item');
+                            videoItem.innerHTML = `
                                 <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}">
                                 <h4>${suggestedVideo.name}</h4>
-                            </a>
-                        `;
-                        suggestionsContainer.appendChild(suggestionItem);
-                    }
-                });
+                                <a href="video.html?id=${suggestedVideo.id}">Watch</a>
+                            `;
+                            suggestionsContainer.appendChild(videoItem);
+                        }
+                    });
+                } else {
+                    document.getElementById('video-title').textContent = 'Video not found';
+                }
             })
-            .catch(error => console.error('Error loading JSON:', error));
-
-        // Function to switch between players
-        function switchPlayer() {
-            const defaultPlayer = document.getElementById('defaultPlayer');
-            const altPlayer = document.getElementById('altPlayer');
-
-            if (isDefaultPlayer) {
-                defaultPlayer.style.display = 'none';
-                altPlayer.style.display = 'block';
-                altPlayer.play();
-            } else {
-                altPlayer.style.display = 'none';
-                defaultPlayer.style.display = 'block';
-                videojs('defaultPlayer').play();
-            }
-            isDefaultPlayer = !isDefaultPlayer;
-        }
+            .catch(error => console.error('Error loading video:', error));
     </script>
 
 </body>
