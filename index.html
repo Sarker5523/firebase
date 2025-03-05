@@ -5,7 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>My OTT Platform</title>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #141414; color: #fff; margin: 0; padding: 0; }
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #141414;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
     header {
       text-align: center;
       padding: 10px 20px;
@@ -13,7 +20,12 @@
       color: #ff8c00;
       position: relative;
     }
-    header h1 { font-size: 20px; margin: 0; }
+
+    header h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+
     .search-bar {
       width: 80%;
       max-width: 400px;
@@ -23,27 +35,32 @@
       border-radius: 5px;
       border: none;
       font-size: 14px;
+      background-color: #222;
+      color: white;
     }
-    .search-results {
-      background-color: #000;
-      color: #fff;
-      border-radius: 4px;
+
+    .search-suggestions {
       position: absolute;
-      top: 45px;
+      background-color: #333;
+      color: white;
       width: 80%;
       max-width: 400px;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
-      z-index: 100;
+      margin-top: 40px;
+      padding: 10px 0;
+      border-radius: 5px;
       display: none;
+      z-index: 1;
     }
-    .search-result-item {
-      padding: 10px;
+
+    .search-suggestions div {
+      padding: 8px 10px;
       cursor: pointer;
-      border-bottom: 1px solid #333;
     }
-    .search-result-item:hover {
-      background-color: #333;
+
+    .search-suggestions div:hover {
+      background-color: #ff8c00;
     }
+
     .video-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -51,6 +68,7 @@
       margin-top: 30px;
       padding: 0 10px;
     }
+
     .video-item {
       cursor: pointer;
       position: relative;
@@ -59,35 +77,44 @@
       overflow: hidden;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
     }
+
     .video-item img {
       width: 100%;
       height: auto;
       display: block;
       border-radius: 8px;
     }
-    .video-item h4 {
+
+    .video-item h3 {
       position: absolute;
       top: 10px;
       left: 10px;
       margin: 0;
-      font-size: 13px;
+      font-size: 16px;
       color: #fff;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
     }
   </style>
 </head>
 <body>
+
   <header>
     <h1>My OTT Platform</h1>
-    <input type="text" id="search" class="search-bar" placeholder="Search for videos..." onkeyup="searchVideos(event)" onkeydown="handleKeyDown(event)">
-    <div id="search-results" class="search-results"></div>
+    <input type="text" id="search" class="search-bar" placeholder="Search for videos..." onkeyup="searchVideos(event)">
+    <div id="search-suggestions" class="search-suggestions"></div>
   </header>
 
   <div class="video-grid" id="video-grid"></div>
 
   <script>
     const searchInput = document.getElementById('search');
-    const searchResultsContainer = document.getElementById('search-results');
+    const searchSuggestions = document.getElementById('search-suggestions');
+    const videoGrid = document.getElementById('video-grid');
     let allVideos = [];
 
     // Fetch video data from JSON
@@ -95,12 +122,11 @@
       .then(response => response.json())
       .then(data => {
         allVideos = data;
-        displayVideos(data);
+        loadVideoGrid(data);
       })
       .catch(error => console.error('Error loading JSON:', error));
 
-    function displayVideos(videos) {
-      const videoGrid = document.getElementById('video-grid');
+    function loadVideoGrid(videos) {
       videoGrid.innerHTML = '';
       videos.forEach(video => {
         const videoItem = document.createElement('div');
@@ -108,7 +134,7 @@
         videoItem.innerHTML = `
           <a href="video.html?id=${video.id}">
             <img src="${video.thumbnail}" alt="${video.name}">
-            <h4>${video.name}</h4>
+            <h3>${video.name}</h3>
           </a>
         `;
         videoGrid.appendChild(videoItem);
@@ -119,33 +145,34 @@
       const query = searchInput.value.toLowerCase();
       const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
 
-      // Show search results as suggestions
-      if (filteredVideos.length > 0 && query !== "") {
-        searchResultsContainer.style.display = "block";
-        searchResultsContainer.innerHTML = '';
-        filteredVideos.forEach(video => {
-          const resultItem = document.createElement('div');
-          resultItem.classList.add('search-result-item');
-          resultItem.innerHTML = `<a href="video.html?id=${video.id}">${video.name}</a>`;
-          searchResultsContainer.appendChild(resultItem);
+      // Display search suggestions as the user types
+      if (query) {
+        searchSuggestions.style.display = 'block';
+        searchSuggestions.innerHTML = '';
+        filteredVideos.slice(0, 5).forEach(video => {
+          const suggestionItem = document.createElement('div');
+          suggestionItem.innerText = video.name;
+          suggestionItem.onclick = () => window.location.href = `video.html?id=${video.id}`;
+          searchSuggestions.appendChild(suggestionItem);
         });
       } else {
-        searchResultsContainer.style.display = "none";
+        searchSuggestions.style.display = 'none';
+      }
+
+      // Redirect to search-results page when Enter key is pressed
+      if (event.key === "Enter" && filteredVideos.length > 0) {
+        const queryParam = encodeURIComponent(query);
+        window.location.href = `search-results.html?q=${queryParam}`;
       }
     }
 
-    function handleKeyDown(event) {
-      if (event.key === "Enter") {
-        const query = searchInput.value.toLowerCase();
-        const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
-
-        if (filteredVideos.length > 0) {
-          // Redirect to search-results.html page
-          const queryParam = encodeURIComponent(query);
-          window.location.href = `search-results.html?q=${queryParam}`;
-        }
+    // Hide search suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#search')) {
+        searchSuggestions.style.display = 'none';
       }
-    }
+    });
   </script>
+
 </body>
 </html>
