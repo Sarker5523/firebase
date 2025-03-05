@@ -1,72 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My OTT Platform</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #141414; color: #fff; }
-        header { text-align: center; padding: 10px 20px; background-color: #000; color: #ff8c00; }
-        header h1 { font-size: 20px; margin: 0; }
-        .home-button { position: absolute; top: 15px; left: 15px; padding: 8px 12px; background-color: #ff8c00; color: #fff; text-decoration: none; border-radius: 5px; font-size: 14px; }
-        .home-button:hover { background-color: #e07b00; }
-        .search-bar { width: 80%; padding: 8px 10px; margin-top: 10px; margin-bottom: 10px; border-radius: 5px; border: none; font-size: 14px; }
-        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-top: 30px; }
-        @media (min-width: 768px) { .video-grid { grid-template-columns: repeat(4, 1fr); } }
-        .video-item { cursor: pointer; text-align: center; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4); position: relative; }
-        .video-item img { width: 100%; height: auto; display: block; border-radius: 8px; }
-        .video-item h4 { font-size: 13px; color: #ddd; position: absolute; top: 10px; left: 10px; color: #fff; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My OTT Platform</title>
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #141414; color: #fff; margin: 0; padding: 0; }
+    header {
+      text-align: center;
+      padding: 10px 20px;
+      background-color: #000;
+      color: #ff8c00;
+      position: relative;
+    }
+    header h1 { font-size: 20px; margin: 0; }
+    .search-bar {
+      width: 80%;
+      max-width: 400px;
+      padding: 8px 10px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 14px;
+    }
+    .search-results {
+      background-color: #000;
+      color: #fff;
+      border-radius: 4px;
+      position: absolute;
+      top: 45px;
+      width: 80%;
+      max-width: 400px;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+      z-index: 100;
+      display: none;
+    }
+    .search-result-item {
+      padding: 10px;
+      cursor: pointer;
+      border-bottom: 1px solid #333;
+    }
+    .search-result-item:hover {
+      background-color: #333;
+    }
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
+      padding: 0 10px;
+    }
+    .video-item {
+      cursor: pointer;
+      position: relative;
+      text-align: center;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+    .video-item img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+    }
+    .video-item h4 {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      margin: 0;
+      font-size: 13px;
+      color: #fff;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+  </style>
 </head>
 <body>
+  <header>
+    <h1>My OTT Platform</h1>
+    <input type="text" id="search" class="search-bar" placeholder="Search for videos..." onkeyup="searchVideos(event)" onkeydown="handleKeyDown(event)">
+    <div id="search-results" class="search-results"></div>
+  </header>
 
-    <header>
-        <h1>My OTT Platform</h1>
-        <input type="text" id="search" class="search-bar" placeholder="Search for videos..." onkeyup="searchVideos()">
-    </header>
+  <div class="video-grid" id="video-grid"></div>
 
-    <!-- Home Button -->
-    <a href="index.html" class="home-button">Home</a>
+  <script>
+    const searchInput = document.getElementById('search');
+    const searchResultsContainer = document.getElementById('search-results');
+    let allVideos = [];
 
-    <!-- Video Grid -->
-    <div class="video-grid" id="video-grid"></div>
+    // Fetch video data from JSON
+    fetch('videos.json')
+      .then(response => response.json())
+      .then(data => {
+        allVideos = data;
+        displayVideos(data);
+      })
+      .catch(error => console.error('Error loading JSON:', error));
 
-    <script>
-        const searchInput = document.getElementById('search');
-        let allVideos = [];
+    function displayVideos(videos) {
+      const videoGrid = document.getElementById('video-grid');
+      videoGrid.innerHTML = '';
+      videos.forEach(video => {
+        const videoItem = document.createElement('div');
+        videoItem.classList.add('video-item');
+        videoItem.innerHTML = `
+          <a href="video.html?id=${video.id}">
+            <img src="${video.thumbnail}" alt="${video.name}">
+            <h4>${video.name}</h4>
+          </a>
+        `;
+        videoGrid.appendChild(videoItem);
+      });
+    }
 
-        // Fetch video data from JSON
-        fetch('videos.json')
-            .then(response => response.json())
-            .then(data => {
-                allVideos = data;
-                displayVideos(data); // Display videos initially
-            })
-            .catch(error => console.error('Error loading JSON:', error));
+    function searchVideos(event) {
+      const query = searchInput.value.toLowerCase();
+      const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
 
-        function displayVideos(videos) {
-            const videoGrid = document.getElementById('video-grid');
-            videoGrid.innerHTML = '';
+      // Show search results as suggestions
+      if (filteredVideos.length > 0 && query !== "") {
+        searchResultsContainer.style.display = "block";
+        searchResultsContainer.innerHTML = '';
+        filteredVideos.forEach(video => {
+          const resultItem = document.createElement('div');
+          resultItem.classList.add('search-result-item');
+          resultItem.innerHTML = `<a href="video.html?id=${video.id}">${video.name}</a>`;
+          searchResultsContainer.appendChild(resultItem);
+        });
+      } else {
+        searchResultsContainer.style.display = "none";
+      }
+    }
 
-            videos.forEach(video => {
-                const videoItem = document.createElement('div');
-                videoItem.classList.add('video-item');
-                videoItem.innerHTML = `
-                    <a href="video.html?id=${video.id}">
-                        <img src="${video.thumbnail}" alt="${video.name}">
-                        <h4>${video.name}</h4>
-                    </a>
-                `;
-                videoGrid.appendChild(videoItem);
-            });
+    function handleKeyDown(event) {
+      if (event.key === "Enter") {
+        const query = searchInput.value.toLowerCase();
+        const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
+
+        if (filteredVideos.length > 0) {
+          // Redirect to search-results.html page
+          const queryParam = encodeURIComponent(query);
+          window.location.href = `search-results.html?q=${queryParam}`;
         }
-
-        function searchVideos() {
-            const query = searchInput.value.toLowerCase();
-            const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
-            displayVideos(filteredVideos);
-        }
-    </script>
-
+      }
+    }
+  </script>
 </body>
 </html>
