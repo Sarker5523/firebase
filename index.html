@@ -3,129 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Watch Video</title>
-    <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
-    <script src="https://unpkg.com/video.js/dist/video.js"></script>
+    <title>My OTT Platform</title>
     <style>
-        body { font-family: Arial, sans-serif; background-color: #141414; color: #fff; text-align: center; }
-        header { padding: 20px; background-color: #000; color: #ff8c00; }
-        .video-container { margin: 20px auto; max-width: 800px; }
-        .hidden { display: none; }
-        .switch-btn { margin-top: 20px; padding: 10px 15px; background-color: #ff8c00; border: none; color: white; cursor: pointer; font-size: 16px; }
-        .video-info { margin-top: 20px; }
-        .controls { margin-top: 20px; }
-        select { padding: 5px; font-size: 16px; }
+        /* Add your styles here */
+        body { font-family: Arial, sans-serif; background-color: #141414; color: #fff; }
+        header { text-align: center; padding: 20px; background-color: #000; color: #ff8c00; }
+        .video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-top: 30px; }
+        .video-item { cursor: pointer; text-align: center; }
+        .video-item img { width: 100%; height: auto; }
+        .video-item h3 { color: white; }
+        .video-item a { color: #ff8c00; text-decoration: none; }
     </style>
 </head>
 <body>
 
-    <header><h1>Watch Video</h1></header>
+    <header><h1>My OTT Platform</h1></header>
 
-    <div class="video-container">
-        <!-- Default Player -->
-        <video id="defaultPlayer" width="800" height="450" controls>
-            <source id="defaultSource" src="" type="video/mp4">
-        </video>
-
-        <!-- Advanced Player (Hidden by Default) -->
-        <video id="advancedPlayer" class="video-js vjs-default-skin hidden" controls width="800" height="450">
-            <source id="advancedSource" src="" type="video/mp4">
-        </video>
-
-        <!-- Switch Player Button -->
-        <button id="switchPlayer" class="switch-btn">Switch to Advanced Player</button>
-
-        <!-- Video Information -->
-        <div class="video-info">
-            <h2 id="videoTitle"></h2>
-            <p id="videoDescription"></p>
-        </div>
-
-        <!-- Player Controls -->
-        <div class="controls">
-            <label for="quality">Quality:</label>
-            <select id="quality">
-                <option value="auto">Auto</option>
-                <option value="720p">720p</option>
-                <option value="1080p">1080p</option>
-            </select>
-            <label for="speed">Speed:</label>
-            <select id="speed">
-                <option value="1.0">1x</option>
-                <option value="1.5">1.5x</option>
-                <option value="2.0">2x</option>
-            </select>
-        </div>
-    </div>
+    <div class="video-grid" id="video-grid"></div>
 
     <script>
-        // Get video ID from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const videoId = urlParams.get('id');
-
         // Fetch video data from JSON
         fetch('videos.json')
             .then(response => response.json())
             .then(data => {
-                const video = data.find(v => v.id === videoId);
-                if (!video) {
-                    alert("Video not found!");
-                    return;
-                }
-
-                // Set video details
-                document.getElementById('defaultSource').src = video.url;
-                document.getElementById('advancedSource').src = video.url;
-                document.getElementById('videoTitle').textContent = video.name;
-                document.getElementById('videoDescription').textContent = video.description;
-
-                // Load default player
-                document.getElementById('defaultPlayer').load();
+                const videoGrid = document.getElementById('video-grid');
+                data.forEach(video => {
+                    const videoItem = document.createElement('div');
+                    videoItem.classList.add('video-item');
+                    videoItem.innerHTML = `
+                        <img src="${video.thumbnail}" alt="${video.name}">
+                        <h3>${video.name}</h3>
+                        <a href="video.html?id=${video.id}">Watch</a>
+                    `;
+                    videoGrid.appendChild(videoItem);
+                });
             })
-            .catch(error => console.error('Error loading video:', error));
-
-        // Player switch functionality
-        document.getElementById('switchPlayer').addEventListener('click', function () {
-            const defaultPlayer = document.getElementById('defaultPlayer');
-            const advancedPlayer = document.getElementById('advancedPlayer');
-
-            if (defaultPlayer.classList.contains('hidden')) {
-                defaultPlayer.classList.remove('hidden');
-                advancedPlayer.classList.add('hidden');
-                this.textContent = "Switch to Advanced Player";
-            } else {
-                defaultPlayer.classList.add('hidden');
-                advancedPlayer.classList.remove('hidden');
-                videojs('advancedPlayer').play();  // Ensure Video.js player starts playing
-                this.textContent = "Switch to Default Player";
-            }
-        });
-
-        // Quality change functionality (only for advanced player)
-        document.getElementById('quality').addEventListener('change', function () {
-            const quality = this.value;
-            const advancedPlayer = videojs('advancedPlayer');
-            if (quality === 'auto') {
-                advancedPlayer.src({ type: 'video/mp4', src: 'your_auto_quality_video_url.m3u8' });
-            } else {
-                advancedPlayer.src({ type: 'video/mp4', src: `your_${quality}_quality_video_url.mp4` });
-            }
-            advancedPlayer.load();
-            advancedPlayer.play();
-        });
-
-        // Speed change functionality (both players)
-        document.getElementById('speed').addEventListener('change', function () {
-            const speed = parseFloat(this.value);
-            const defaultPlayer = document.getElementById('defaultPlayer');
-            const advancedPlayer = videojs('advancedPlayer');
-            
-            if (!defaultPlayer.classList.contains('hidden')) {
-                defaultPlayer.playbackRate = speed;
-            } else {
-                advancedPlayer.playbackRate(speed);
-            }
-        });
+            .catch(error => console.error('Error loading JSON:', error));
     </script>
 
 </body>
