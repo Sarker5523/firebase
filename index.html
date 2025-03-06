@@ -63,6 +63,7 @@
       align-items: center;
       padding: 20px;
     }
+    /* The video element or iframe will be styled here */
     video, iframe {
       width: 100%;
       max-width: 1000px;
@@ -113,6 +114,7 @@
   <!-- Include Hls.js for m3u8 support -->
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
+    // Fetch video data from videos.json
     fetch('videos.json')
       .then(response => response.json())
       .then(data => {
@@ -121,17 +123,23 @@
         const video = data.find(v => v.id === videoId);
 
         if (video) {
+          // Set title and description
           document.getElementById('video-title').innerText = video.name;
           document.getElementById('video-description').innerText = video.description || "No description available.";
+
           const container = document.getElementById('video-container');
 
+          // Check if the URL is from Google Drive
           if (video.url.includes("drive.google.com")) {
+            // Extract the file ID from the URL
+            // Assuming the URL is in the format: https://drive.google.com/uc?export=download&id=FILE_ID
             const urlParams = new URLSearchParams(video.url.split('?')[1]);
             const fileId = urlParams.get('id');
             const iframe = document.createElement('iframe');
             iframe.src = `https://drive.google.com/file/d/${fileId}/preview`;
             container.appendChild(iframe);
-          } else if (video.url.endsWith(".m3u8")) {
+          } else {
+            // Otherwise, assume it's an m3u8 stream and use Hls.js for playback
             const videoElem = document.createElement('video');
             videoElem.controls = true;
             container.appendChild(videoElem);
@@ -149,16 +157,6 @@
                 videoElem.play();
               });
             }
-          } else {
-            // If the video doesn't match the above conditions, embed it as an iframe
-            const iframe = document.createElement('iframe');
-            iframe.width = "640";
-            iframe.height = "360";
-            iframe.src = video.url;
-            iframe.frameBorder = "0";
-            iframe.scrolling = "0";
-            iframe.allowFullscreen = true;
-            container.appendChild(iframe);
           }
         } else {
           document.getElementById('video-title').innerText = "Video not found";
