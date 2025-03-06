@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Video Details</title>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <style>
@@ -20,6 +20,48 @@
       background-color: #000;
       color: #ff8c00;
       position: relative;
+    }
+
+    .home-btn {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      font-size: 16px;
+      color: #ff8c00;
+      background-color: #333;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .home-btn:hover {
+      background-color: #444;
+      transform: translateY(-4px);
+    }
+
+    .phub-title {
+      font-size: 30px;
+      font-weight: bold;
+    }
+
+    .phub-title span {
+      color: #000;
+      background-color: #ff8c00;
+      padding: 3px 10px;
+      border-radius: 4px;
+    }
+
+    .search-bar {
+      width: 80%;
+      max-width: 400px;
+      padding: 8px;
+      margin-top: 10px;
+      border-radius: 5px;
+      border: none;
+      background-color: #222;
+      color: white;
     }
 
     .video-container {
@@ -40,18 +82,22 @@
     .video-details {
       text-align: left;
       margin-top: 20px;
-      padding: 0 20px;
+      padding: 20px;
       background-color: #333;
       border-radius: 15px;
-      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
     }
 
     .video-details h2 {
       font-size: 20px;
-      color: white;
       background-color: #dcdcdc;
       padding: 10px;
       border-radius: 10px;
+      color: black;
+    }
+
+    .video-details p {
+      font-size: 14px;
+      color: #bbb;
     }
 
     .suggested-videos {
@@ -61,92 +107,46 @@
       padding: 20px;
     }
 
+    .suggested-video-item {
+      cursor: pointer;
+      text-align: center;
+      position: relative;
+    }
+
     .suggested-video-item img {
       width: 100%;
       border-radius: 8px;
+    }
+
+    .suggested-video-item h3 {
+      font-size: 12px;
+      color: white;
+      padding: 5px;
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    @media (max-width: 768px) {
+      .suggested-videos {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .search-bar {
+        width: 90%;
+      }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Video Player</h1>
-  </header>
-
-  <div class="video-container">
-    <video id="video-player" controls></video>
-  </div>
-
-  <div class="video-details">
-    <h2 id="video-title"></h2>
-    <p id="video-description"></p>
-  </div>
-
-  <div class="suggested-videos" id="suggested-videos"></div>
-
-  <script>
-    let allVideos = [];
-
-    fetch('videos.json')
-      .then(response => response.json())
-      .then(data => {
-        allVideos = data;
-        const videoId = new URLSearchParams(window.location.search).get('id');
-        const video = data.find(v => v.id === videoId);
-
-        if (video) {
-          const videoPlayer = document.getElementById('video-player');
-          const videoSource = video.url;
-
-          if (videoSource.endsWith(".m3u8")) {
-            if (Hls.isSupported()) {
-              const hls = new Hls();
-              hls.loadSource(videoSource);
-              hls.attachMedia(videoPlayer);
-              hls.on(Hls.Events.MANIFEST_PARSED, function () {
-                videoPlayer.play();
-              });
-            } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-              videoPlayer.src = videoSource;
-              videoPlayer.addEventListener('loadedmetadata', function () {
-                videoPlayer.play();
-              });
-            } else {
-              console.error("HLS is not supported on this browser.");
-            }
-          } else {
-            videoPlayer.src = videoSource;
-          }
-
-          document.getElementById('video-title').innerText = video.name;
-          document.getElementById('video-description').innerText = video.description || "No description available.";
-
-          const suggestedVideosContainer = document.getElementById('suggested-videos');
-          video.suggestions.forEach(suggestionId => {
-            const suggestedVideo = data.find(v => v.id === String(suggestionId));
-            if (suggestedVideo) {
-              const suggestedVideoItem = document.createElement('div');
-              suggestedVideoItem.classList.add('suggested-video-item');
-              suggestedVideoItem.innerHTML = `
-                <a href="video.html?id=${suggestedVideo.id}">
-                  <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
-                  <h3>${suggestedVideo.name}</h3>
-                </a>
-              `;
-              suggestedVideosContainer.appendChild(suggestedVideoItem);
-            }
-          });
-        } else {
-          document.getElementById('video-title').innerText = "Video not found";
-          document.getElementById('video-description').innerText = "This video could not be found.";
-        }
-      })
-      .catch(error => {
-        console.error('Error loading video data:', error);
-        document.getElementById('video-title').innerText = "Error loading video";
-        document.getElementById('video-description').innerText = "There was an error loading the video details.";
-      });
-  </script>
-
-</body>
-</html>
+    <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
+    <h1 class="phub-title">
+      P<span>HUB</span>
+    </h1>
+    <input type="text"
