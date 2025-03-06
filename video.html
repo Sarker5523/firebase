@@ -138,7 +138,7 @@
     }
 
     .suggested-video-item h3 {
-      font-size: 16px;
+      font-size: 14px; /* Reduced font size for the titles */
       color: white;
       padding: 5px 0;
       text-align: center;
@@ -296,18 +296,4 @@
       searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
 
       filteredVideos.forEach(video => {
-        const resultItem = document.createElement('div');
-        resultItem.classList.add('search-result-item');
-        resultItem.innerHTML = `
-          <a href="video.html?id=${video.id}">
-            <img src="${video.thumbnail}" alt="${video.name}" style="width: 30px; height: auto; border-radius: 5px; margin-right: 10px;">
-            ${video.name}
-          </a>
-        `;
-        searchResultsContainer.appendChild(resultItem);
-      });
-    }
-  </script>
-
-</body>
-</html>
+        const result
