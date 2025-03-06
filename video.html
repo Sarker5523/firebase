@@ -125,12 +125,12 @@
     <input type="text" class="search-bar" id="search-input" placeholder="Search..." oninput="handleSearch()" />
   </header>
 
-  <div class="video-container">
-    <video id="video-player" controls>
-      <source src="" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  </div>
+  <div class="video-container" id="video-container">
+  <video id="video-player" controls style="display: none;">
+    <source id="video-source" src="" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+</div>
 
   <div class="video-details">
     <h2 id="video-title"></h2>
@@ -226,4 +226,3 @@
 
 </body>
 </html>
-```
