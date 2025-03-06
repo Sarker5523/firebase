@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Video Details</title>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script> <!-- HLS.js for m3u8 support -->
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -27,14 +26,70 @@
       margin: 0;
     }
 
+    /* Home button styling */
+    .home-btn {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      font-size: 16px;
+      color: #ff8c00;
+      background-color: #333;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .home-btn:hover {
+      background-color: #444;
+      transform: translateY(-4px);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.7);
+    }
+
+    .home-btn:focus {
+      outline: none;
+    }
+
+    /* PHUB title styling */
+    header .phub-title {
+      font-size: 30px;
+      font-weight: bold;
+      color: white;
+    }
+
+    header .phub-title span {
+      color: #000;
+      background-color: #ff8c00;
+      padding: 3px 10px;
+      border-radius: 4px;
+      border: 2px solid #ff8c00;
+    }
+
+    /* Search bar styling */
+    .search-bar {
+      width: 80%;
+      max-width: 400px;
+      padding: 8px 10px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 14px;
+      background-color: #222;
+      color: white;
+    }
+
+    /* Video player container styling */
     .video-container {
-      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
       padding: 20px;
     }
 
+    /* Video player styling */
     video {
       width: 100%;
       max-width: 1000px;
@@ -43,63 +98,117 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
     }
 
-    .control-bar {
-      position: absolute;
-      top: 10px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 10px;
-      background: rgba(0, 0, 0, 0.7);
+    /* Video details container styling */
+    .video-details {
+      text-align: left;
+      margin-top: 20px;
+      padding: 0 10px;
+      background-color: #777;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .video-details h2 {
+      font-size: 20px;
+      color: white;
+      background-color: #383636;
       padding: 10px;
       border-radius: 10px;
     }
 
-    .control-btn, .resolution-btn, .subtitle-btn {
-      background-color: rgba(255, 140, 0, 0.8);
-      border: none;
-      color: white;
-      padding: 8px 12px;
+    .video-details p {
       font-size: 14px;
-      cursor: pointer;
-      border-radius: 5px;
-      transition: background 0.3s;
+      color: #bbb;
+      max-width: 800px;
+      margin: 10px auto;
     }
 
-    .control-btn:hover, .resolution-btn:hover, .subtitle-btn:hover {
-      background-color: rgba(255, 100, 0, 0.9);
-    }
-
-    .video-details {
-      text-align: center;
-      margin-top: 20px;
-    }
-
+    /* Suggested videos grid */
     .suggested-videos {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      padding: 20px;
     }
 
     .suggested-video-item {
-      background-color: #222;
-      padding: 15px;
-      border-radius: 8px;
-      width: 200px;
+      cursor: pointer;
       text-align: center;
+      position: relative;
     }
 
     .suggested-video-item img {
       width: 100%;
-      border-radius: 5px;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .suggested-video-item h3 {
+      font-size: 12px;
+      color: white;
+      padding: 5px 0;
+      text-align: center;
+      font-weight: bold;
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    .suggested-video-item:hover {
+      opacity: 0.8;
+    }
+
+    /* Media Queries for better responsiveness */
+    @media (max-width: 768px) {
+      .suggested-videos {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      video {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .search-bar {
+        width: 90%;
+      }
     }
 
     .search-results {
-      margin-top: 20px;
-      text-align: center;
+      position: absolute;
+      top: 60px;
+      left: 10%;
+      right: 10%;
+      background-color: #222;
+      padding: 10px;
+      border-radius: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
     }
+
+    .search-results a {
+      color: #ff8c00;
+      text-decoration: none;
+    }
+
+    .search-results a:hover {
+      color: white;
+    }
+
+    .search-result-item {
+      padding: 8px;
+      border-bottom: 1px solid #444;
+    }
+
+    .search-result-item:hover {
+      background-color: #333;
+    }
+
   </style>
 </head>
 <body>
@@ -115,20 +224,9 @@
   <div class="video-container">
     <!-- Video element here -->
     <video id="video-player" controls>
-      <source src="" type="video/mp4">
-      <track id="subtitle-track" label="English" kind="subtitles" srclang="en" src="" default>
+      <source id="video-source" src="" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
-
-    <!-- Control Bar with buttons outside the video player -->
-    <div class="control-bar">
-      <button class="control-btn" onclick="skip(-10)">⏪ 10s</button>
-      <button class="subtitle-btn" onclick="toggleSubtitles()">CC</button>
-      <select id="resolution-selector" class="resolution-btn" onchange="changeResolution(this.value)">
-        <option value="auto">Auto</option>
-      </select>
-      <button class="control-btn" onclick="skip(10)">10s ⏩</button>
-    </div>
   </div>
 
   <div class="video-details">
@@ -142,11 +240,11 @@
 
   <div id="search-results" class="search-results" style="display: none;"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
-    let hls;
-    const videoPlayer = document.getElementById('video-player');
-    const resolutionSelector = document.getElementById('resolution-selector');
     let allVideos = [];
+    const searchInput = document.getElementById('search-input');
+    const searchResultsContainer = document.getElementById('search-results');
 
     // Fetch video data from JSON
     fetch('videos.json')
@@ -157,27 +255,21 @@
         const video = data.find(v => v.id === videoId);
 
         if (video) {
-          if (Hls.isSupported() && video.url.endsWith('.m3u8')) {
-            hls = new Hls();
-            hls.loadSource(video.url);
+          // Set video source for HLS
+          const videoPlayer = document.getElementById('video-player');
+          const videoSource = document.getElementById('video-source');
+
+          if (Hls.isSupported()) {
+            const hls = new Hls();
+            hls.loadSource(video.url);  // m3u8 file URL
             hls.attachMedia(videoPlayer);
-
-            hls.on(Hls.Events.MANIFEST_PARSED, () => {
-              const levels = hls.levels.map((level, index) => ({
-                index: index,
-                resolution: level.height + 'p'
-              }));
-
-              levels.forEach(level => {
-                const option = document.createElement('option');
-                option.value = level.index;
-                option.textContent = level.resolution;
-                resolutionSelector.appendChild(option);
-              });
+            hls.on(Hls.Events.MANIFEST_PARSED, function () {
+              videoPlayer.play();
             });
-          } else {
-            videoPlayer.querySelector('source').src = video.url;
+          } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
+            videoSource.src = video.url;
             videoPlayer.load();
+            videoPlayer.play();
           }
 
           // Set video details
@@ -213,32 +305,12 @@
         document.getElementById('video-description').innerText = "There was an error loading the video details.";
       });
 
-    // Skip function
-    function skip(seconds) {
-      videoPlayer.currentTime += seconds;
-    }
-
-    // Toggle subtitles
-    function toggleSubtitles() {
-      const track = document.getElementById('subtitle-track');
-      track.mode = track.mode === "showing" ? "disabled" : "showing";
-    }
-
-    // Change video resolution
-    function changeResolution(index) {
-      if (hls && index !== "auto") {
-        hls.currentLevel = parseInt(index);
-      } else {
-        hls.currentLevel = -1;
-      }
-    }
-
     // Handle search input and show suggestions
     function handleSearch() {
-      const query = document.getElementById('search-input').value.toLowerCase();
-      const searchResultsContainer = document.getElementById('search-results');
-      const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
-
+      const query = searchInput.value.toLowerCase();
+      const filteredVideos = allVideos.filter(video =>
+        video.name.toLowerCase().includes(query)
+      );
       searchResultsContainer.innerHTML = '';
       searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
 
