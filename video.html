@@ -128,6 +128,7 @@
     .suggested-video-item {
       cursor: pointer;
       text-align: center;
+      position: relative;
     }
 
     .suggested-video-item img {
@@ -142,6 +143,11 @@
       padding: 5px 0;
       text-align: center;
       font-weight: bold;
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      margin: 0;
     }
 
     .suggested-video-item:hover {
@@ -160,6 +166,38 @@
         width: 90%;
       }
     }
+
+    .search-results {
+      position: absolute;
+      top: 60px;
+      left: 10%;
+      right: 10%;
+      background-color: #222;
+      padding: 10px;
+      border-radius: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+
+    .search-results a {
+      color: #ff8c00;
+      text-decoration: none;
+    }
+
+    .search-results a:hover {
+      color: white;
+    }
+
+    .search-result-item {
+      padding: 8px;
+      border-bottom: 1px solid #444;
+    }
+
+    .search-result-item:hover {
+      background-color: #333;
+    }
+
   </style>
 </head>
 <body>
@@ -189,9 +227,12 @@
     <!-- Suggested videos will be appended here -->
   </div>
 
+  <div id="search-results" class="search-results" style="display: none;"></div>
+
   <script>
     let allVideos = [];
     const searchInput = document.getElementById('search-input');
+    const searchResultsContainer = document.getElementById('search-results');
 
     // Fetch video data from JSON
     fetch('videos.json')
@@ -238,22 +279,21 @@
       const filteredVideos = allVideos.filter(video =>
         video.name.toLowerCase().includes(query)
       );
-      const suggestedVideosContainer = document.getElementById('suggested-videos');
-      suggestedVideosContainer.innerHTML = '';
+      searchResultsContainer.innerHTML = '';
+      searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
 
       filteredVideos.forEach(video => {
-        const suggestedVideoItem = document.createElement('div');
-        suggestedVideoItem.classList.add('suggested-video-item');
-        suggestedVideoItem.innerHTML = `
+        const resultItem = document.createElement('div');
+        resultItem.classList.add('search-result-item');
+        resultItem.innerHTML = `
           <a href="video.html?id=${video.id}">
-            <img src="${video.thumbnail}" alt="${video.name}" />
-            <h3>${video.name}</h3>
+            <img src="${video.thumbnail}" alt="${video.name}" style="width: 30px; height: auto; border-radius: 5px; margin-right: 10px;">
+            ${video.name}
           </a>
         `;
-        suggestedVideosContainer.appendChild(suggestedVideoItem);
+        searchResultsContainer.appendChild(resultItem);
       });
     }
-
   </script>
 
 </body>
