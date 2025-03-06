@@ -3,6 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#141414" />
+  <meta name="apple-mobile-web-app-title" content="PHUB" />
+  <link rel="apple-touch-icon" href="icon.png" />
   <title>PHUB - Home</title>
   <style>
     body {
@@ -26,7 +31,6 @@
       margin: 0;
     }
 
-    /* Home button styling */
     .home-btn {
       position: absolute;
       left: 10px;
@@ -52,7 +56,6 @@
       outline: none;
     }
 
-    /* PHUB title styling */
     header .phub-title {
       font-size: 30px;
       font-weight: bold;
@@ -138,9 +141,9 @@
       right: 0;
       color: white;
       padding: 3px 10px;
-      font-size: 12px; /* Smaller font size */
+      font-size: 12px; 
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-      transform: translateY(10px); /* Moved further down */
+      transform: translateY(10px);
       text-align: center;
       font-family: Arial, sans-serif;
       font-weight: bold;
@@ -148,7 +151,6 @@
       letter-spacing: 1px;
       filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.6));
     }
-
   </style>
 </head>
 <body>
@@ -223,12 +225,19 @@
       }
     }
 
-    // Hide search suggestions when clicking outside
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('#search')) {
-        document.getElementById('search-suggestions').style.display = 'none';
+    // Handle deep links for iOS Shortcuts (Custom URL Scheme)
+    function handleCustomURLScheme() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchQuery = urlParams.get('q'); // Fetch 'q' parameter for search queries
+      if (searchQuery) {
+        const query = decodeURIComponent(searchQuery);
+        const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
+        displayVideos(filteredVideos); // Display filtered videos based on query
       }
-    });
+    }
+
+    // Call this function on page load to handle deep links
+    window.onload = handleCustomURLScheme;
   </script>
 
 </body>
