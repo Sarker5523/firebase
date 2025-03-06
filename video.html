@@ -271,12 +271,12 @@
             if (suggestedVideo) {
               const suggestedVideoItem = document.createElement('div');
               suggestedVideoItem.classList.add('suggested-video-item');
-              suggestedVideoItem.innerHTML = 
+              suggestedVideoItem.innerHTML = `
                 <a href="video.html?id=${suggestedVideo.id}">
                   <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
                   <h3>${suggestedVideo.name}</h3>
                 </a>
-              ;
+              `;
               suggestedVideosContainer.appendChild(suggestedVideoItem);
             }
           });
@@ -304,12 +304,12 @@
       filteredVideos.forEach(video => {
         const resultItem = document.createElement('div');
         resultItem.classList.add('search-result-item');
-        resultItem.innerHTML = 
+        resultItem.innerHTML = `
           <a href="video.html?id=${video.id}">
             <img src="${video.thumbnail}" alt="${video.name}" style="width: 30px; height: auto; border-radius: 5px; margin-right: 10px;">
             ${video.name}
           </a>
-        ;
+        `;
         searchResultsContainer.appendChild(resultItem);
       });
     }
