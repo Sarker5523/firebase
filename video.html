@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Video Details</title>
-  <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.20.3/video-js.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -23,13 +21,75 @@
       position: relative;
     }
 
+    header h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+
+    /* Home button styling */
+    .home-btn {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      font-size: 16px;
+      color: #ff8c00;
+      background-color: #333;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .home-btn:hover {
+      background-color: #444;
+      transform: translateY(-4px);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.7);
+    }
+
+    .home-btn:focus {
+      outline: none;
+    }
+
+    /* PHUB title styling */
+    header .phub-title {
+      font-size: 30px;
+      font-weight: bold;
+      color: white;
+    }
+
+    header .phub-title span {
+      color: #000;
+      background-color: #ff8c00;
+      padding: 3px 10px;
+      border-radius: 4px;
+      border: 2px solid #ff8c00;
+    }
+
+    /* Search bar styling */
+    .search-bar {
+      width: 80%;
+      max-width: 400px;
+      padding: 8px 10px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 14px;
+      background-color: #222;
+      color: white;
+    }
+
+    /* Video player container styling */
     .video-container {
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
       padding: 20px;
     }
 
+    /* Video player styling */
     video {
       width: 100%;
       max-width: 1000px;
@@ -38,122 +98,221 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
     }
 
-    /* Player switch button */
-    .switch-player {
-      margin-top: 10px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
+    /* Video details container styling */
+    .video-details {
+      text-align: left;
+      margin-top: 20px;
+      padding: 0 20px;
+      background-color: #333;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
     }
 
-    select, button {
-      padding: 8px 12px;
-      font-size: 16px;
-      background-color: #ff8c00;
+    .video-details h2 {
+      font-size: 20px;
       color: white;
-      border: none;
-      border-radius: 5px;
+      background-color: #dcdcdc;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .video-details p {
+      font-size: 14px;
+      color: #bbb;
+      max-width: 800px;
+      margin: 20px auto;
+    }
+
+    /* Suggested videos grid */
+    .suggested-videos {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .suggested-video-item {
       cursor: pointer;
+      text-align: center;
+      position: relative;
     }
 
-    select {
+    .suggested-video-item img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .suggested-video-item h3 {
+      font-size: 12px;
+      color: white;
+      padding: 5px 0;
+      text-align: center;
+      font-weight: bold;
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    .suggested-video-item:hover {
+      opacity: 0.8;
+    }
+
+    /* Media Queries for better responsiveness */
+    @media (max-width: 768px) {
+      .suggested-videos {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      video {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .search-bar {
+        width: 90%;
+      }
+    }
+
+    .search-results {
+      position: absolute;
+      top: 60px;
+      left: 10%;
+      right: 10%;
       background-color: #222;
+      padding: 10px;
+      border-radius: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
     }
 
-    button:hover {
-      background-color: #e07b00;
+    .search-results a {
+      color: #ff8c00;
+      text-decoration: none;
     }
+
+    .search-results a:hover {
+      color: white;
+    }
+
+    .search-result-item {
+      padding: 8px;
+      border-bottom: 1px solid #444;
+    }
+
+    .search-result-item:hover {
+      background-color: #333;
+    }
+
   </style>
 </head>
 <body>
 
   <header>
-    <h1>Video Details</h1>
+    <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
+    <h1 class="phub-title">
+      P<span>HUB</span>
+    </h1>
+    <input type="text" class="search-bar" id="search-input" placeholder="Search..." oninput="handleSearch()" />
   </header>
 
   <div class="video-container">
-    <!-- Default HTML5 Video Player -->
+    <!-- Video element here -->
     <video id="video-player" controls>
-      <source id="video-source" src="" type="video/mp4">
+      <source src="" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
-
-    <!-- Player Switcher -->
-    <div class="switch-player">
-      <label for="playerType">Select Player:</label>
-      <select id="playerType">
-        <option value="default">Default HTML5</option>
-        <option value="videojs">Video.js</option>
-        <option value="plyr">Plyr.js</option>
-      </select>
-      <button onclick="switchPlayer()">Switch</button>
-    </div>
   </div>
 
-  <!-- Video.js -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.20.3/video.min.js"></script>
-  <!-- Plyr.js -->
-  <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
+  <div class="video-details">
+    <h2 id="video-title"></h2>
+    <p id="video-description"></p>
+  </div>
+
+  <div class="suggested-videos" id="suggested-videos">
+    <!-- Suggested videos will be appended here -->
+  </div>
+
+  <div id="search-results" class="search-results" style="display: none;"></div>
 
   <script>
-    let currentPlayer = "default"; 
+    let allVideos = [];
+    const searchInput = document.getElementById('search-input');
+    const searchResultsContainer = document.getElementById('search-results');
 
-    function switchPlayer() {
-      const selectedPlayer = document.getElementById("playerType").value;
-      const videoContainer = document.querySelector(".video-container");
-      const videoSource = document.getElementById("video-source").src;
-
-      // Remove existing player
-      document.getElementById("video-player").remove();
-
-      let newPlayer;
-
-      if (selectedPlayer === "videojs") {
-        newPlayer = document.createElement("video");
-        newPlayer.id = "video-player";
-        newPlayer.className = "video-js vjs-default-skin";
-        newPlayer.setAttribute("controls", "");
-        newPlayer.innerHTML = `<source src="${videoSource}" type="video/mp4">`;
-        videoContainer.insertBefore(newPlayer, videoContainer.children[1]);
-
-        // Initialize Video.js
-        videojs(newPlayer);
-      
-      } else if (selectedPlayer === "plyr") {
-        newPlayer = document.createElement("video");
-        newPlayer.id = "video-player";
-        newPlayer.className = "plyr";
-        newPlayer.setAttribute("controls", "");
-        newPlayer.innerHTML = `<source src="${videoSource}" type="video/mp4">`;
-        videoContainer.insertBefore(newPlayer, videoContainer.children[1]);
-
-        // Initialize Plyr.js
-        new Plyr(newPlayer);
-      
-      } else {
-        // Default HTML5 Player
-        newPlayer = document.createElement("video");
-        newPlayer.id = "video-player";
-        newPlayer.setAttribute("controls", "");
-        newPlayer.innerHTML = `<source src="${videoSource}" type="video/mp4">`;
-        videoContainer.insertBefore(newPlayer, videoContainer.children[1]);
-      }
-
-      currentPlayer = selectedPlayer;
-    }
-
-    // Load video from query parameter
+    // Fetch video data from JSON
     fetch('videos.json')
       .then(response => response.json())
       .then(data => {
+        allVideos = data;
         const videoId = new URLSearchParams(window.location.search).get('id');
         const video = data.find(v => v.id === videoId);
+
         if (video) {
-          document.getElementById('video-source').src = video.url;
-          document.getElementById('video-player').load();
+          // Set video source
+          const videoPlayer = document.getElementById('video-player');
+          videoPlayer.querySelector('source').src = video.url;
+          videoPlayer.load(); // Reload the video player with the new video
+
+          // Set video details
+          document.getElementById('video-title').innerText = video.name;
+          document.getElementById('video-description').innerText = video.description || "No description available.";
+
+          // Load suggested videos
+          const suggestedVideosContainer = document.getElementById('suggested-videos');
+          suggestedVideosContainer.innerHTML = '';
+          video.suggestions.forEach(suggestionId => {
+            const suggestedVideo = data.find(v => v.id === String(suggestionId));
+            if (suggestedVideo) {
+              const suggestedVideoItem = document.createElement('div');
+              suggestedVideoItem.classList.add('suggested-video-item');
+              suggestedVideoItem.innerHTML = `
+                <a href="video.html?id=${suggestedVideo.id}">
+                  <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
+                  <h3>${suggestedVideo.name}</h3>
+                </a>
+              `;
+              suggestedVideosContainer.appendChild(suggestedVideoItem);
+            }
+          });
+        } else {
+          // Display error if no video is found
+          document.getElementById('video-title').innerText = "Video not found";
+          document.getElementById('video-description').innerText = "This video could not be found.";
         }
       })
-      .catch(error => console.error('Error loading video:', error));
+      .catch(error => {
+        console.error('Error loading video data:', error);
+        document.getElementById('video-title').innerText = "Error loading video";
+        document.getElementById('video-description').innerText = "There was an error loading the video details.";
+      });
+
+    // Handle search input and show suggestions
+    function handleSearch() {
+      const query = searchInput.value.toLowerCase();
+      const filteredVideos = allVideos.filter(video =>
+        video.name.toLowerCase().includes(query)
+      );
+      searchResultsContainer.innerHTML = '';
+      searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
+
+      filteredVideos.forEach(video => {
+        const resultItem = document.createElement('div');
+        resultItem.classList.add('search-result-item');
+        resultItem.innerHTML = `
+          <a href="video.html?id=${video.id}">
+            <img src="${video.thumbnail}" alt="${video.name}" style="width: 30px; height: auto; border-radius: 5px; margin-right: 10px;">
+            ${video.name}
+          </a>
+        `;
+        searchResultsContainer.appendChild(resultItem);
+      });
+    }
   </script>
 
 </body>
