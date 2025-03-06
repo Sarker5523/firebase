@@ -1,90 +1,182 @@
-<style>
-  /* Currently playing video title */
-  .video-title {
-    font-size: 22px; /* Smaller font size for the title */
-    color: white;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 15px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Page</title>
+  <style>
+    /* General styling */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #141414;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
 
-  /* Video player container */
-  .video-player-container {
-    position: relative;
-    max-width: 100%;
-    margin: 20px auto;
-  }
+    /* Header styling */
+    header {
+      text-align: center;
+      padding: 10px;
+      background-color: #000;
+      color: #ff8c00;
+    }
 
-  /* Details container with 3D rounded corners */
-  .video-details-container {
-    background-color: #e0e0e0; /* Light ash background for title */
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    margin-top: 20px;
-  }
-
-  /* Video details content */
-  .video-details {
-    background-color: #d0d0d0; /* Slightly darker background for details */
-    padding: 15px;
-    border-radius: 8px;
-    margin-top: 10px;
-  }
-
-  /* Suggested video section */
-  .suggested-videos {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    padding: 20px;
-  }
-
-  .suggested-video-item {
-    cursor: pointer;
-    text-align: center;
-    position: relative;
-  }
-
-  .suggested-video-item img {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-  }
-
-  .suggested-video-item h3 {
-    font-size: 14px;
-    color: white;
-    padding: 5px 0;
-    text-align: center;
-    font-weight: bold;
-    position: absolute;
-    bottom: 10px;
-    left: 0;
-    right: 0;
-    margin: 0;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-  }
-
-  .suggested-video-item:hover {
-    opacity: 0.8;
-  }
-
-  /* Media Queries for better responsiveness */
-  @media (max-width: 768px) {
-    .suggested-videos {
-      grid-template-columns: repeat(2, 1fr);
+    /* Video container styling */
+    .video-container {
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 20px;
     }
 
     video {
       width: 100%;
+      height: auto;
+      max-height: 480px;
+      border-radius: 8px;
     }
-  }
 
-  @media (max-width: 480px) {
-    .search-bar {
-      width: 90%;
+    /* Title styling */
+    .video-title {
+      font-size: 22px;
+      font-weight: bold;
+      color: white;
+      text-align: center;
+      margin-top: 10px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     }
-  }
-</style>
+
+    /* Video details container */
+    .video-details-container {
+      background-color: #e0e0e0;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      margin-top: 20px;
+    }
+
+    .video-details {
+      background-color: #d0d0d0;
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+
+    /* Suggested videos section */
+    .suggested-videos {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .suggested-video-item {
+      cursor: pointer;
+      text-align: center;
+      position: relative;
+    }
+
+    .suggested-video-item img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .suggested-video-item h3 {
+      font-size: 16px;
+      color: white;
+      padding: 5px 0;
+      text-align: center;
+      font-weight: bold;
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    .suggested-video-item:hover {
+      opacity: 0.8;
+    }
+
+    /* Media Queries */
+    @media (max-width: 768px) {
+      .suggested-videos {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 480px) {
+      .suggested-videos {
+        grid-template-columns: 1fr;
+      }
+
+      video {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <button onclick="window.location.href='index.html'">Home</button>
+    <h1>PHUB</h1>
+    <input type="text" id="search-bar" placeholder="Search videos..." oninput="searchVideo()" />
+  </header>
+
+  <div class="video-container">
+    <video controls>
+      <source src="video.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+
+    <div class="video-title">Video Title</div>
+
+    <div class="video-details-container">
+      <h2>Video Details</h2>
+      <div class="video-details">
+        <p>Description of the video goes here.</p>
+      </div>
+    </div>
+
+    <!-- Suggested Videos Section -->
+    <h2>Suggested Videos</h2>
+    <div class="suggested-videos">
+      <div class="suggested-video-item">
+        <img src="thumbnail1.jpg" alt="Video 1">
+        <h3>Video 1</h3>
+      </div>
+      <div class="suggested-video-item">
+        <img src="thumbnail2.jpg" alt="Video 2">
+        <h3>Video 2</h3>
+      </div>
+      <div class="suggested-video-item">
+        <img src="thumbnail3.jpg" alt="Video 3">
+        <h3>Video 3</h3>
+      </div>
+      <div class="suggested-video-item">
+        <img src="thumbnail4.jpg" alt="Video 4">
+        <h3>Video 4</h3>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function searchVideo() {
+      // Handle search functionality
+      const query = document.getElementById('search-bar').value.toLowerCase();
+      const suggestedItems = document.querySelectorAll('.suggested-video-item');
+      
+      suggestedItems.forEach(item => {
+        const title = item.querySelector('h3').textContent.toLowerCase();
+        if (title.includes(query)) {
+          item.style.display = 'block';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    }
+  </script>
+</body>
+</html>
