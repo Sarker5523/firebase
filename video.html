@@ -4,8 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Video Details</title>
-  <!-- Include Video.js CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/video.js@7.13.3/dist/video-js.css" rel="stylesheet" />
+  <!-- Include Plyr CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/plyr@3.7.2/dist/plyr.css" rel="stylesheet" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -214,8 +214,8 @@
   </header>
 
   <div class="video-container">
-    <!-- Video.js player -->
-    <video id="video-player" class="video-js vjs-default-skin" controls>
+    <!-- Plyr video player -->
+    <video id="video-player" class="plyr" controls>
       <source src="" type="application/x-mpegURL" />
       Your browser does not support the video tag.
     </video>
@@ -232,17 +232,18 @@
 
   <div id="search-results" class="search-results" style="display: none;"></div>
 
-  <!-- Include Video.js and HLS plugin -->
-  <script src="https://cdn.jsdelivr.net/npm/video.js@7.13.3/dist/video.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-hls@2.0.1/dist/videojs-contrib-hls.min.js"></script>
+  <!-- Include Plyr JS -->
+  <script src="https://cdn.jsdelivr.net/npm/plyr@3.7.2/dist/plyr.polyfilled.js"></script>
 
   <script>
     let allVideos = [];
     const searchInput = document.getElementById('search-input');
     const searchResultsContainer = document.getElementById('search-results');
 
-    // Initialize Video.js player
-    const videoPlayer = videojs('video-player');
+    // Initialize Plyr player
+    const player = new Plyr('#video-player', {
+      controls: ['play', 'progress', 'current-time', 'mute', 'volume', 'fullscreen']
+    });
 
     // Fetch video data from JSON
     fetch('videos.json')
@@ -253,8 +254,16 @@
         const video = data.find(v => v.id === videoId);
 
         if (video) {
-          // Set video source
-          videoPlayer.src({ type: 'application/x-mpegURL', src: video.url });
+          // Set video source for Plyr
+          player.source = {
+            type: 'video',
+            sources: [
+              {
+                src: video.url,
+                type: 'application/x-mpegURL',
+              }
+            ]
+          };
 
           // Set video details
           document.getElementById('video-title').innerText = video.name;
@@ -280,37 +289,4 @@
         } else {
           // Display error if no video is found
           document.getElementById('video-title').innerText = "Video not found";
-          document.getElementById('video-description').innerText = "This video could not be found.";
-        }
-      })
-      .catch(error => {
-        console.error('Error loading video data:', error);
-        document.getElementById('video-title').innerText = "Error loading video";
-        document.getElementById('video-description').innerText = "There was an error loading the video details.";
-      });
-
-    // Handle search input and show suggestions
-    function handleSearch() {
-      const query = searchInput.value.toLowerCase();
-      const filteredVideos = allVideos.filter(video =>
-        video.name.toLowerCase().includes(query)
-      );
-      searchResultsContainer.innerHTML = '';
-      searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
-
-      filteredVideos.forEach(video => {
-        const resultItem = document.createElement('div');
-        resultItem.classList.add('search-result-item');
-        resultItem.innerHTML = `
-          <a href="video.html?id=${video.id}">
-            <img src="${video.thumbnail}" alt="${video.name}" style="width: 30px; height: auto; border-radius: 5px; margin-right: 10px;">
-            ${video.name}
-          </a>
-        `;
-        searchResultsContainer.appendChild(resultItem);
-      });
-    }
-  </script>
-
-</body>
-</html>
+          document.getElementById('video-description
