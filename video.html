@@ -240,80 +240,88 @@
 
   <div id="search-results" class="search-results" style="display: none;"></div>
 
-  <script>
-    let allVideos = [];
-    const searchInput = document.getElementById('search-input');
-    const searchResultsContainer = document.getElementById('search-results');
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script>
+  let allVideos = [];
+  const searchInput = document.getElementById('search-input');
+  const searchResultsContainer = document.getElementById('search-results');
+  const videoPlayer = document.getElementById('video-player');
+  const videoSource = videoPlayer.querySelector('source');
 
-    // Fetch video data from JSON
-    fetch('videos.json')
-      .then(response => response.json())
-      .then(data => {
-        allVideos = data;
-        const videoId = new URLSearchParams(window.location.search).get('id');
-        const video = data.find(v => v.id === videoId);
+  // Fetch video data from JSON
+  fetch('videos.json')
+    .then(response => response.json())
+    .then(data => {
+      allVideos = data;
+      const videoId = new URLSearchParams(window.location.search).get('id');
+      const video = data.find(v => v.id === videoId);
 
-        if (video) {
-          // Set video source
-          const videoPlayer = document.getElementById('video-player');
-          videoPlayer.querySelector('source').src = video.url;
-          videoPlayer.load(); // Reload the video player with the new video
+      if (video) {
+        const videoUrl = video.url;
 
-          // Set video details
-          document.getElementById('video-title').innerText = video.name;
-          document.getElementById('video-description').innerText = video.description || "No description available.";
-
-          // Load suggested videos
-          const suggestedVideosContainer = document.getElementById('suggested-videos');
-          suggestedVideosContainer.innerHTML = '';
-          video.suggestions.forEach(suggestionId => {
-            const suggestedVideo = data.find(v => v.id === String(suggestionId));
-            if (suggestedVideo) {
-              const suggestedVideoItem = document.createElement('div');
-              suggestedVideoItem.classList.add('suggested-video-item');
-              suggestedVideoItem.innerHTML = `
-                <a href="video.html?id=${suggestedVideo.id}">
-                  <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
-                  <h3>${suggestedVideo.name}</h3>
-                </a>
-              `;
-              suggestedVideosContainer.appendChild(suggestedVideoItem);
-            }
+        if (Hls.isSupported() && videoUrl.endsWith('.m3u8')) {
+          const hls = new Hls();
+          hls.loadSource(videoUrl);
+          hls.attachMedia(videoPlayer);
+          hls.on(Hls.Events.MANIFEST_PARSED, () => {
+            videoPlayer.play();
           });
         } else {
-          // Display error if no video is found
-          document.getElementById('video-title').innerText = "Video not found";
-          document.getElementById('video-description').innerText = "This video could not be found.";
+          videoSource.src = videoUrl;
+          videoPlayer.load();
+          videoPlayer.play();
         }
-      })
-      .catch(error => {
-        console.error('Error loading video data:', error);
-        document.getElementById('video-title').innerText = "Error loading video";
-        document.getElementById('video-description').innerText = "There was an error loading the video details.";
-      });
 
-    // Handle search input and show suggestions
-    function handleSearch() {
-      const query = searchInput.value.toLowerCase();
-      const filteredVideos = allVideos.filter(video =>
-        video.name.toLowerCase().includes(query)
-      );
-      searchResultsContainer.innerHTML = '';
-      searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
+        document.getElementById('video-title').innerText = video.name;
+        document.getElementById('video-description').innerText = video.description || "No description available.";
 
-      filteredVideos.forEach(video => {
-        const resultItem = document.createElement('div');
-        resultItem.classList.add('search-result-item');
-        resultItem.innerHTML = `
-          <a href="video.html?id=${video.id}">
-            <img src="${video.thumbnail}" alt="${video.name}" style="width: 30px; height: auto; border-radius: 5px; margin-right: 10px;">
-            ${video.name}
-          </a>
-        `;
-        searchResultsContainer.appendChild(resultItem);
-      });
-    }
-  </script>
+        const suggestedVideosContainer = document.getElementById('suggested-videos');
+        suggestedVideosContainer.innerHTML = '';
+        video.suggestions.forEach(suggestionId => {
+          const suggestedVideo = data.find(v => v.id === String(suggestionId));
+          if (suggestedVideo) {
+            const suggestedVideoItem = document.createElement('div');
+            suggestedVideoItem.classList.add('suggested-video-item');
+            suggestedVideoItem.innerHTML = `
+              <a href="video.html?id=${suggestedVideo.id}">
+                <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
+                <h3>${suggestedVideo.name}</h3>
+              </a>
+            `;
+            suggestedVideosContainer.appendChild(suggestedVideoItem);
+          }
+        });
+      } else {
+        document.getElementById('video-title').innerText = "Video not found";
+        document.getElementById('video-description').innerText = "This video could not be found.";
+      }
+    })
+    .catch(error => {
+      console.error('Error loading video data:', error);
+      document.getElementById('video-title').innerText = "Error loading video";
+      document.getElementById('video-description').innerText = "There was an error loading the video details.";
+    });
 
+  function handleSearch() {
+    const query = searchInput.value.toLowerCase();
+    const filteredVideos = allVideos.filter(video =>
+      video.name.toLowerCase().includes(query)
+    );
+    searchResultsContainer.innerHTML = '';
+    searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
+
+    filteredVideos.forEach(video => {
+      const resultItem = document.createElement('div');
+      resultItem.classList.add('search-result-item');
+      resultItem.innerHTML = `
+        <a href="video.html?id=${video.id}">
+          <img src="${video.thumbnail}" alt="${video.name}" style="width: 30px; height: auto; border-radius: 5px; margin-right: 10px;">
+          ${video.name}
+        </a>
+      `;
+      searchResultsContainer.appendChild(resultItem);
+    });
+  }
+</script>
 </body>
 </html>
