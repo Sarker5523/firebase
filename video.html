@@ -5,8 +5,212 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Video Details</title>
   <style>
-    /* (Your existing styles here) */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #141414;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      text-align: center;
+      padding: 10px 20px;
+      background-color: #000;
+      color: #ff8c00;
+      position: relative;
+    }
+
+    header h1 {
+      font-size: 20px;
+      margin: 0;
+    }
+
+    /* Home button styling */
+    .home-btn {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      font-size: 16px;
+      color: #ff8c00;
+      background-color: #333;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .home-btn:hover {
+      background-color: #444;
+      transform: translateY(-4px);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.7);
+    }
+
+    .home-btn:focus {
+      outline: none;
+    }
+
+    /* PHUB title styling */
+    header .phub-title {
+      font-size: 30px;
+      font-weight: bold;
+      color: white;
+    }
+
+    header .phub-title span {
+      color: #000;
+      background-color: #ff8c00;
+      padding: 3px 10px;
+      border-radius: 4px;
+      border: 2px solid #ff8c00;
+    }
+
+    /* Search bar styling */
+    .search-bar {
+      width: 80%;
+      max-width: 400px;
+      padding: 8px 10px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 14px;
+      background-color: #222;
+      color: white;
+    }
+
+    /* Video player container styling */
+    .video-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* Video player styling */
+    video {
+      width: 100%;
+      max-width: 1000px;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+    }
+
+    /* Video details container styling */
+    .video-details {
+      text-align: left;
+      margin-top: 20px;
+      padding: 0 20px;
+      background-color: #333;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .video-details h2 {
+      font-size: 20px;
+      color: white;
+      background-color: #dcdcdc;
+      padding: 10px;
+      border-radius: 10px;
+    }
+
+    .video-details p {
+      font-size: 14px;
+      color: #bbb;
+      max-width: 800px;
+      margin: 20px auto;
+    }
+
+    /* Suggested videos grid */
+    .suggested-videos {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .suggested-video-item {
+      cursor: pointer;
+      text-align: center;
+      position: relative;
+    }
+
+    .suggested-video-item img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .suggested-video-item h3 {
+      font-size: 12px;
+      color: white;
+      padding: 5px 0;
+      text-align: center;
+      font-weight: bold;
+      position: absolute;
+      bottom: 10px;
+      left: 0;
+      right: 0;
+      margin: 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    .suggested-video-item:hover {
+      opacity: 0.8;
+    }
+
+    /* Media Queries for better responsiveness */
+    @media (max-width: 768px) {
+      .suggested-videos {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      video {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .search-bar {
+        width: 90%;
+      }
+    }
+
+    .search-results {
+      position: absolute;
+      top: 60px;
+      left: 10%;
+      right: 10%;
+      background-color: #222;
+      padding: 10px;
+      border-radius: 8px;
+      max-height: 300px;
+      overflow-y: auto;
+      z-index: 1000;
+    }
+
+    .search-results a {
+      color: #ff8c00;
+      text-decoration: none;
+    }
+
+    .search-results a:hover {
+      color: white;
+    }
+
+    .search-result-item {
+      padding: 8px;
+      border-bottom: 1px solid #444;
+    }
+
+    .search-result-item:hover {
+      background-color: #333;
+    }
+
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
 
@@ -21,7 +225,6 @@
   <div class="video-container">
     <!-- Video element here -->
     <video id="video-player" controls>
-      <!-- No source tag needed for HLS.js -->
       Your browser does not support the video tag.
     </video>
   </div>
@@ -37,7 +240,6 @@
 
   <div id="search-results" class="search-results" style="display: none;"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script> <!-- Include HLS.js library -->
   <script>
     let allVideos = [];
     const searchInput = document.getElementById('search-input');
@@ -52,20 +254,26 @@
         const video = data.find(v => v.id === videoId);
 
         if (video) {
-          // Set video source and initialize playback
+          // Set video source dynamically for HLS.js
           const videoPlayer = document.getElementById('video-player');
 
+          // Check if HLS.js is supported and use it for .m3u8
           if (Hls.isSupported()) {
-            // For browsers like Chrome, Firefox, and Edge
             const hls = new Hls();
-            hls.loadSource(video.url); // Set .m3u8 URL
+            hls.loadSource(video.url); // .m3u8 URL
             hls.attachMedia(videoPlayer);
+            hls.on(Hls.Events.MANIFEST_PARSED, function() {
+              videoPlayer.play();
+            });
           } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-            // For Safari (iPhone & Mac)
-            videoPlayer.src = video.url; // Set .m3u8 URL directly
+            // For Safari and iOS devices that support .m3u8 natively
+            videoPlayer.src = video.url;
+            videoPlayer.addEventListener('loadedmetadata', function() {
+              videoPlayer.play();
+            });
+          } else {
+            videoPlayer.src = video.url; // Fallback to direct source if not HLS.js supported
           }
-
-          videoPlayer.load(); // Reload the video player with the new video
 
           // Set video details
           document.getElementById('video-title').innerText = video.name;
@@ -101,25 +309,4 @@
 
     // Handle search input and show suggestions
     function handleSearch() {
-      const query = searchInput.value.toLowerCase();
-      const filteredVideos = allVideos.filter(video =>
-        video.name.toLowerCase().includes(query)
-      );
-      searchResultsContainer.innerHTML = '';
-      searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
-
-      filteredVideos.forEach(video => {
-        const resultItem = document.createElement('div');
-        resultItem.classList.add('search-result-item');
-        resultItem.innerHTML = 
-          `<a href="video.html?id=${video.id}">
-            <img src="${video.thumbnail}" alt="${video.name}" style="width: 30px; height: auto; border-radius: 5px; margin-right: 10px;">
-            ${video.name}
-          </a>`;
-        searchResultsContainer.appendChild(resultItem);
-      });
-    }
-  </script>
-
-</body>
-</html>
+      const query = s
