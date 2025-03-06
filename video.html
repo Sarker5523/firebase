@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Video Details</title>
+  <!-- Include Video.js CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/video.js@7.13.3/dist/video-js.css" rel="stylesheet" />
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -87,15 +89,6 @@
       justify-content: center;
       align-items: center;
       padding: 20px;
-    }
-
-    /* Video player styling */
-    video {
-      width: 100%;
-      max-width: 1000px;
-      height: auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
     }
 
     /* Video details container styling */
@@ -208,7 +201,6 @@
     .search-result-item:hover {
       background-color: #333;
     }
-
   </style>
 </head>
 <body>
@@ -222,9 +214,9 @@
   </header>
 
   <div class="video-container">
-    <!-- Video element here -->
-    <video id="video-player" controls>
-      <source id="video-source" src="" type="video/mp4" />
+    <!-- Video.js player -->
+    <video id="video-player" class="video-js vjs-default-skin" controls>
+      <source src="" type="application/x-mpegURL" />
       Your browser does not support the video tag.
     </video>
   </div>
@@ -240,11 +232,17 @@
 
   <div id="search-results" class="search-results" style="display: none;"></div>
 
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  <!-- Include Video.js and HLS plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/video.js@7.13.3/dist/video.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/videojs-contrib-hls@2.0.1/dist/videojs-contrib-hls.min.js"></script>
+
   <script>
     let allVideos = [];
     const searchInput = document.getElementById('search-input');
     const searchResultsContainer = document.getElementById('search-results');
+
+    // Initialize Video.js player
+    const videoPlayer = videojs('video-player');
 
     // Fetch video data from JSON
     fetch('videos.json')
@@ -255,22 +253,8 @@
         const video = data.find(v => v.id === videoId);
 
         if (video) {
-          // Set video source for HLS
-          const videoPlayer = document.getElementById('video-player');
-          const videoSource = document.getElementById('video-source');
-
-          if (Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(video.url);  // m3u8 file URL
-            hls.attachMedia(videoPlayer);
-            hls.on(Hls.Events.MANIFEST_PARSED, function () {
-              videoPlayer.play();
-            });
-          } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-            videoSource.src = video.url;
-            videoPlayer.load();
-            videoPlayer.play();
-          }
+          // Set video source
+          videoPlayer.src({ type: 'application/x-mpegURL', src: video.url });
 
           // Set video details
           document.getElementById('video-title').innerText = video.name;
