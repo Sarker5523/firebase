@@ -210,7 +210,6 @@
     }
 
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
 
@@ -225,6 +224,7 @@
   <div class="video-container">
     <!-- Video element here -->
     <video id="video-player" controls>
+      <source src="" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
   </div>
@@ -254,26 +254,10 @@
         const video = data.find(v => v.id === videoId);
 
         if (video) {
-          // Set video source dynamically for HLS.js
+          // Set video source
           const videoPlayer = document.getElementById('video-player');
-
-          // Check if HLS.js is supported and use it for .m3u8
-          if (Hls.isSupported()) {
-            const hls = new Hls();
-            hls.loadSource(video.url); // .m3u8 URL
-            hls.attachMedia(videoPlayer);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-              videoPlayer.play();
-            });
-          } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-            // For Safari and iOS devices that support .m3u8 natively
-            videoPlayer.src = video.url;
-            videoPlayer.addEventListener('loadedmetadata', function() {
-              videoPlayer.play();
-            });
-          } else {
-            videoPlayer.src = video.url; // Fallback to direct source if not HLS.js supported
-          }
+          videoPlayer.querySelector('source').src = video.url;
+          videoPlayer.load(); // Reload the video player with the new video
 
           // Set video details
           document.getElementById('video-title').innerText = video.name;
@@ -288,10 +272,11 @@
               const suggestedVideoItem = document.createElement('div');
               suggestedVideoItem.classList.add('suggested-video-item');
               suggestedVideoItem.innerHTML = 
-                `<a href="video.html?id=${suggestedVideo.id}">
+                <a href="video.html?id=${suggestedVideo.id}">
                   <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
                   <h3>${suggestedVideo.name}</h3>
-                </a>`;
+                </a>
+              ;
               suggestedVideosContainer.appendChild(suggestedVideoItem);
             }
           });
@@ -309,4 +294,26 @@
 
     // Handle search input and show suggestions
     function handleSearch() {
-      const query = s
+      const query = searchInput.value.toLowerCase();
+      const filteredVideos = allVideos.filter(video =>
+        video.name.toLowerCase().includes(query)
+      );
+      searchResultsContainer.innerHTML = '';
+      searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
+
+      filteredVideos.forEach(video => {
+        const resultItem = document.createElement('div');
+        resultItem.classList.add('search-result-item');
+        resultItem.innerHTML = 
+          <a href="video.html?id=${video.id}">
+            <img src="${video.thumbnail}" alt="${video.name}" style="width: 30px; height: auto; border-radius: 5px; margin-right: 10px;">
+            ${video.name}
+          </a>
+        ;
+        searchResultsContainer.appendChild(resultItem);
+      });
+    }
+  </script>
+
+</body>
+</html>
