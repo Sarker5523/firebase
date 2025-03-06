@@ -1,50 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video Player</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Details</title>
   <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/video.js/7.20.3/video-js.min.css">
   <style>
     body {
       font-family: Arial, sans-serif;
       background-color: #141414;
-      color: white;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
       text-align: center;
+      padding: 10px 20px;
+      background-color: #000;
+      color: #ff8c00;
+      position: relative;
     }
 
     .video-container {
-      width: 80%;
-      max-width: 800px;
-      margin: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
     }
 
     video {
       width: 100%;
+      max-width: 1000px;
+      height: auto;
       border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
     }
 
+    /* Player switch button */
     .switch-player {
       margin-top: 10px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
     }
 
     select, button {
       padding: 8px 12px;
       font-size: 16px;
-      margin: 5px;
+      background-color: #ff8c00;
+      color: white;
+      border: none;
+      border-radius: 5px;
       cursor: pointer;
+    }
+
+    select {
+      background-color: #222;
+    }
+
+    button:hover {
+      background-color: #e07b00;
     }
   </style>
 </head>
 <body>
 
-  <h2>Watch Video</h2>
+  <header>
+    <h1>Video Details</h1>
+  </header>
 
   <div class="video-container">
     <!-- Default HTML5 Video Player -->
-    <video id="videoPlayer" controls>
-      <source id="videoSource" src="sample.mp4" type="video/mp4">
+    <video id="video-player" controls>
+      <source id="video-source" src="" type="video/mp4">
       Your browser does not support the video tag.
     </video>
 
@@ -71,16 +101,16 @@
     function switchPlayer() {
       const selectedPlayer = document.getElementById("playerType").value;
       const videoContainer = document.querySelector(".video-container");
-      const videoSource = document.getElementById("videoSource").src;
+      const videoSource = document.getElementById("video-source").src;
 
       // Remove existing player
-      document.getElementById("videoPlayer").remove();
+      document.getElementById("video-player").remove();
 
       let newPlayer;
-      
+
       if (selectedPlayer === "videojs") {
         newPlayer = document.createElement("video");
-        newPlayer.id = "videoPlayer";
+        newPlayer.id = "video-player";
         newPlayer.className = "video-js vjs-default-skin";
         newPlayer.setAttribute("controls", "");
         newPlayer.innerHTML = `<source src="${videoSource}" type="video/mp4">`;
@@ -91,7 +121,7 @@
       
       } else if (selectedPlayer === "plyr") {
         newPlayer = document.createElement("video");
-        newPlayer.id = "videoPlayer";
+        newPlayer.id = "video-player";
         newPlayer.className = "plyr";
         newPlayer.setAttribute("controls", "");
         newPlayer.innerHTML = `<source src="${videoSource}" type="video/mp4">`;
@@ -103,7 +133,7 @@
       } else {
         // Default HTML5 Player
         newPlayer = document.createElement("video");
-        newPlayer.id = "videoPlayer";
+        newPlayer.id = "video-player";
         newPlayer.setAttribute("controls", "");
         newPlayer.innerHTML = `<source src="${videoSource}" type="video/mp4">`;
         videoContainer.insertBefore(newPlayer, videoContainer.children[1]);
@@ -111,6 +141,19 @@
 
       currentPlayer = selectedPlayer;
     }
+
+    // Load video from query parameter
+    fetch('videos.json')
+      .then(response => response.json())
+      .then(data => {
+        const videoId = new URLSearchParams(window.location.search).get('id');
+        const video = data.find(v => v.id === videoId);
+        if (video) {
+          document.getElementById('video-source').src = video.url;
+          document.getElementById('video-player').load();
+        }
+      })
+      .catch(error => console.error('Error loading video:', error));
   </script>
 
 </body>
