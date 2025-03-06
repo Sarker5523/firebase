@@ -26,7 +26,7 @@
     {
         "id": "4",
         "name": "Google Drive Video",
-        "url": "https://drive.google.com/uc?export=download&id=1_qIwDbKJrMiFkGc-Fe0HHTH0U1TmyXUL",
+        "url": "https://drive.usercontent.google.com/download?id=1_qIwDbKJrMiFkGc-Fe0HHTH0U1TmyXUL&export=download&authuser=0&confirm=t&uuid=3ef5acd2-8f9a-4c54-9a9b-55110928c8ed",
         "thumbnail": "https://via.placeholder.com/300x170",
         "description": "This is a Google Drive hosted video.",
         "suggestions": [2, 3]
