@@ -5,10 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Video Details</title>
   <style>
-    /* Your styles remain the same */
+    /* (Your existing styles here) */
   </style>
-  <!-- Add HLS.js script -->
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 </head>
 <body>
 
@@ -23,6 +21,7 @@
   <div class="video-container">
     <!-- Video element here -->
     <video id="video-player" controls>
+      <!-- No source tag needed for HLS.js -->
       Your browser does not support the video tag.
     </video>
   </div>
@@ -38,6 +37,7 @@
 
   <div id="search-results" class="search-results" style="display: none;"></div>
 
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script> <!-- Include HLS.js library -->
   <script>
     let allVideos = [];
     const searchInput = document.getElementById('search-input');
@@ -52,26 +52,20 @@
         const video = data.find(v => v.id === videoId);
 
         if (video) {
-          // Set video source dynamically for HLS.js
+          // Set video source and initialize playback
           const videoPlayer = document.getElementById('video-player');
 
-          // Check if HLS.js is supported and use it for .m3u8
           if (Hls.isSupported()) {
+            // For browsers like Chrome, Firefox, and Edge
             const hls = new Hls();
-            hls.loadSource(video.url); // .m3u8 URL
+            hls.loadSource(video.url); // Set .m3u8 URL
             hls.attachMedia(videoPlayer);
-            hls.on(Hls.Events.MANIFEST_PARSED, function() {
-              videoPlayer.play();
-            });
           } else if (videoPlayer.canPlayType('application/vnd.apple.mpegurl')) {
-            // For Safari and iOS devices that support .m3u8 natively
-            videoPlayer.src = video.url;
-            videoPlayer.addEventListener('loadedmetadata', function() {
-              videoPlayer.play();
-            });
-          } else {
-            videoPlayer.src = video.url; // Fallback to direct source if not HLS.js supported
+            // For Safari (iPhone & Mac)
+            videoPlayer.src = video.url; // Set .m3u8 URL directly
           }
+
+          videoPlayer.load(); // Reload the video player with the new video
 
           // Set video details
           document.getElementById('video-title').innerText = video.name;
