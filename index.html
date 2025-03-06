@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Video Details</title>
+  <title>PHUB - Home</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -67,7 +67,6 @@
       border: 2px solid #ff8c00;
     }
 
-    /* Search bar styling */
     .search-bar {
       width: 80%;
       max-width: 400px;
@@ -81,126 +80,73 @@
       color: white;
     }
 
-    /* Video player container styling */
-    .video-container {
+    .search-suggestions {
+      position: absolute;
+      background-color: #333;
+      color: white;
+      width: 80%;
+      max-width: 400px;
+      margin-top: 40px;
+      padding: 10px 0;
+      border-radius: 5px;
+      display: none;
+      z-index: 1;
+    }
+
+    .search-suggestions div {
       display: flex;
-      justify-content: center;
       align-items: center;
-      padding: 20px;
+      padding: 8px 10px;
+      cursor: pointer;
     }
 
-    /* Video player styling */
-    video {
-      width: 100%;
-      max-width: 1000px;
-      height: auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+    .search-suggestions div:hover {
+      background-color: #ff8c00;
     }
 
-    /* Video details container styling */
-    .video-details {
-      text-align: left;
-      margin-top: 20px;
+    .search-suggestions img {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    .video-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 30px;
       padding: 0 20px;
     }
 
-    .video-details h2 {
-      font-size: 24px;
-      color: white;
-    }
-
-    .video-details p {
-      font-size: 14px;
-      color: #bbb;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-
-    /* Suggested videos grid */
-    .suggested-videos {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-      padding: 20px;
-    }
-
-    .suggested-video-item {
+    .video-item {
+      position: relative;
       cursor: pointer;
       text-align: center;
-      position: relative;
     }
 
-    .suggested-video-item img {
+    .video-item img {
       width: 100%;
       height: auto;
       border-radius: 8px;
     }
 
-    .suggested-video-item h3 {
-      font-size: 14px; /* Reduced font size for the titles */
-      color: white;
-      padding: 5px 0;
-      text-align: center;
-      font-weight: bold;
+    .video-item h3 {
       position: absolute;
-      bottom: 10px;
+      bottom: 0;
       left: 0;
       right: 0;
-      margin: 0;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-    }
-
-    .suggested-video-item:hover {
-      opacity: 0.8;
-    }
-
-    /* Media Queries for better responsiveness */
-    @media (max-width: 768px) {
-      .suggested-videos {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      video {
-        width: 100%;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .search-bar {
-        width: 90%;
-      }
-    }
-
-    .search-results {
-      position: absolute;
-      top: 60px;
-      left: 10%;
-      right: 10%;
-      background-color: #222;
-      padding: 10px;
-      border-radius: 8px;
-      max-height: 300px;
-      overflow-y: auto;
-      z-index: 1000;
-    }
-
-    .search-results a {
-      color: #ff8c00;
-      text-decoration: none;
-    }
-
-    .search-results a:hover {
       color: white;
-    }
-
-    .search-result-item {
-      padding: 8px;
-      border-bottom: 1px solid #444;
-    }
-
-    .search-result-item:hover {
-      background-color: #333;
+      padding: 3px 10px;
+      font-size: 12px; /* Smaller font size */
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+      transform: translateY(10px); /* Moved further down */
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.6));
     }
 
   </style>
@@ -212,88 +158,78 @@
     <h1 class="phub-title">
       P<span>HUB</span>
     </h1>
-    <input type="text" class="search-bar" id="search-input" placeholder="Search..." oninput="handleSearch()" />
+    <input type="text" id="search" class="search-bar" placeholder="Search for videos..." onkeyup="searchVideos(event)">
+    <div id="search-suggestions" class="search-suggestions"></div>
   </header>
 
-  <div class="video-container">
-    <!-- Video element here -->
-    <video id="video-player" controls>
-      <source src="" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
-  </div>
-
-  <div class="video-details">
-    <h2 id="video-title"></h2>
-    <p id="video-description"></p>
-  </div>
-
-  <div class="suggested-videos" id="suggested-videos">
-    <!-- Suggested videos will be appended here -->
-  </div>
-
-  <div id="search-results" class="search-results" style="display: none;"></div>
+  <div class="video-grid" id="video-grid"></div>
 
   <script>
     let allVideos = [];
-    const searchInput = document.getElementById('search-input');
-    const searchResultsContainer = document.getElementById('search-results');
 
     // Fetch video data from JSON
     fetch('videos.json')
       .then(response => response.json())
       .then(data => {
         allVideos = data;
-        const videoId = new URLSearchParams(window.location.search).get('id');
-        const video = data.find(v => v.id === videoId);
-
-        if (video) {
-          // Set video source
-          const videoPlayer = document.getElementById('video-player');
-          videoPlayer.querySelector('source').src = video.url;
-          videoPlayer.load(); // Reload the video player with the new video
-
-          // Set video details
-          document.getElementById('video-title').innerText = video.name;
-          document.getElementById('video-description').innerText = video.description || "No description available.";
-
-          // Load suggested videos
-          const suggestedVideosContainer = document.getElementById('suggested-videos');
-          suggestedVideosContainer.innerHTML = '';
-          video.suggestions.forEach(suggestionId => {
-            const suggestedVideo = data.find(v => v.id === String(suggestionId));
-            if (suggestedVideo) {
-              const suggestedVideoItem = document.createElement('div');
-              suggestedVideoItem.classList.add('suggested-video-item');
-              suggestedVideoItem.innerHTML = `
-                <a href="video.html?id=${suggestedVideo.id}">
-                  <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
-                  <h3>${suggestedVideo.name}</h3>
-                </a>
-              `;
-              suggestedVideosContainer.appendChild(suggestedVideoItem);
-            }
-          });
-        } else {
-          // Display error if no video is found
-          document.getElementById('video-title').innerText = "Video not found";
-          document.getElementById('video-description').innerText = "This video could not be found.";
-        }
+        displayVideos(data);
       })
-      .catch(error => {
-        console.error('Error loading video data:', error);
-        document.getElementById('video-title').innerText = "Error loading video";
-        document.getElementById('video-description').innerText = "There was an error loading the video details.";
+      .catch(error => console.error('Error loading JSON:', error));
+
+    // Display videos on the homepage
+    function displayVideos(videos) {
+      const videoGrid = document.getElementById('video-grid');
+      videoGrid.innerHTML = '';
+      
+      videos.forEach(video => {
+        const videoItem = document.createElement('div');
+        videoItem.classList.add('video-item');
+        videoItem.innerHTML = `
+          <a href="video.html?id=${video.id}">
+            <img src="${video.thumbnail}" alt="${video.name}">
+            <h3>${video.name}</h3>
+          </a>
+        `;
+        videoGrid.appendChild(videoItem);
       });
+    }
 
-    // Handle search input and show suggestions
-    function handleSearch() {
-      const query = searchInput.value.toLowerCase();
-      const filteredVideos = allVideos.filter(video =>
-        video.name.toLowerCase().includes(query)
-      );
-      searchResultsContainer.innerHTML = '';
-      searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
+    // Search for videos and show suggestions
+    function searchVideos(event) {
+      const query = document.getElementById('search').value.toLowerCase();
+      const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
 
-      filteredVideos.forEach(video => {
-        const result
+      // Display search suggestions as the user types
+      if (query) {
+        document.getElementById('search-suggestions').style.display = 'block';
+        document.getElementById('search-suggestions').innerHTML = '';
+        filteredVideos.slice(0, 5).forEach(video => {
+          const suggestionItem = document.createElement('div');
+          suggestionItem.innerHTML = `
+            <img src="${video.thumbnail}" alt="${video.name}">
+            ${video.name}
+          `;
+          suggestionItem.onclick = () => window.location.href = `video.html?id=${video.id}`;
+          document.getElementById('search-suggestions').appendChild(suggestionItem);
+        });
+      } else {
+        document.getElementById('search-suggestions').style.display = 'none';
+      }
+
+      // Redirect to search-results page when Enter key is pressed
+      if (event.key === "Enter" && filteredVideos.length > 0) {
+        const queryParam = encodeURIComponent(query);
+        window.location.href = `search-results.html?q=${queryParam}`;
+      }
+    }
+
+    // Hide search suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#search')) {
+        document.getElementById('search-suggestions').style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+</html>
