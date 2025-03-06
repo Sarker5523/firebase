@@ -91,8 +91,8 @@
 
     /* Video player styling */
     video {
-      width: 80%;
-      max-width: 800px;
+      width: 100%;
+      max-width: 1000px;
       height: auto;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
@@ -141,11 +141,24 @@
       color: white;
       padding: 5px 0;
       text-align: center;
+      font-weight: bold;
     }
 
-    /* Suggested video item hover effect */
     .suggested-video-item:hover {
       opacity: 0.8;
+    }
+
+    /* Media Queries for better responsiveness */
+    @media (max-width: 768px) {
+      video {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .search-bar {
+        width: 90%;
+      }
     }
   </style>
 </head>
@@ -156,7 +169,7 @@
     <h1 class="phub-title">
       P<span>HUB</span>
     </h1>
-    <input type="text" class="search-bar" placeholder="Search..." />
+    <input type="text" class="search-bar" id="search-input" placeholder="Search..." oninput="handleSearch()" />
   </header>
 
   <div class="video-container">
@@ -177,16 +190,16 @@
   </div>
 
   <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const videoId = urlParams.get('id');
     let allVideos = [];
+    const searchInput = document.getElementById('search-input');
 
     // Fetch video data from JSON
     fetch('videos.json')
       .then(response => response.json())
       .then(data => {
         allVideos = data;
-        const video = data.find(video => video.id === videoId);
+        const videoId = new URLSearchParams(window.location.search).get('id');
+        const video = data.find(v => v.id === videoId);
 
         if (video) {
           // Set video source
@@ -218,6 +231,28 @@
         }
       })
       .catch(error => console.error('Error loading JSON:', error));
+
+    // Handle search input and show suggestions
+    function handleSearch() {
+      const query = searchInput.value.toLowerCase();
+      const filteredVideos = allVideos.filter(video =>
+        video.name.toLowerCase().includes(query)
+      );
+      const suggestedVideosContainer = document.getElementById('suggested-videos');
+      suggestedVideosContainer.innerHTML = '';
+
+      filteredVideos.forEach(video => {
+        const suggestedVideoItem = document.createElement('div');
+        suggestedVideoItem.classList.add('suggested-video-item');
+        suggestedVideoItem.innerHTML = `
+          <a href="video.html?id=${video.id}">
+            <img src="${video.thumbnail}" alt="${video.name}" />
+            <h3>${video.name}</h3>
+          </a>
+        `;
+        suggestedVideosContainer.appendChild(suggestedVideoItem);
+      });
+    }
 
   </script>
 
