@@ -1,5 +1,39 @@
 <style>
-  /* Suggested videos grid */
+  /* Currently playing video title */
+  .video-title {
+    font-size: 22px; /* Smaller font size for the title */
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 15px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  }
+
+  /* Video player container */
+  .video-player-container {
+    position: relative;
+    max-width: 100%;
+    margin: 20px auto;
+  }
+
+  /* Details container with 3D rounded corners */
+  .video-details-container {
+    background-color: #e0e0e0; /* Light ash background for title */
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 20px;
+  }
+
+  /* Video details content */
+  .video-details {
+    background-color: #d0d0d0; /* Slightly darker background for details */
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 10px;
+  }
+
+  /* Suggested video section */
   .suggested-videos {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -20,7 +54,7 @@
   }
 
   .suggested-video-item h3 {
-    font-size: 14px; /* Reduced font size */
+    font-size: 14px;
     color: white;
     padding: 5px 0;
     text-align: center;
