@@ -98,30 +98,22 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
     }
 
-    /* Video title container styling */
-    .video-title-container {
-      background-color: #bbb; /* Darker shade for the title */
-      padding: 10px;
-      border-radius: 10px;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.6);
-      margin-bottom: 20px;
-    }
-
-    .video-title {
-      font-size: 20px;
-      color: white;
-      background-color: #dcdcdc; /* Light ash background */
-      padding: 10px;
-      border-radius: 10px;
-    }
-
     /* Video details container styling */
     .video-details {
-      text-align: left;
-      padding: 20px;
-      background-color: #333;
+      text-align: center;
+      margin-top: 20px;
+      padding: 0 20px;
+      background-color: #777;
       border-radius: 15px;
       box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .video-details h2 {
+      font-size: 20px;
+      color: white;
+      background-color: #dcdcdc;
+      padding: 10px;
+      border-radius: 10px;
     }
 
     .video-details p {
@@ -237,11 +229,8 @@
     </video>
   </div>
 
-  <div class="video-title-container">
-    <h2 class="video-title" id="video-title"></h2>
-  </div>
-
   <div class="video-details">
+    <h2 id="video-title"></h2>
     <p id="video-description"></p>
   </div>
 
@@ -313,4 +302,18 @@
       searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
 
       filteredVideos.forEach(video => {
-        const resultItem = document.createElement('div
+        const resultItem = document.createElement('div');
+        resultItem.classList.add('search-result-item');
+        resultItem.innerHTML = `
+          <a href="video.html?id=${video.id}">
+            <img src="${video.thumbnail}" alt="${video.name}" style="width: 30px; height: auto; border-radius: 5px; margin-right: 10px;">
+            ${video.name}
+          </a>
+        `;
+        searchResultsContainer.appendChild(resultItem);
+      });
+    }
+  </script>
+
+</body>
+</html>
