@@ -14,31 +14,20 @@
     }
 
     header {
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding: 10px 20px;
       background-color: #000;
       color: #ff8c00;
-      position: relative;
     }
 
     header h1 {
-      font-size: 30px;
-      font-weight: bold;
+      font-size: 24px;
       margin: 0;
     }
 
-    header h1 span {
-      color: #000;
-      background-color: #ff8c00;
-      padding: 3px 10px;
-      border-radius: 4px;
-      border: 2px solid #ff8c00;
-    }
-
     .home-btn {
-      position: absolute;
-      left: 10px;
-      top: 10px;
       font-size: 16px;
       color: #ff8c00;
       background-color: #333;
@@ -46,62 +35,21 @@
       border-radius: 8px;
       border: none;
       cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      transition: background-color 0.2s ease-in-out;
     }
 
     .home-btn:hover {
       background-color: #444;
-      transform: translateY(-4px);
-      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.7);
-    }
-
-    .home-btn:focus {
-      outline: none;
     }
 
     .search-bar {
       width: 80%;
       max-width: 400px;
-      padding: 8px 10px;
-      margin-top: 10px;
-      margin-bottom: 10px;
+      padding: 8px;
       border-radius: 5px;
       border: none;
-      font-size: 14px;
       background-color: #222;
       color: white;
-    }
-
-    .search-suggestions {
-      position: absolute;
-      background-color: #333;
-      color: white;
-      width: 80%;
-      max-width: 400px;
-      margin-top: 40px;
-      padding: 10px 0;
-      border-radius: 5px;
-      display: none;
-      z-index: 1;
-    }
-
-    .search-suggestions div {
-      display: flex;
-      align-items: center;
-      padding: 8px 10px;
-      cursor: pointer;
-    }
-
-    .search-suggestions div:hover {
-      background-color: #ff8c00;
-    }
-
-    .search-suggestions img {
-      width: 40px;
-      height: 40px;
-      border-radius: 4px;
-      margin-right: 10px;
     }
 
     .video-container {
@@ -167,15 +115,46 @@
     .suggested-video-item:hover {
       transform: translateY(-4px);
     }
+
+    .search-results {
+      position: absolute;
+      top: 60px;
+      background-color: #333;
+      color: white;
+      width: 80%;
+      max-width: 400px;
+      margin-top: 10px;
+      padding: 10px 0;
+      border-radius: 5px;
+      display: none;
+      z-index: 1;
+    }
+
+    .search-results div {
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .search-results div:hover {
+      background-color: #ff8c00;
+    }
+
+    .search-results img {
+      width: 30px;
+      height: auto;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
   </style>
 </head>
 <body>
 
   <header>
     <button class="home-btn" onclick="window.location.href='index.html'">Home</button>
-    <h1><span>PHUB</span></h1>
-    <input type="text" class="search-bar" id="search-input" placeholder="Search for videos..." oninput="handleSearch()" />
-    <div id="search-suggestions" class="search-suggestions"></div>
+    <h1>P<span style="color: #000; background-color: #ff8c00; padding: 3px 10px; border-radius: 4px;">HUB</span></h1>
+    <input type="text" class="search-bar" id="search-input" placeholder="Search..." oninput="handleSearch()" />
   </header>
 
   <div class="video-container" id="video-container">
@@ -192,16 +171,18 @@
 
   <div class="suggested-videos" id="suggested-videos"></div>
 
+  <div id="search-results" class="search-results"></div>
+
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
     let allVideos = [];
     const searchInput = document.getElementById('search-input');
-    const searchSuggestionsContainer = document.getElementById('search-suggestions');
+    const searchResultsContainer = document.getElementById('search-results');
 
-    // Fetch video data from JSON
     fetch('videos.json')
       .then(response => response.json())
       .then(data => {
+        allVideos = data;
         const videoId = new URLSearchParams(window.location.search).get('id');
         const video = data.find(v => v.id === videoId);
         const videoContainer = document.getElementById('video-container');
@@ -209,33 +190,26 @@
         const videoSource = document.getElementById('video-source');
 
         if (video) {
-          // Set video title and description
           document.getElementById('video-title').innerText = video.name;
           document.getElementById('video-description').innerText = video.description || "No description available.";
 
           if (video.embed_code) {
-            // If the video has an embed code, use iframe
             videoContainer.innerHTML = video.embed_code;
           } else if (video.url) {
-            // If the video has a direct URL, use the video player
-            videoPlayer.style.display = "block"; // Show video player
+            videoPlayer.style.display = "block";
             videoSource.src = video.url;
 
             if (Hls.isSupported() && video.url.endsWith('.m3u8')) {
-              // Load HLS video
               const hls = new Hls();
               hls.loadSource(video.url);
               hls.attachMedia(videoPlayer);
             } else {
-              // Load normal MP4 video
               videoPlayer.load();
             }
           } else {
-            // No video available
             videoContainer.innerHTML = "<p>Video not available.</p>";
           }
 
-          // Load suggested videos
           const suggestedVideosContainer = document.getElementById('suggested-videos');
           suggestedVideosContainer.innerHTML = '';
           video.suggestions.forEach(suggestionId => {
@@ -252,7 +226,6 @@
             }
           });
         } else {
-          // Video not found
           document.getElementById('video-title').innerText = "Video not found";
           document.getElementById('video-description').innerText = "This video could not be found.";
         }
@@ -263,24 +236,23 @@
         document.getElementById('video-description').innerText = "There was an error loading the video details.";
       });
 
-    // Handle search input and show suggestions
     function handleSearch() {
       const query = searchInput.value.toLowerCase();
       const filteredVideos = allVideos.filter(video =>
         video.name.toLowerCase().includes(query)
       );
-      searchSuggestionsContainer.innerHTML = '';
-      searchSuggestionsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
+      searchResultsContainer.innerHTML = '';
+      searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
 
       filteredVideos.forEach(video => {
-        const suggestionItem = document.createElement('div');
-        suggestionItem.classList.add('search-result-item');
-        suggestionItem.innerHTML = 
+        const resultItem = document.createElement('div');
+        resultItem.classList.add('search-result-item');
+        resultItem.innerHTML = 
           `<a href="video.html?id=${video.id}">
-            <img src="${video.thumbnail}" alt="${video.name}" style="width: 40px; height: 40px; border-radius: 4px; margin-right: 10px;">
+            <img src="${video.thumbnail}" alt="${video.name}" />
             ${video.name}
           </a>`;
-        searchSuggestionsContainer.appendChild(suggestionItem);
+        searchResultsContainer.appendChild(resultItem);
       });
     }
   </script>
