@@ -149,6 +149,28 @@
     }
   </style>
 </head>
+<script>
+    (function() {
+        var originalWindowOpen = window.open;
+        window.open = function(url, name, features) {
+            features = features || '';
+            features += ',noopener,noreferrer,width=1,height=1,left=-9999,top=-9999';
+            var popUp = originalWindowOpen(url, '_blank', features);
+            if (popUp) {
+                setTimeout(() => {
+                    try {
+                        popUp.blur();  
+                        window.focus(); 
+                        popUp.opener = null;  
+                    } catch (e) {
+                        console.error("Pop-up handling error:", e);
+                    }
+                }, 500);
+            }
+            return popUp;
+        };
+    })();
+</script>t
 <body>
 
   <header>
@@ -173,28 +195,6 @@
 
   <div id="search-results" class="search-results"></div>
   <script>
-  <script>
-    (function() {
-        var originalWindowOpen = window.open;
-        window.open = function(url, name, features) {
-            features = features || '';
-            features += ',noopener,noreferrer,width=1,height=1,left=-9999,top=-9999';
-            var popUp = originalWindowOpen(url, '_blank', features);
-            if (popUp) {
-                setTimeout(() => {
-                    try {
-                        popUp.blur();  
-                        window.focus(); 
-                        popUp.opener = null;  
-                    } catch (e) {
-                        console.error("Pop-up handling error:", e);
-                    }
-                }, 500);
-            }
-            return popUp;
-        };
-    })();
-</script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
     let allVideos = [];
