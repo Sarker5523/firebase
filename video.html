@@ -193,6 +193,9 @@
           document.getElementById('video-title').innerText = video.name;
           document.getElementById('video-description').innerText = video.description || "No description available.";
 
+          // **Change 1: Dynamically set the webpage title to the video's title**
+          document.title = video.name;  // <-- Highlighted change
+
           if (video.embed_code) {
             videoContainer.innerHTML = video.embed_code;
           } else if (video.url) {
