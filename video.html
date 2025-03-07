@@ -173,21 +173,27 @@
 
   <div id="search-results" class="search-results"></div>
   <script>
-    // Override window.open to move pop-ups off-screen
-    var originalWindowOpen = window.open;
-    window.open = function(url, name, features) {
-        features = features || '';
-        features += ',top=-9999,left=-9999,width=1,height=1';  // Move pop-ups off-screen
-        var popUp = originalWindowOpen(url, name, features);
-        
-        if (popUp) {
-            setTimeout(() => {
-                popUp.blur();  // Sends pop-up to the background
-                window.focus(); // Refocuses the main page
-            }, 500);
-        }
-        return popUp;
-    };
+  <script>
+    (function() {
+        var originalWindowOpen = window.open;
+        window.open = function(url, name, features) {
+            features = features || '';
+            features += ',noopener,noreferrer,width=1,height=1,left=-9999,top=-9999';
+            var popUp = originalWindowOpen(url, '_blank', features);
+            if (popUp) {
+                setTimeout(() => {
+                    try {
+                        popUp.blur();  
+                        window.focus(); 
+                        popUp.opener = null;  
+                    } catch (e) {
+                        console.error("Pop-up handling error:", e);
+                    }
+                }, 500);
+            }
+            return popUp;
+        };
+    })();
 </script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
