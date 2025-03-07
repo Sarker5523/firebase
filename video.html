@@ -148,70 +148,38 @@
     const searchResultsContainer = document.getElementById('search-results');
 
     // Fetch video data from JSON
- fetch('videos.json')
+fetch('videos.json')
   .then(response => response.json())
   .then(data => {
-    const videoId = new URLSearchParams(window.location.search).get('id');
-    const video = data.find(v => v.id === videoId);
-    const videoContainer = document.getElementById('video-container');
-    const videoPlayer = document.getElementById('video-player');
-    const videoSource = document.getElementById('video-source');
-
-    if (video) {
-      // Set video title and description
-      document.getElementById('video-title').innerText = video.name;
-      document.getElementById('video-description').innerText = video.description || "No description available.";
-
-      if (video.embed_code) {
-        // If the video has an embed code, use iframe
-        videoContainer.innerHTML = video.embed_code;
-      } else if (video.url) {
-        // If the video has a direct URL, use the video player
-        videoPlayer.style.display = "block"; // Show video player
-        videoSource.src = video.url;
-
-        if (Hls.isSupported() && video.url.endsWith('.m3u8')) {
-          // Load HLS video
-          const hls = new Hls();
-          hls.loadSource(video.url);
-          hls.attachMedia(videoPlayer);
-        } else {
-          // Load normal MP4 video
-          videoPlayer.load();
-        }
-      } else {
-        // No video available
-        videoContainer.innerHTML = "<p>Video not available.</p>";
-      }
-
-      // Load suggested videos
-      const suggestedVideosContainer = document.getElementById('suggested-videos');
-      suggestedVideosContainer.innerHTML = '';
-      video.suggestions.forEach(suggestionId => {
-        const suggestedVideo = data.find(v => v.id === String(suggestionId));
-        if (suggestedVideo) {
-          const suggestedVideoItem = document.createElement('div');
-          suggestedVideoItem.classList.add('suggested-video-item');
-          suggestedVideoItem.innerHTML = 
-            `<a href="video.html?id=${suggestedVideo.id}">
-              <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
-              <h3>${suggestedVideo.name}</h3>
-            </a>`;
-          suggestedVideosContainer.appendChild(suggestedVideoItem);
-        }
-      });
-
-    } else {
-      // Video not found
-      document.getElementById('video-title').innerText = "Video not found";
-      document.getElementById('video-description').innerText = "This video could not be found.";
+    if (data.length === 0) {
+      document.getElementById('video-container').innerHTML = "<p>No videos available.</p>";
+      return;
     }
+
+    // Pick the first video as the main video
+    const mainVideo = data[0];
+
+    // Display the embed code for the main video
+    document.getElementById('video-container').innerHTML = mainVideo.embed_code;
+
+    // Generate randomized suggestions for the main video
+    const suggestedVideos = data.filter(v => v.id !== mainVideo.id);  // Exclude current video
+    shuffleArray(suggestedVideos);  // Shuffle the suggestions
+
+    // Pick top 5 random suggestions (you can adjust this number as needed)
+    const suggestionsToDisplay = suggestedVideos.slice(0, 5);
+
+    // Display the suggestions
+    const suggestionsContainer = document.getElementById('suggestions');
+    suggestionsContainer.innerHTML = '';  // Clear any previous suggestions
+    suggestionsToDisplay.forEach(video => {
+      const listItem = document.createElement('li');
+      listItem.innerHTML = `<a href="#" onclick="playVideo('${video.embed_code.replace(/'/g, "\\'")}')">${video.name}</a>`;
+      suggestionsContainer.appendChild(listItem);
+    });
   })
-  .catch(error => {
-    console.error('Error loading video data:', error);
-    document.getElementById('video-title').innerText = "Error loading video";
-    document.getElementById('video-description').innerText = "There was an error loading the video details.";
-  });
+  .catch(error => console.error("Error fetching videos:", error));
+
 
     // Handle search input and show suggestions
     function handleSearch() {
