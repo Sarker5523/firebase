@@ -125,11 +125,11 @@
     <input type="text" class="search-bar" id="search-input" placeholder="Search..." oninput="handleSearch()" />
   </header>
 
-  <div class="video-container">
-    <video id="video-player" controls>
-      <source src="" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
+  <div class="video-container" id="video-container">
+  <video id="video-player" controls style="display: none;">
+    <source id="video-source" src="" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
   </div>
 
   <div class="video-details">
@@ -148,59 +148,70 @@
     const searchResultsContainer = document.getElementById('search-results');
 
     // Fetch video data from JSON
-    fetch('videos.json')
-      .then(response => response.json())
-      .then(data => {
-        allVideos = data;
-        const videoId = new URLSearchParams(window.location.search).get('id');
-        const video = data.find(v => v.id === videoId);
+ fetch('videos.json')
+  .then(response => response.json())
+  .then(data => {
+    const videoId = new URLSearchParams(window.location.search).get('id');
+    const video = data.find(v => v.id === videoId);
+    const videoContainer = document.getElementById('video-container');
+    const videoPlayer = document.getElementById('video-player');
+    const videoSource = document.getElementById('video-source');
 
-        if (video) {
-          // Set video source
-          const videoPlayer = document.getElementById('video-player');
-          const videoSource = videoPlayer.querySelector('source');
-          videoSource.src = video.url;
+    if (video) {
+      // Set video title and description
+      document.getElementById('video-title').innerText = video.name;
+      document.getElementById('video-description').innerText = video.description || "No description available.";
 
-          // Check if the video is an m3u8 file
-          if (Hls.isSupported() && video.url.endsWith('.m3u8')) {
-            const hls = new Hls();
-            hls.loadSource(video.url);
-            hls.attachMedia(videoPlayer);
-          } else {
-            videoPlayer.load(); // Reload the video player with the new video
-          }
+      if (video.embed_code) {
+        // If the video has an embed code, use iframe
+        videoContainer.innerHTML = video.embed_code;
+      } else if (video.url) {
+        // If the video has a direct URL, use the video player
+        videoPlayer.style.display = "block"; // Show video player
+        videoSource.src = video.url;
 
-          // Set video details
-          document.getElementById('video-title').innerText = video.name;
-          document.getElementById('video-description').innerText = video.description || "No description available.";
-
-          // Load suggested videos
-          const suggestedVideosContainer = document.getElementById('suggested-videos');
-          suggestedVideosContainer.innerHTML = '';
-          video.suggestions.forEach(suggestionId => {
-            const suggestedVideo = data.find(v => v.id === String(suggestionId));
-            if (suggestedVideo) {
-              const suggestedVideoItem = document.createElement('div');
-              suggestedVideoItem.classList.add('suggested-video-item');
-              suggestedVideoItem.innerHTML = 
-                `<a href="video.html?id=${suggestedVideo.id}">
-                  <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
-                  <h3>${suggestedVideo.name}</h3>
-                </a>`;
-              suggestedVideosContainer.appendChild(suggestedVideoItem);
-            }
-          });
+        if (Hls.isSupported() && video.url.endsWith('.m3u8')) {
+          // Load HLS video
+          const hls = new Hls();
+          hls.loadSource(video.url);
+          hls.attachMedia(videoPlayer);
         } else {
-          // Display error if no video is found
-          document.getElementById('video-title').innerText = "Video not found";
-          document.getElementById('video-description').innerText = "This video could not be found.";
+          // Load normal MP4 video
+          videoPlayer.load();
         }
-      })
-      .catch(error => {
-        console.error('Error loading video data:', error);
-        document.getElementById('video-title').innerText = "Error loading video";
-        document.getElementById('video-description').innerText = "There was an error loading the video details.";
+      } else {
+        // No video available
+        videoContainer.innerHTML = "<p>Video not available.</p>";
+      }
+
+      // Load suggested videos
+      const suggestedVideosContainer = document.getElementById('suggested-videos');
+      suggestedVideosContainer.innerHTML = '';
+      video.suggestions.forEach(suggestionId => {
+        const suggestedVideo = data.find(v => v.id === String(suggestionId));
+        if (suggestedVideo) {
+          const suggestedVideoItem = document.createElement('div');
+          suggestedVideoItem.classList.add('suggested-video-item');
+          suggestedVideoItem.innerHTML = 
+            `<a href="video.html?id=${suggestedVideo.id}">
+              <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
+              <h3>${suggestedVideo.name}</h3>
+            </a>`;
+          suggestedVideosContainer.appendChild(suggestedVideoItem);
+        }
       });
+
+    } else {
+      // Video not found
+      document.getElementById('video-title').innerText = "Video not found";
+      document.getElementById('video-description').innerText = "This video could not be found.";
+    }
+  })
+  .catch(error => {
+    console.error('Error loading video data:', error);
+    document.getElementById('video-title').innerText = "Error loading video";
+    document.getElementById('video-description').innerText = "There was an error loading the video details.";
+  });
 
     // Handle search input and show suggestions
     function handleSearch() {
@@ -226,4 +237,3 @@
 
 </body>
 </html>
-```
