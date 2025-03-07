@@ -22,8 +22,17 @@
     }
 
     header h1 {
-      font-size: 20px;
+      font-size: 30px;
+      font-weight: bold;
       margin: 0;
+    }
+
+    header h1 span {
+      color: #000;
+      background-color: #ff8c00;
+      padding: 3px 10px;
+      border-radius: 4px;
+      border: 2px solid #ff8c00;
     }
 
     .home-btn {
@@ -49,20 +58,6 @@
 
     .home-btn:focus {
       outline: none;
-    }
-
-    header .phub-title {
-      font-size: 30px;
-      font-weight: bold;
-      color: white;
-    }
-
-    header .phub-title span {
-      color: #000;
-      background-color: #ff8c00;
-      padding: 3px 10px;
-      border-radius: 4px;
-      border: 2px solid #ff8c00;
     }
 
     .search-bar {
@@ -177,11 +172,9 @@
 <body>
 
   <header>
-    <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
-    <h1 class="phub-title">
-      P<span>HUB</span>
-    </h1>
-    <input type="text" class="search-bar" id="search-input" placeholder="Search..." oninput="handleSearch()" />
+    <button class="home-btn" onclick="window.location.href='index.html'">Home</button>
+    <h1><span>PHUB</span></h1>
+    <input type="text" class="search-bar" id="search-input" placeholder="Search for videos..." oninput="handleSearch()" />
     <div id="search-suggestions" class="search-suggestions"></div>
   </header>
 
@@ -205,6 +198,7 @@
     const searchInput = document.getElementById('search-input');
     const searchSuggestionsContainer = document.getElementById('search-suggestions');
 
+    // Fetch video data from JSON
     fetch('videos.json')
       .then(response => response.json())
       .then(data => {
@@ -215,26 +209,33 @@
         const videoSource = document.getElementById('video-source');
 
         if (video) {
+          // Set video title and description
           document.getElementById('video-title').innerText = video.name;
           document.getElementById('video-description').innerText = video.description || "No description available.";
 
           if (video.embed_code) {
+            // If the video has an embed code, use iframe
             videoContainer.innerHTML = video.embed_code;
           } else if (video.url) {
-            videoPlayer.style.display = "block"; 
+            // If the video has a direct URL, use the video player
+            videoPlayer.style.display = "block"; // Show video player
             videoSource.src = video.url;
 
             if (Hls.isSupported() && video.url.endsWith('.m3u8')) {
+              // Load HLS video
               const hls = new Hls();
               hls.loadSource(video.url);
               hls.attachMedia(videoPlayer);
             } else {
+              // Load normal MP4 video
               videoPlayer.load();
             }
           } else {
+            // No video available
             videoContainer.innerHTML = "<p>Video not available.</p>";
           }
 
+          // Load suggested videos
           const suggestedVideosContainer = document.getElementById('suggested-videos');
           suggestedVideosContainer.innerHTML = '';
           video.suggestions.forEach(suggestionId => {
@@ -250,8 +251,8 @@
               suggestedVideosContainer.appendChild(suggestedVideoItem);
             }
           });
-
         } else {
+          // Video not found
           document.getElementById('video-title').innerText = "Video not found";
           document.getElementById('video-description').innerText = "This video could not be found.";
         }
@@ -262,6 +263,7 @@
         document.getElementById('video-description').innerText = "There was an error loading the video details.";
       });
 
+    // Handle search input and show suggestions
     function handleSearch() {
       const query = searchInput.value.toLowerCase();
       const filteredVideos = allVideos.filter(video =>
@@ -275,7 +277,7 @@
         suggestionItem.classList.add('search-result-item');
         suggestionItem.innerHTML = 
           `<a href="video.html?id=${video.id}">
-            <img src="${video.thumbnail}" alt="${video.name}" style="width: 30px; height: auto; border-radius: 5px; margin-right: 10px;">
+            <img src="${video.thumbnail}" alt="${video.name}" style="width: 40px; height: 40px; border-radius: 4px; margin-right: 10px;">
             ${video.name}
           </a>`;
         searchSuggestionsContainer.appendChild(suggestionItem);
