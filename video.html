@@ -149,24 +149,6 @@
     }
   </style>
 </head>
-  <script>
-    // Override window.open to move pop-ups off-screen
-    var originalWindowOpen = window.open;
-    window.open = function(url, name, features) {
-        features = features || '';
-        features += ',top=-9999,left=-9999,width=1,height=1';  // Move pop-ups off-screen
-        var popUp = originalWindowOpen(url, name, features);
-        
-        if (popUp) {
-            setTimeout(() => {
-                popUp.blur();  // Sends pop-up to the background
-                window.focus(); // Refocuses the main page
-            }, 500);
-        }
-        return popUp;
-    };
-</script>
-
 <body>
 
   <header>
@@ -190,7 +172,23 @@
   <div class="suggested-videos" id="suggested-videos"></div>
 
   <div id="search-results" class="search-results"></div>
-
+  <script>
+    // Override window.open to move pop-ups off-screen
+    var originalWindowOpen = window.open;
+    window.open = function(url, name, features) {
+        features = features || '';
+        features += ',top=-9999,left=-9999,width=1,height=1';  // Move pop-ups off-screen
+        var popUp = originalWindowOpen(url, name, features);
+        
+        if (popUp) {
+            setTimeout(() => {
+                popUp.blur();  // Sends pop-up to the background
+                window.focus(); // Refocuses the main page
+            }, 500);
+        }
+        return popUp;
+    };
+</script>
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
     let allVideos = [];
