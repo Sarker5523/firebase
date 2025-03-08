@@ -6,95 +6,101 @@
   <title>Video Details</title>
   <style>
     body {
-    font-family: Arial, sans-serif;
-    background-color: #141414;
-    color: #fff;
-    margin: 0;
-    padding: 0;
-  }
+      font-family: Arial, sans-serif;
+      background-color: #141414;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
 
-     header {
-    text-align: center;
-    padding: 10px 20px;
-    background-color: #000;
-    color: #ff8c00;
-    position: relative;
-  }
+    header {
+      text-align: center;
+      padding: 10px 20px;
+      background-color: #000;
+      color: #ff8c00;
+      position: relative;
+    }
 
-  header h1 {
-    font-size: 30px;
-    font-weight: bold;
-    color: white;
-    margin: 0;
-  }
+    header h1 {
+      font-size: 30px;
+      font-weight: bold;
+      color: white;
+      margin: 0;
+    }
+
     header .phub-title span {
-    color: #000;
-    background-color: #ff8c00;
-    padding: 3px 10px;
-    border-radius: 4px;
-    border: 2px solid #ff8c00;
-  }
+      color: #000;
+      background-color: #ff8c00;
+      padding: 3px 10px;
+      border-radius: 4px;
+      border: 2px solid #ff8c00;
+    }
 
-  .home-btn {
-    position: absolute;
-    left: 10px;
-    top: 10px;
-    font-size: 16px;
-    color: #ff8c00;
-    background-color: #333;
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  }
+    .home-btn {
+      position: absolute;
+      left: 10px;
+      top: 10px;
+      font-size: 16px;
+      color: #ff8c00;
+      background-color: #333;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
     .home-btn:hover {
-    background-color: #444;
-    transform: translateY(-4px);
-    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.7);
-  }
+      background-color: #444;
+      transform: translateY(-4px);
+      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.7);
+    }
 
     .search-bar {
-    width: 80%;
-    max-width: 400px;
-    padding: 8px 10px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    border: none;
-    font-size: 14px;
-    background-color: #222;
-    color: white;
-  }
-    .search-suggestions {
-    position: absolute;
-    background-color: #333;
-    color: white;
-    width: 80%;
-    max-width: 400px;
-    margin-top: 40px;
-    padding: 10px 0;
-    border-radius: 5px;
-    display: none;
-    z-index: 1;
-  } 
-    .search-suggestions div {
-    display: flex;
-    align-items: center;
-    padding: 8px 10px;
-    cursor: pointer;
-  }
- .search-suggestions div:hover {
-    background-color: #ff8c00;
-  }
+      width: 80%;
+      max-width: 400px;
+      padding: 8px 10px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: none;
+      font-size: 14px;
+      background-color: #222;
+      color: white;
+    }
 
-  .search-suggestions img {
-    width: 40px;
-    height: 40px;
-    border-radius: 4px;
-    margin-right: 10px;
-  }
+    .search-suggestions {
+      position: absolute;
+      background-color: #333;
+      color: white;
+      width: 80%;
+      max-width: 400px;
+      margin-top: 40px;
+      padding: 10px 0;
+      border-radius: 5px;
+      display: none;
+      z-index: 1;
+    }
+
+    .search-suggestions div {
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .search-suggestions div:hover {
+      background-color: #ff8c00;
+    }
+
+    .search-suggestions img {
+      width: 40px;
+      height: 40px;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
     .video-container {
       display: flex;
       justify-content: center;
@@ -195,13 +201,13 @@
 <body>
 
   <header>
-  <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
-  <h1 class="phub-title">
-    P<span>HUB</span>
-  </h1>
-  <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="handleSearch()" />
-  <div id="search-results" class="search-suggestions"></div>
-</header>
+    <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
+    <h1 class="phub-title">
+      P<span>HUB</span>
+    </h1>
+    <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="handleSearch()" />
+    <div id="search-results" class="search-suggestions"></div>
+  </header>
 
   <div class="video-container" id="video-container">
     <video id="video-player" controls style="display: none;">
@@ -286,7 +292,7 @@
       });
 
     function searchVideos(event) {
-      const query = document.getElementById('search').value.toLowerCase();
+      const query = document.getElementById('search-input').value.toLowerCase();
       const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
 
       // Display search suggestions as the user types
