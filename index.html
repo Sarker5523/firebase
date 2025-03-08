@@ -141,7 +141,7 @@
       right: 0;
       color: white;
       padding: 3px 10px;
-      font-size: 12px;
+      font-size: 12px; 
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
       transform: translateY(10px);
       text-align: center;
@@ -152,7 +152,6 @@
       filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.6));
     }
   </style>
-  <script src="https://cdn.backendless.com/8.0.4/backendless.min.js"></script>
 </head>
 <body>
 
@@ -168,59 +167,78 @@
   <div class="video-grid" id="video-grid"></div>
 
   <script>
-    // Initialize Backendless with your Application ID and API Key
-    Backendless.initApp('32F52482-6E55-4EAB-A11B-18D754E18D6A', '8EC114B1-9A82-4A92-9E74-5EFC059D37C2');
-
     let allVideos = [];
 
-    // Fetch video data from Backendless
-    function fetchVideos() {
-      Backendless.Data.of('videos').find()
-        .then(videos => {
-          allVideos = videos;
-          displayVideos(allVideos);
-        })
-        .catch(error => console.error('Error loading videos:', error));
-    }
+    // Fetch video data from JSON
+    fetch('https://api.jsonbin.io/v3/b/67cc6595ad19ca34f818b325/latest')
+  .then(response => response.json())
+  .then(data => {
+    allVideos = data.record; // JSONBin.io wraps data inside "record"
+    displayVideos(allVideos);
+  })
+  .catch(error => console.error('Error loading JSON:', error));
 
-    // Function to display videos
+
+    // Display videos on the homepage
     function displayVideos(videos) {
       const videoGrid = document.getElementById('video-grid');
-      videoGrid.innerHTML = ''; // Clear existing videos
-
+      videoGrid.innerHTML = '';
+      
       videos.forEach(video => {
         const videoItem = document.createElement('div');
         videoItem.classList.add('video-item');
-        
-        const videoThumbnail = document.createElement('img');
-        videoThumbnail.src = video.thumbnail;
-        videoThumbnail.alt = video.title;
-        
-        const videoTitle = document.createElement('h3');
-        videoTitle.innerText = video.title;
-        
-        videoItem.appendChild(videoThumbnail);
-        videoItem.appendChild(videoTitle);
-
-        videoItem.addEventListener('click', () => {
-          window.location.href = video.url;  // Navigate to the video URL
-        });
-
+        videoItem.innerHTML = `
+          <a href="video.html?id=${video.id}">
+            <img src="${video.thumbnail}" alt="${video.name}">
+            <h3>${video.name}</h3>
+          </a>
+        `;
         videoGrid.appendChild(videoItem);
       });
     }
 
-    // Search functionality
+    // Search for videos and show suggestions
     function searchVideos(event) {
-      const query = event.target.value.toLowerCase();
-      const filteredVideos = allVideos.filter(video =>
-        video.title.toLowerCase().includes(query)
-      );
-      displayVideos(filteredVideos);
+      const query = document.getElementById('search').value.toLowerCase();
+      const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
+
+      // Display search suggestions as the user types
+      if (query) {
+        document.getElementById('search-suggestions').style.display = 'block';
+        document.getElementById('search-suggestions').innerHTML = '';
+        filteredVideos.slice(0, 5).forEach(video => {
+          const suggestionItem = document.createElement('div');
+          suggestionItem.innerHTML = `
+            <img src="${video.thumbnail}" alt="${video.name}">
+            ${video.name}
+          `;
+          suggestionItem.onclick = () => window.location.href = `video.html?id=${video.id}`;
+          document.getElementById('search-suggestions').appendChild(suggestionItem);
+        });
+      } else {
+        document.getElementById('search-suggestions').style.display = 'none';
+      }
+
+      // Redirect to search-results page when Enter key is pressed
+      if (event.key === "Enter" && filteredVideos.length > 0) {
+        const queryParam = encodeURIComponent(query);
+        window.location.href = `search-results.html?q=${queryParam}`;
+      }
     }
 
-    // Fetch the videos when the page loads
-    fetchVideos();
+    // Handle deep links for iOS Shortcuts (Custom URL Scheme)
+    function handleCustomURLScheme() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchQuery = urlParams.get('q'); // Fetch 'q' parameter for search queries
+      if (searchQuery) {
+        const query = decodeURIComponent(searchQuery);
+        const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
+        displayVideos(filteredVideos); // Display filtered videos based on query
+      }
+    }
+
+    // Call this function on page load to handle deep links
+    window.onload = handleCustomURLScheme;
   </script>
 </body>
 </html>
