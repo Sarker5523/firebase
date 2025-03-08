@@ -179,64 +179,14 @@
     const searchInput = document.getElementById('search-input');
     const searchResultsContainer = document.getElementById('search-results');
 
-    fetch('https://api.jsonbin.io/v3/b/67cc6595ad19ca34f818b325/latest')
+    ffetch('https://raw.githubusercontent.com/Sarker5523/firebase/main/videos.json')
   .then(response => response.json())
   .then(data => {
-    allVideos = data.record; // JSONBin.io wraps data inside "record"
-    const videoId = new URLSearchParams(window.location.search).get('id');
-    const video = allVideos.find(v => v.id === videoId);
-    const videoContainer = document.getElementById('video-container');
-    const videoPlayer = document.getElementById('video-player');
-    const videoSource = document.getElementById('video-source');
-
-    if (video) {
-      document.getElementById('video-title').innerText = video.name;
-      document.getElementById('video-description').innerText = video.description || "No description available.";
-
-      document.title = video.name; // Update page title
-
-      if (video.embed_code) {
-        videoContainer.innerHTML = video.embed_code;
-      } else if (video.url) {
-        videoPlayer.style.display = "block";
-        videoSource.src = video.url;
-
-        if (Hls.isSupported() && video.url.endsWith('.m3u8')) {
-          const hls = new Hls();
-          hls.loadSource(video.url);
-          hls.attachMedia(videoPlayer);
-        } else {
-          videoPlayer.load();
-        }
-      } else {
-        videoContainer.innerHTML = "<p>Video not available.</p>";
-      }
-
-      const suggestedVideosContainer = document.getElementById('suggested-videos');
-      suggestedVideosContainer.innerHTML = '';
-      video.suggestions.forEach(suggestionId => {
-        const suggestedVideo = allVideos.find(v => v.id === String(suggestionId));
-        if (suggestedVideo) {
-          const suggestedVideoItem = document.createElement('div');
-          suggestedVideoItem.classList.add('suggested-video-item');
-          suggestedVideoItem.innerHTML = 
-            `<a href="video.html?id=${suggestedVideo.id}">
-              <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
-              <h3>${suggestedVideo.name}</h3>
-            </a>`;
-          suggestedVideosContainer.appendChild(suggestedVideoItem);
-        }
-      });
-    } else {
-      document.getElementById('video-title').innerText = "Video not found";
-      document.getElementById('video-description').innerText = "This video could not be found.";
-    }
+    allVideos = data;
+    // Your existing video processing logic...
   })
-  .catch(error => {
-    console.error('Error loading video data:', error);
-    document.getElementById('video-title').innerText = "Error loading video";
-    document.getElementById('video-description').innerText = "There was an error loading the video details.";
-  });
+  .catch(error => console.error('Error fetching JSON:', error));
+
 
     function handleSearch() {
       const query = searchInput.value.toLowerCase();
