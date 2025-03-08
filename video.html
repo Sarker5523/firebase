@@ -179,41 +179,66 @@
     const searchInput = document.getElementById('search-input');
     const searchResultsContainer = document.getElementById('search-results');
 
-    let allVideos = [];
+    fetch('https://raw.githubusercontent.com/Sarker5523/firebase/main/videos.json')
+      .then(response => response.json())
+      .then(data => {
+        allVideos = data;
+        const videoId = new URLSearchParams(window.location.search).get('id');
+        const video = data.find(v => v.id === videoId);
+        const videoContainer = document.getElementById('video-container');
+        const videoPlayer = document.getElementById('video-player');
+        const videoSource = document.getElementById('video-source');
 
-fetch('https://raw.githubusercontent.com/Sarker5523/firebase/main/videos.json')
-  .then(response => {
-    console.log("Response Status:", response.status);
-    return response.json();
-  })
-  .then(data => {
-    console.log("Fetched Data:", data);
-    allVideos = data;
-  })
-  .catch(error => console.error('Error fetching JSON:', error));
+        if (video) {
+          document.getElementById('video-title').innerText = video.name;
+          document.getElementById('video-description').innerText = video.description || "No description available.";
 
-function handleSearch() {
-  if (allVideos.length === 0) return; // Guard clause if data hasn't loaded
+          // **Change 1: Dynamically set the webpage title to the video's title**
+          document.title = video.name;  // <-- Highlighted change
 
-  const query = searchInput.value.toLowerCase();
-  const filteredVideos = allVideos.filter(video =>
-    video.name.toLowerCase().includes(query)
-  );
+          if (video.embed_code) {
+            videoContainer.innerHTML = video.embed_code;
+          } else if (video.url) {
+            videoPlayer.style.display = "block";
+            videoSource.src = video.url;
 
-  searchResultsContainer.innerHTML = '';
-  searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
+            if (Hls.isSupported() && video.url.endsWith('.m3u8')) {
+              const hls = new Hls();
+              hls.loadSource(video.url);
+              hls.attachMedia(videoPlayer);
+            } else {
+              videoPlayer.load();
+            }
+          } else {
+            videoContainer.innerHTML = "<p>Video not available.</p>";
+          }
 
-  filteredVideos.forEach(video => {
-    const resultItem = document.createElement('div');
-    resultItem.classList.add('search-result-item');
-    resultItem.innerHTML = 
-      `<a href="video.html?id=${video.id}">
-        <img src="${video.thumbnail}" alt="${video.name}" />
-        ${video.name}
-      </a>`;
-    searchResultsContainer.appendChild(resultItem);
-  });
-}
+          const suggestedVideosContainer = document.getElementById('suggested-videos');
+          suggestedVideosContainer.innerHTML = '';
+          video.suggestions.forEach(suggestionId => {
+            const suggestedVideo = data.find(v => v.id === String(suggestionId));
+            if (suggestedVideo) {
+              const suggestedVideoItem = document.createElement('div');
+              suggestedVideoItem.classList.add('suggested-video-item');
+              suggestedVideoItem.innerHTML = 
+                `<a href="video.html?id=${suggestedVideo.id}">
+                  <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
+                  <h3>${suggestedVideo.name}</h3>
+                </a>`;
+              suggestedVideosContainer.appendChild(suggestedVideoItem);
+            }
+          });
+        } else {
+          document.getElementById('video-title').innerText = "Video not found";
+          document.getElementById('video-description').innerText = "This video could not be found.";
+        }
+      })
+      .catch(error => {
+        console.error('Error loading video data:', error);
+        document.getElementById('video-title').innerText = "Error loading video";
+        document.getElementById('video-description').innerText = "There was an error loading the video details.";
+      });
+
     function handleSearch() {
       const query = searchInput.value.toLowerCase();
       const filteredVideos = allVideos.filter(video =>
