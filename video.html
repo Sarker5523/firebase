@@ -5,157 +5,113 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Video Details</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #141414;
-      color: #fff;
-      margin: 0;
-      padding: 0;
-    }
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #141414;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+  }
 
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 20px;
-      background-color: #000;
-      color: #ff8c00;
-    }
+  header {
+    text-align: center;
+    padding: 10px 20px;
+    background-color: #000;
+    color: #ff8c00;
+    position: relative;
+  }
 
-    header h1 {
-      font-size: 24px;
-      margin: 0;
-    }
+  header h1 {
+    font-size: 30px;
+    font-weight: bold;
+    color: white;
+    margin: 0;
+  }
 
-    .home-btn {
-      font-size: 16px;
-      color: #ff8c00;
-      background-color: #333;
-      padding: 8px 12px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.2s ease-in-out;
-    }
+  header .phub-title span {
+    color: #000;
+    background-color: #ff8c00;
+    padding: 3px 10px;
+    border-radius: 4px;
+    border: 2px solid #ff8c00;
+  }
 
-    .home-btn:hover {
-      background-color: #444;
-    }
+  .home-btn {
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    font-size: 16px;
+    color: #ff8c00;
+    background-color: #333;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
 
-    .search-bar {
-      width: 80%;
-      max-width: 400px;
-      padding: 8px;
-      border-radius: 5px;
-      border: none;
-      background-color: #222;
-      color: white;
-    }
+  .home-btn:hover {
+    background-color: #444;
+    transform: translateY(-4px);
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.7);
+  }
 
-    .video-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-    }
+  .search-bar {
+    width: 80%;
+    max-width: 400px;
+    padding: 8px 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: none;
+    font-size: 14px;
+    background-color: #222;
+    color: white;
+  }
 
-    video {
-      width: 100%;
-      max-width: 1000px;
-      height: auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
-    }
+  .search-suggestions {
+    position: absolute;
+    background-color: #333;
+    color: white;
+    width: 80%;
+    max-width: 400px;
+    margin-top: 40px;
+    padding: 10px 0;
+    border-radius: 5px;
+    display: none;
+    z-index: 1;
+  }
 
-    .video-details {
-      padding: 20px;
-      background-color: #333;
-      border-radius: 15px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-      margin: 20px;
-    }
+  .search-suggestions div {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    cursor: pointer;
+  }
 
-    .video-details h2 {
-      font-size: 20px;
-      margin: 0;
-      padding-bottom: 10px;
-      border-bottom: 1px solid #444;
-    }
+  .search-suggestions div:hover {
+    background-color: #ff8c00;
+  }
 
-    .video-details p {
-      font-size: 14px;
-      color: #bbb;
-    }
-
-    .suggested-videos {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 10px;
-      padding: 20px;
-    }
-
-    .suggested-video-item {
-      cursor: pointer;
-      text-align: center;
-      transition: transform 0.2s ease-in-out;
-    }
-
-    .suggested-video-item img {
-      width: 100%;
-      height: auto;
-      border-radius: 8px;
-    }
-
-    .suggested-video-item h3 {
-      font-size: 12px;
-      color: white;
-      margin: 5px 0 0;
-    }
-
-    .suggested-video-item:hover {
-      transform: translateY(-4px);
-    }
-
-    .search-results {
-      position: absolute;
-      top: 60px;
-      background-color: #333;
-      color: white;
-      width: 80%;
-      max-width: 400px;
-      margin-top: 10px;
-      padding: 10px 0;
-      border-radius: 5px;
-      display: none;
-      z-index: 1;
-    }
-
-    .search-results div {
-      display: flex;
-      align-items: center;
-      padding: 8px 10px;
-      cursor: pointer;
-    }
-
-    .search-results div:hover {
-      background-color: #ff8c00;
-    }
-
-    .search-results img {
-      width: 30px;
-      height: auto;
-      border-radius: 4px;
-      margin-right: 10px;
-    }
-  </style>
+  .search-suggestions img {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    margin-right: 10px;
+  }
+</style>
 </head>
 <body>
 
   <header>
-    <button class="home-btn" onclick="window.location.href='index.html'">Home</button>
-    <h1>P<span style="color: #000; background-color: #ff8c00; padding: 3px 10px; border-radius: 4px;">HUB</span></h1>
-    <input type="text" class="search-bar" id="search-input" placeholder="Search..." oninput="handleSearch()" />
-  </header>
+  <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
+  <h1 class="phub-title">
+    P<span>HUB</span>
+  </h1>
+  <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="handleSearch()" />
+  <div id="search-results" class="search-suggestions"></div>
+</header>
 
   <div class="video-container" id="video-container">
     <video id="video-player" controls style="display: none;">
