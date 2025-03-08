@@ -3,12 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#141414" />
-  <meta name="apple-mobile-web-app-title" content="PHUB" />
-  <link rel="apple-touch-icon" href="icon.png" />
-  <title>PHUB - Home</title>
+  <title>Video Details</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -27,8 +22,18 @@
     }
 
     header h1 {
-      font-size: 20px;
+      font-size: 30px;
+      font-weight: bold;
+      color: white;
       margin: 0;
+    }
+
+    header .phub-title span {
+      color: #000;
+      background-color: #ff8c00;
+      padding: 3px 10px;
+      border-radius: 4px;
+      border: 2px solid #ff8c00;
     }
 
     .home-btn {
@@ -50,20 +55,6 @@
       background-color: #444;
       transform: translateY(-4px);
       box-shadow: 0 6px 10px rgba(0, 0, 0, 0.7);
-    }
-
-    header .phub-title {
-      font-size: 30px;
-      font-weight: bold;
-      color: white;
-    }
-
-    header .phub-title span {
-      color: #000;
-      background-color: #ff8c00;
-      padding: 3px 10px;
-      border-radius: 4px;
-      border: 2px solid #ff8c00;
     }
 
     .search-bar {
@@ -110,42 +101,100 @@
       margin-right: 10px;
     }
 
-    .video-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 20px;
-      margin-top: 30px;
-      padding: 0 20px;
+    .video-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
 
-    .video-item {
-      position: relative;
+    video {
+      width: 100%;
+      max-width: 1000px;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+    }
+
+    .video-details {
+      padding: 20px;
+      background-color: #333;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      margin: 20px;
+    }
+
+    .video-details h2 {
+      font-size: 20px;
+      margin: 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #444;
+    }
+
+    .video-details p {
+      font-size: 14px;
+      color: #bbb;
+    }
+
+    .suggested-videos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      padding: 20px;
+    }
+
+    .suggested-video-item {
       cursor: pointer;
       text-align: center;
+      transition: transform 0.2s ease-in-out;
     }
 
-    .video-item img {
+    .suggested-video-item img {
       width: 100%;
       height: auto;
       border-radius: 8px;
     }
 
-    .video-item h3 {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
+    .suggested-video-item h3 {
+      font-size: 12px;
       color: white;
-      padding: 3px 10px;
-      font-size: 12px; 
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-      transform: translateY(10px);
-      text-align: center;
-      font-family: Arial, sans-serif;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.6));
+      margin: 5px 0 0;
+    }
+
+    .suggested-video-item:hover {
+      transform: translateY(-4px);
+    }
+
+    .search-results {
+      position: absolute;
+      top: 60px;
+      background-color: #333;
+      color: white;
+      width: 80%;
+      max-width: 400px;
+      margin-top: 10px;
+      padding: 10px 0;
+      border-radius: 5px;
+      display: none;
+      z-index: 1;
+    }
+
+    .search-results div {
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .search-results div:hover {
+      background-color: #ff8c00;
+    }
+
+    .search-results img {
+      width: 30px;
+      height: auto;
+      border-radius: 4px;
+      margin-right: 10px;
     }
   </style>
 </head>
@@ -156,57 +205,100 @@
     <h1 class="phub-title">
       P<span>HUB</span>
     </h1>
-    <input type="text" id="search" class="search-bar" placeholder="Search for videos..." onkeyup="searchVideos(event)">
-    <div id="search-suggestions" class="search-suggestions"></div>
+    <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="handleSearch()" />
+    <div id="search-results" class="search-suggestions"></div>
   </header>
 
-  <div class="video-grid" id="video-grid"></div>
+  <div class="video-container" id="video-container">
+    <video id="video-player" controls style="display: none;">
+      <source id="video-source" src="" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
 
+  <div class="video-details">
+    <h2 id="video-title"></h2>
+    <p id="video-description"></p>
+  </div>
+
+  <div class="suggested-videos" id="suggested-videos"></div>
+
+  <div id="search-results" class="search-results"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
     let allVideos = [];
+    const searchInput = document.getElementById('search-input');
+    const searchResultsContainer = document.getElementById('search-results');
 
-    // Fetch video data from JSON
     fetch('https://raw.githubusercontent.com/Sarker5523/firebase/main/videos.json')
-      .then(response => {
-        console.log("Response Status:", response.status); // Debugging
-        return response.json();
-      })
+      .then(response => response.json())
       .then(data => {
-        console.log("Fetched Data:", data); // Debugging
         allVideos = data;
-        displayVideos(allVideos); // Ensure this is called
+        const videoId = new URLSearchParams(window.location.search).get('id');
+        const video = data.find(v => v.id === videoId);
+        const videoContainer = document.getElementById('video-container');
+        const videoPlayer = document.getElementById('video-player');
+        const videoSource = document.getElementById('video-source');
+
+        if (video) {
+          document.getElementById('video-title').innerText = video.name;
+          document.getElementById('video-description').innerText = video.description || "No description available.";
+
+          // **Change 1: Dynamically set the webpage title to the video's title**
+          document.title = video.name;  // <-- Highlighted change
+
+          if (video.embed_code) {
+            videoContainer.innerHTML = video.embed_code;
+          } else if (video.url) {
+            videoPlayer.style.display = "block";
+            videoSource.src = video.url;
+
+            if (Hls.isSupported() && video.url.endsWith('.m3u8')) {
+              const hls = new Hls();
+              hls.loadSource(video.url);
+              hls.attachMedia(videoPlayer);
+            } else {
+              videoPlayer.load();
+            }
+          } else {
+            videoContainer.innerHTML = "<p>Video not available.</p>";
+          }
+
+          const suggestedVideosContainer = document.getElementById('suggested-videos');
+          suggestedVideosContainer.innerHTML = '';
+          video.suggestions.forEach(suggestionId => {
+            const suggestedVideo = data.find(v => v.id === String(suggestionId));
+            if (suggestedVideo) {
+              const suggestedVideoItem = document.createElement('div');
+              suggestedVideoItem.classList.add('suggested-video-item');
+              suggestedVideoItem.innerHTML = 
+                `<a href="video.html?id=${suggestedVideo.id}">
+                  <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
+                  <h3>${suggestedVideo.name}</h3>
+                </a>`;
+              suggestedVideosContainer.appendChild(suggestedVideoItem);
+            }
+          });
+        } else {
+          document.getElementById('video-title').innerText = "Video not found";
+          document.getElementById('video-description').innerText = "This video could not be found.";
+        }
       })
-      .catch(error => console.error('Error fetching JSON:', error));
-
-    // Display videos on the homepage
-    function displayVideos(videos) {
-      const videoGrid = document.getElementById('video-grid');
-      videoGrid.innerHTML = '';
-
-      // Reverse the order of the videos array so that the last item shows first
-      videos.reverse().forEach(video => {
-        const videoItem = document.createElement('div');
-        videoItem.classList.add('video-item');
-        videoItem.innerHTML = `
-          <a href="video.html?id=${video.id}">
-            <img src="${video.thumbnail}" alt="${video.name}">
-            <h3>${video.name}</h3>
-          </a>
-        `;
-        videoGrid.appendChild(videoItem);
+      .catch(error => {
+        console.error('Error loading video data:', error);
+        document.getElementById('video-title').innerText = "Error loading video";
+        document.getElementById('video-description').innerText = "There was an error loading the video details.";
       });
-    }
 
-    // Search for videos and show suggestions
     function searchVideos(event) {
-      const query = document.getElementById('search').value.toLowerCase();
+      const query = document.getElementById('search-input').value.toLowerCase();
       const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
 
       // Display search suggestions as the user types
-      const suggestionsContainer = document.getElementById('search-suggestions');
       if (query) {
-        suggestionsContainer.style.display = 'block';
-        suggestionsContainer.innerHTML = '';
+        document.getElementById('search-suggestions').style.display = 'block';
+        document.getElementById('search-suggestions').innerHTML = '';
         filteredVideos.slice(0, 5).forEach(video => {
           const suggestionItem = document.createElement('div');
           suggestionItem.innerHTML = `
@@ -214,10 +306,10 @@
             ${video.name}
           `;
           suggestionItem.onclick = () => window.location.href = `video.html?id=${video.id}`;
-          suggestionsContainer.appendChild(suggestionItem);
+          document.getElementById('search-suggestions').appendChild(suggestionItem);
         });
       } else {
-        suggestionsContainer.style.display = 'none';
+        document.getElementById('search-suggestions').style.display = 'none';
       }
 
       // Redirect to search-results page when Enter key is pressed
@@ -226,23 +318,7 @@
         window.location.href = `search-results.html?q=${queryParam}`;
       }
     }
-
-    // Handle deep links for iOS Shortcuts (Custom URL Scheme)
-    function handleCustomURLScheme() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const searchQuery = urlParams.get('q'); // Fetch 'q' parameter for search queries
-      if (searchQuery) {
-        const query = decodeURIComponent(searchQuery);
-        const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
-        displayVideos(filteredVideos); // Display filtered videos based on query
-      }
-    }
-
-    // Call this function on page load to handle deep links
-    window.onload = function() {
-      handleCustomURLScheme();
-      displayVideos(allVideos); // ✅ Ensure this runs
-    };
   </script>
+
 </body>
 </html>
