@@ -182,22 +182,24 @@
   })
   .catch(error => console.error('Error fetching JSON:', error));
     // Display videos on the homepage
-    function displayVideos(videos) {
-      const videoGrid = document.getElementById('video-grid');
-      videoGrid.innerHTML = '';
-      
-      videos.forEach(video => {
-        const videoItem = document.createElement('div');
-        videoItem.classList.add('video-item');
-        videoItem.innerHTML = `
-          <a href="video.html?id=${video.id}">
-            <img src="${video.thumbnail}" alt="${video.name}">
-            <h3>${video.name}</h3>
-          </a>
-        `;
-        videoGrid.appendChild(videoItem);
-      });
-    }
+function displayVideos(videos) {
+  const videoGrid = document.getElementById('video-grid');
+  videoGrid.innerHTML = '';
+
+  // Reverse the order of the videos array so that the last item shows first
+  videos.reverse().forEach(video => {
+    const videoItem = document.createElement('div');
+    videoItem.classList.add('video-item');
+    videoItem.innerHTML = `
+      <a href="video.html?id=${video.id}">
+        <img src="${video.thumbnail}" alt="${video.name}">
+        <h3>${video.name}</h3>
+      </a>
+    `;
+    videoGrid.appendChild(videoItem);
+  });
+}
+
 
     // Search for videos and show suggestions
     function searchVideos(event) {
