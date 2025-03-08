@@ -170,13 +170,13 @@
     let allVideos = [];
 
     // Fetch video data from JSON
-    fetch('https://api.jsonbin.io/v3/b/67cc6595ad19ca34f818b325/latest')
+    fetch('https://raw.githubusercontent.com/Sarker5523/firebase/main/videos.json')
   .then(response => response.json())
   .then(data => {
-    allVideos = data.record; // JSONBin.io wraps data inside "record"
-    displayVideos(allVideos);
+    allVideos = data;
+    // Your existing video processing logic...
   })
-  .catch(error => console.error('Error loading JSON:', error));
+  .catch(error => console.error('Error fetching JSON:', error));
 
 
     // Display videos on the homepage
