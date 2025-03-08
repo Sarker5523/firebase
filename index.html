@@ -182,6 +182,7 @@
   })
   .catch(error => console.error('Error fetching JSON:', error));
     // Display videos on the homepage
+// Display videos on the homepage
 function displayVideos(videos) {
   const videoGrid = document.getElementById('video-grid');
   videoGrid.innerHTML = '';
@@ -199,6 +200,7 @@ function displayVideos(videos) {
     videoGrid.appendChild(videoItem);
   });
 }
+
 
 
     // Search for videos and show suggestions
