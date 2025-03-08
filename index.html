@@ -152,9 +152,7 @@
       filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.6));
     }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
+  <script src="https://cdn.backendless.com/8.0.4/backendless.min.js"></script>
 </head>
 <body>
 
@@ -170,77 +168,42 @@
   <div class="video-grid" id="video-grid"></div>
 
   <script>
-    // Firebase configuration
-    const firebaseConfig = {
-      apiKey: "AIzaSyAUhOgbdv0diV3aA66MG94gAR7gNZ7MmCk",
-      authDomain: "netlify-ca78f.firebaseapp.com",
-      projectId: "netlify-ca78f",
-      storageBucket: "netlify-ca78f.firebasestorage.app",
-      messagingSenderId: "392380704810",
-      appId: "1:392380704810:web:be810025f308c89f6bbb53",
-      measurementId: "G-LQ26MP338P"
-    };
-
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
+    // Initialize Backendless with your Application ID and API Key
+    Backendless.initApp('32F52482-6E55-4EAB-A11B-18D754E18D6A', '8EC114B1-9A82-4A92-9E74-5EFC059D37C2');
 
     let allVideos = [];
 
-    // Fetch video data from Firestore
-    firebase.firestore().collection('videos').get()
-      .then(snapshot => {
-        snapshot.forEach(doc => {
-          allVideos.push(doc.data());
-        });
-        displayVideos(allVideos);
-      })
-      .catch(error => console.error('Error loading videos:', error));
+    // Fetch video data from Backendless
+    function fetchVideos() {
+      Backendless.Data.of('videos').find()
+        .then(videos => {
+          allVideos = videos;
+          displayVideos(allVideos);
+        })
+        .catch(error => console.error('Error loading videos:', error));
+    }
 
     // Function to display videos
     function displayVideos(videos) {
       const videoGrid = document.getElementById('video-grid');
-      videoGrid.innerHTML = '';
+      videoGrid.innerHTML = ''; // Clear existing videos
 
       videos.forEach(video => {
         const videoItem = document.createElement('div');
         videoItem.classList.add('video-item');
         
         const videoThumbnail = document.createElement('img');
-        videoThumbnail.src = video.thumbnailUrl;
+        videoThumbnail.src = video.thumbnail;
         videoThumbnail.alt = video.title;
         
         const videoTitle = document.createElement('h3');
         videoTitle.innerText = video.title;
-
-        // Create a video element
-        const videoElement = document.createElement('video');
-        videoElement.controls = true;
-        videoElement.style.width = '100%';
-        videoElement.style.borderRadius = '8px';
-
-        // Check if HLS.js is supported
-        if (Hls.isSupported()) {
-          const hls = new Hls();
-          hls.loadSource(video.url);  // .m3u8 URL
-          hls.attachMedia(videoElement);
-          hls.on(Hls.Events.MANIFEST_PARSED, function () {
-            videoElement.play();
-          });
-        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
-          // For Safari
-          videoElement.src = video.url;  // .m3u8 URL
-          videoElement.addEventListener('loadedmetadata', function () {
-            videoElement.play();
-          });
-        }
-
+        
         videoItem.appendChild(videoThumbnail);
         videoItem.appendChild(videoTitle);
-        videoItem.appendChild(videoElement);
 
         videoItem.addEventListener('click', () => {
-          // For non-streaming, you can navigate or open video on a new page.
-          window.location.href = video.url;
+          window.location.href = video.url;  // Navigate to the video URL
         });
 
         videoGrid.appendChild(videoItem);
@@ -255,6 +218,9 @@
       );
       displayVideos(filteredVideos);
     }
+
+    // Fetch the videos when the page loads
+    fetchVideos();
   </script>
 </body>
 </html>
