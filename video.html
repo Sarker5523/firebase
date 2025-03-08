@@ -240,24 +240,32 @@
       });
 
     function handleSearch() {
-      const query = searchInput.value.toLowerCase();
-      const filteredVideos = allVideos.filter(video =>
-        video.name.toLowerCase().includes(query)
-      );
-      searchResultsContainer.innerHTML = '';
-      searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
+  const query = searchInput.value.toLowerCase();
+  const filteredVideos = allVideos.filter(video =>
+    video.name.toLowerCase().includes(query)
+  );
+  searchResultsContainer.innerHTML = '';
+  searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
 
-      filteredVideos.forEach(video => {
-        const resultItem = document.createElement('div');
-        resultItem.classList.add('search-result-item');
-        resultItem.innerHTML = 
-          `<a href="video.html?id=${video.id}">
-            <img src="${video.thumbnail}" alt="${video.name}" />
-            ${video.name}
-          </a>`;
-        searchResultsContainer.appendChild(resultItem);
-      });
+  filteredVideos.forEach(video => {
+    const resultItem = document.createElement('div');
+    resultItem.classList.add('search-result-item');
+    resultItem.innerHTML = 
+      `<a href="video.html?id=${video.id}">
+        <img src="${video.thumbnail}" alt="${video.name}" />
+        ${video.name}
+      </a>`;
+    searchResultsContainer.appendChild(resultItem);
+  }
+
+  // Redirect to search-results page when Enter key is pressed
+  searchInput.addEventListener('keydown', function(event) {
+    if (event.key === "Enter" && filteredVideos.length > 0) {
+      const queryParam = encodeURIComponent(query);
+      window.location.href = `search-results.html?q=${queryParam}`;
     }
+  });
+}
   </script>
 
 </body>
