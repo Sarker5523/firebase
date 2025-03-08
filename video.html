@@ -256,45 +256,30 @@
         document.getElementById('video-title').innerText = "Error loading video";
         document.getElementById('video-description').innerText = "There was an error loading the video details.";
       });
-    // Search for videos and show suggestions
-    function searchVideos(event) {
-      const query = document.getElementById('search').value.toLowerCase();
-      const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
+    function handleSearch() {
+  const query = searchInput.value.toLowerCase();
+  const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
 
-      // Display search suggestions as the user types
-      if (query) {
-        document.getElementById('search-suggestions').style.display = 'block';
-        document.getElementById('search-suggestions').innerHTML = '';
-        filteredVideos.slice(0, 5).forEach(video => {
-          const suggestionItem = document.createElement('div');
-          suggestionItem.innerHTML = `
-            <img src="${video.thumbnail}" alt="${video.name}">
-            ${video.name}
-          `;
-          suggestionItem.onclick = () => window.location.href = `video.html?id=${video.id}`;
-          document.getElementById('search-suggestions').appendChild(suggestionItem);
-        });
-      } else {
-        document.getElementById('search-suggestions').style.display = 'none';
-      }
+  if (query) {
+    searchResultsContainer.style.display = 'block';
+    searchResultsContainer.innerHTML = '';
+    filteredVideos.slice(0, 5).forEach(video => {
+      const suggestionItem = document.createElement('div');
+      suggestionItem.innerHTML = `
+        <img src="${video.thumbnail}" alt="${video.name}">
+        ${video.name}
+      `;
+      // Redirect to the search-result.html with the query
+      suggestionItem.onclick = () => {
+        window.location.href = `search-result.html?q=${encodeURIComponent(query)}`;
+      };
+      searchResultsContainer.appendChild(suggestionItem);
+    });
+  } else {
+    searchResultsContainer.style.display = 'none';
+  }
+}
 
-      // Redirect to search-results page when Enter key is pressed
-      if (event.key === "Enter" && filteredVideos.length > 0) {
-        const queryParam = encodeURIComponent(query);
-        window.location.href = `search-results.html?q=${queryParam}`;
-      }
-    }
-
-    // Handle deep links for iOS Shortcuts (Custom URL Scheme)
-    function handleCustomURLScheme() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const searchQuery = urlParams.get('q'); // Fetch 'q' parameter for search queries
-      if (searchQuery) {
-        const query = decodeURIComponent(searchQuery);
-        const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
-        displayVideos(filteredVideos); // Display filtered videos based on query
-      }
-    }
   </script>
 
 </body>
