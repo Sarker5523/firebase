@@ -141,7 +141,7 @@
       right: 0;
       color: white;
       padding: 3px 10px;
-      font-size: 12px; 
+      font-size: 12px;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
       transform: translateY(10px);
       text-align: center;
@@ -153,7 +153,7 @@
     }
   </style>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script> <!-- For Firestore -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 </head>
 <body>
 
@@ -167,11 +167,10 @@
   </header>
 
   <div class="video-grid" id="video-grid"></div>
-  <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js"></script>
-<script>
-  // Your web app's Firebase configuration
-const firebaseConfig = {
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
   apiKey: "AIzaSyAUhOgbdv0diV3aA66MG94gAR7gNZ7MmCk",
   authDomain: "netlify-ca78f.firebaseapp.com",
   projectId: "netlify-ca78f",
@@ -181,18 +180,56 @@ const firebaseConfig = {
   measurementId: "G-LQ26MP338P"
 };
 
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
 
-  let allVideos = [];
+    let allVideos = [];
 
-  // Fetch video data from Firebase
-  firebase.database().ref('videos').once('value').then(snapshot => {
-    allVideos = snapshot.val();
-    displayVideos(allVideos);
-  }).catch(error => console.error('Error loading data:', error));
+    // Fetch video data from Firestore
+    firebase.firestore().collection('videos').get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          allVideos.push(doc.data());
+        });
+        displayVideos(allVideos);
+      })
+      .catch(error => console.error('Error loading videos:', error));
 
-  // Rest of the script remains the same...
-</script>
+    // Function to display videos
+    function displayVideos(videos) {
+      const videoGrid = document.getElementById('video-grid');
+      videoGrid.innerHTML = '';
+
+      videos.forEach(video => {
+        const videoItem = document.createElement('div');
+        videoItem.classList.add('video-item');
+        
+        const videoThumbnail = document.createElement('img');
+        videoThumbnail.src = video.thumbnailUrl;
+        videoThumbnail.alt = video.title;
+        
+        const videoTitle = document.createElement('h3');
+        videoTitle.innerText = video.title;
+        
+        videoItem.appendChild(videoThumbnail);
+        videoItem.appendChild(videoTitle);
+
+        videoItem.addEventListener('click', () => {
+          window.location.href = video.url;  // Navigate to the video page
+        });
+
+        videoGrid.appendChild(videoItem);
+      });
+    }
+
+    // Search functionality
+    function searchVideos(event) {
+      const query = event.target.value.toLowerCase();
+      const filteredVideos = allVideos.filter(video =>
+        video.title.toLowerCase().includes(query)
+      );
+      displayVideos(filteredVideos);
+    }
+  </script>
 </body>
 </html>
