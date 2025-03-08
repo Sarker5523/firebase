@@ -3,12 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="theme-color" content="#141414" />
-  <meta name="apple-mobile-web-app-title" content="PHUB" />
-  <link rel="apple-touch-icon" href="icon.png" />
-  <title>PHUB - Video</title>
+  <title>Video Details</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -19,22 +14,20 @@
     }
 
     header {
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       padding: 10px 20px;
       background-color: #000;
       color: #ff8c00;
-      position: relative;
     }
 
     header h1 {
-      font-size: 20px;
+      font-size: 24px;
       margin: 0;
     }
 
     .home-btn {
-      position: absolute;
-      left: 10px;
-      top: 10px;
       font-size: 16px;
       color: #ff8c00;
       background-color: #333;
@@ -42,91 +35,228 @@
       border-radius: 8px;
       border: none;
       cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+      transition: background-color 0.2s ease-in-out;
     }
 
     .home-btn:hover {
       background-color: #444;
-      transform: translateY(-4px);
-      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.7);
     }
 
-    .home-btn:focus {
-      outline: none;
+    .search-bar {
+      width: 80%;
+      max-width: 400px;
+      padding: 8px;
+      border-radius: 5px;
+      border: none;
+      background-color: #222;
+      color: white;
     }
 
     .video-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       padding: 20px;
-      text-align: center;
     }
 
     video {
       width: 100%;
-      max-width: 800px;
-      margin-top: 20px;
+      max-width: 1000px;
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+    }
+
+    .video-details {
+      padding: 20px;
+      background-color: #333;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      margin: 20px;
+    }
+
+    .video-details h2 {
+      font-size: 20px;
+      margin: 0;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #444;
+    }
+
+    .video-details p {
+      font-size: 14px;
+      color: #bbb;
+    }
+
+    .suggested-videos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 10px;
+      padding: 20px;
+    }
+
+    .suggested-video-item {
+      cursor: pointer;
+      text-align: center;
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .suggested-video-item img {
+      width: 100%;
+      height: auto;
       border-radius: 8px;
     }
 
-    .video-title {
-      font-size: 24px;
-      margin-top: 10px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-weight: bold;
-      color: #ff8c00;
+    .suggested-video-item h3 {
+      font-size: 12px;
+      color: white;
+      margin: 5px 0 0;
     }
 
-    .video-description {
-      font-size: 14px;
-      color: #fff;
+    .suggested-video-item:hover {
+      transform: translateY(-4px);
+    }
+
+    .search-results {
+      position: absolute;
+      top: 60px;
+      background-color: #333;
+      color: white;
+      width: 80%;
+      max-width: 400px;
       margin-top: 10px;
+      padding: 10px 0;
+      border-radius: 5px;
+      display: none;
+      z-index: 1;
+    }
+
+    .search-results div {
+      display: flex;
+      align-items: center;
+      padding: 8px 10px;
+      cursor: pointer;
+    }
+
+    .search-results div:hover {
+      background-color: #ff8c00;
+    }
+
+    .search-results img {
+      width: 30px;
+      height: auto;
+      border-radius: 4px;
+      margin-right: 10px;
     }
   </style>
-  <script src="https://cdn.backendless.com/8.0.4/backendless.min.js"></script>
 </head>
 <body>
 
   <header>
-    <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
-    <h1 class="phub-title">
-      P<span>HUB</span>
-    </h1>
+    <button class="home-btn" onclick="window.location.href='index.html'">Home</button>
+    <h1>P<span style="color: #000; background-color: #ff8c00; padding: 3px 10px; border-radius: 4px;">HUB</span></h1>
+    <input type="text" class="search-bar" id="search-input" placeholder="Search..." oninput="handleSearch()" />
   </header>
 
-  <div class="video-container">
-    <video id="videoPlayer" controls>
+  <div class="video-container" id="video-container">
+    <video id="video-player" controls style="display: none;">
+      <source id="video-source" src="" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
-    <h2 class="video-title" id="videoTitle"></h2>
-    <p class="video-description" id="videoDescription"></p>
   </div>
 
+  <div class="video-details">
+    <h2 id="video-title"></h2>
+    <p id="video-description"></p>
+  </div>
+
+  <div class="suggested-videos" id="suggested-videos"></div>
+
+  <div id="search-results" class="search-results"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
-    // Initialize Backendless with your Application ID and API Key
-    Backendless.initApp('32F52482-6E55-4EAB-A11B-18D754E18D6A', '8EC114B1-9A82-4A92-9E74-5EFC059D37C2');
+    let allVideos = [];
+    const searchInput = document.getElementById('search-input');
+    const searchResultsContainer = document.getElementById('search-results');
 
-    // Extract video ID from URL query string
-    const urlParams = new URLSearchParams(window.location.search);
-    const videoId = urlParams.get('id');  // Assuming your video URL looks like `video.html?id=<videoId>`
+    fetch('https://api.jsonbin.io/v3/b/67cc6595ad19ca34f818b325/latest')
+  .then(response => response.json())
+  .then(data => {
+    allVideos = data.record; // JSONBin.io wraps data inside "record"
+    const videoId = new URLSearchParams(window.location.search).get('id');
+    const video = allVideos.find(v => v.id === videoId);
+    const videoContainer = document.getElementById('video-container');
+    const videoPlayer = document.getElementById('video-player');
+    const videoSource = document.getElementById('video-source');
 
-    // Fetch the video data from Backendless based on the video ID
-    function fetchVideoDetails() {
-      Backendless.Data.of('videos').findById(videoId)
-        .then(video => {
-          // Set the video title, description, and video source
-          document.getElementById('videoTitle').innerText = video.title;
-          document.getElementById('videoDescription').innerText = video.description || "No description available";
-          
-          // Set the video URL (this should be the m3u8 URL or mp4 URL)
-          const videoPlayer = document.getElementById('videoPlayer');
-          videoPlayer.src = video.url;
-        })
-        .catch(error => console.error('Error fetching video details:', error));
+    if (video) {
+      document.getElementById('video-title').innerText = video.name;
+      document.getElementById('video-description').innerText = video.description || "No description available.";
+
+      document.title = video.name; // Update page title
+
+      if (video.embed_code) {
+        videoContainer.innerHTML = video.embed_code;
+      } else if (video.url) {
+        videoPlayer.style.display = "block";
+        videoSource.src = video.url;
+
+        if (Hls.isSupported() && video.url.endsWith('.m3u8')) {
+          const hls = new Hls();
+          hls.loadSource(video.url);
+          hls.attachMedia(videoPlayer);
+        } else {
+          videoPlayer.load();
+        }
+      } else {
+        videoContainer.innerHTML = "<p>Video not available.</p>";
+      }
+
+      const suggestedVideosContainer = document.getElementById('suggested-videos');
+      suggestedVideosContainer.innerHTML = '';
+      video.suggestions.forEach(suggestionId => {
+        const suggestedVideo = allVideos.find(v => v.id === String(suggestionId));
+        if (suggestedVideo) {
+          const suggestedVideoItem = document.createElement('div');
+          suggestedVideoItem.classList.add('suggested-video-item');
+          suggestedVideoItem.innerHTML = 
+            `<a href="video.html?id=${suggestedVideo.id}">
+              <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
+              <h3>${suggestedVideo.name}</h3>
+            </a>`;
+          suggestedVideosContainer.appendChild(suggestedVideoItem);
+        }
+      });
+    } else {
+      document.getElementById('video-title').innerText = "Video not found";
+      document.getElementById('video-description').innerText = "This video could not be found.";
     }
+  })
+  .catch(error => {
+    console.error('Error loading video data:', error);
+    document.getElementById('video-title').innerText = "Error loading video";
+    document.getElementById('video-description').innerText = "There was an error loading the video details.";
+  });
 
-    // Fetch video details when the page loads
-    fetchVideoDetails();
+    function handleSearch() {
+      const query = searchInput.value.toLowerCase();
+      const filteredVideos = allVideos.filter(video =>
+        video.name.toLowerCase().includes(query)
+      );
+      searchResultsContainer.innerHTML = '';
+      searchResultsContainer.style.display = filteredVideos.length > 0 ? 'block' : 'none';
+
+      filteredVideos.forEach(video => {
+        const resultItem = document.createElement('div');
+        resultItem.classList.add('search-result-item');
+        resultItem.innerHTML = 
+          `<a href="video.html?id=${video.id}">
+            <img src="${video.thumbnail}" alt="${video.name}" />
+            ${video.name}
+          </a>`;
+        searchResultsContainer.appendChild(resultItem);
+      });
+    }
   </script>
 
 </body>
