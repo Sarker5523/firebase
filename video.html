@@ -164,38 +164,6 @@
     .suggested-video-item:hover {
       transform: translateY(-4px);
     }
-
-    .search-results {
-      position: absolute;
-      top: 60px;
-      background-color: #333;
-      color: white;
-      width: 80%;
-      max-width: 400px;
-      margin-top: 10px;
-      padding: 10px 0;
-      border-radius: 5px;
-      display: none;
-      z-index: 1;
-    }
-
-    .search-results div {
-      display: flex;
-      align-items: center;
-      padding: 8px 10px;
-      cursor: pointer;
-    }
-
-    .search-results div:hover {
-      background-color: #ff8c00;
-    }
-
-    .search-results img {
-      width: 30px;
-      height: auto;
-      border-radius: 4px;
-      margin-right: 10px;
-    }
   </style>
 </head>
 <body>
@@ -206,7 +174,7 @@
       P<span>HUB</span>
     </h1>
     <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="handleSearch()" />
-    <div id="search-results" class="search-suggestions"></div>
+    <div id="search-suggestions" class="search-suggestions"></div>
   </header>
 
   <div class="video-container" id="video-container">
@@ -223,13 +191,11 @@
 
   <div class="suggested-videos" id="suggested-videos"></div>
 
-  <div id="search-results" class="search-results"></div>
-
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
     let allVideos = [];
     const searchInput = document.getElementById('search-input');
-    const searchResultsContainer = document.getElementById('search-results');
+    const searchResultsContainer = document.getElementById('search-suggestions');
 
     fetch('https://raw.githubusercontent.com/Sarker5523/firebase/main/videos.json')
       .then(response => response.json())
@@ -245,7 +211,7 @@
           document.getElementById('video-title').innerText = video.name;
           document.getElementById('video-description').innerText = video.description || "No description available.";
 
-          // **Change 1: Dynamically set the webpage title to the video's title**
+          // Dynamically set the webpage title to the video's title
           document.title = video.name;  // <-- Highlighted change
 
           if (video.embed_code) {
@@ -291,14 +257,13 @@
         document.getElementById('video-description').innerText = "There was an error loading the video details.";
       });
 
-    function searchVideos(event) {
-      const query = document.getElementById('search-input').value.toLowerCase();
+    function handleSearch() {
+      const query = searchInput.value.toLowerCase();
       const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
 
-      // Display search suggestions as the user types
       if (query) {
-        document.getElementById('search-suggestions').style.display = 'block';
-        document.getElementById('search-suggestions').innerHTML = '';
+        searchResultsContainer.style.display = 'block';
+        searchResultsContainer.innerHTML = '';
         filteredVideos.slice(0, 5).forEach(video => {
           const suggestionItem = document.createElement('div');
           suggestionItem.innerHTML = `
@@ -306,16 +271,10 @@
             ${video.name}
           `;
           suggestionItem.onclick = () => window.location.href = `video.html?id=${video.id}`;
-          document.getElementById('search-suggestions').appendChild(suggestionItem);
+          searchResultsContainer.appendChild(suggestionItem);
         });
       } else {
-        document.getElementById('search-suggestions').style.display = 'none';
-      }
-
-      // Redirect to search-results page when Enter key is pressed
-      if (event.key === "Enter" && filteredVideos.length > 0) {
-        const queryParam = encodeURIComponent(query);
-        window.location.href = `search-results.html?q=${queryParam}`;
+        searchResultsContainer.style.display = 'none';
       }
     }
   </script>
