@@ -152,6 +152,7 @@
       filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.6));
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
 </head>
@@ -171,14 +172,14 @@
   <script>
     // Firebase configuration
     const firebaseConfig = {
-  apiKey: "AIzaSyAUhOgbdv0diV3aA66MG94gAR7gNZ7MmCk",
-  authDomain: "netlify-ca78f.firebaseapp.com",
-  projectId: "netlify-ca78f",
-  storageBucket: "netlify-ca78f.firebasestorage.app",
-  messagingSenderId: "392380704810",
-  appId: "1:392380704810:web:be810025f308c89f6bbb53",
-  measurementId: "G-LQ26MP338P"
-};
+      apiKey: "AIzaSyAUhOgbdv0diV3aA66MG94gAR7gNZ7MmCk",
+      authDomain: "netlify-ca78f.firebaseapp.com",
+      projectId: "netlify-ca78f",
+      storageBucket: "netlify-ca78f.firebasestorage.app",
+      messagingSenderId: "392380704810",
+      appId: "1:392380704810:web:be810025f308c89f6bbb53",
+      measurementId: "G-LQ26MP338P"
+    };
 
     // Initialize Firebase
     firebase.initializeApp(firebaseConfig);
@@ -210,12 +211,36 @@
         
         const videoTitle = document.createElement('h3');
         videoTitle.innerText = video.title;
-        
+
+        // Create a video element
+        const videoElement = document.createElement('video');
+        videoElement.controls = true;
+        videoElement.style.width = '100%';
+        videoElement.style.borderRadius = '8px';
+
+        // Check if HLS.js is supported
+        if (Hls.isSupported()) {
+          const hls = new Hls();
+          hls.loadSource(video.url);  // .m3u8 URL
+          hls.attachMedia(videoElement);
+          hls.on(Hls.Events.MANIFEST_PARSED, function () {
+            videoElement.play();
+          });
+        } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+          // For Safari
+          videoElement.src = video.url;  // .m3u8 URL
+          videoElement.addEventListener('loadedmetadata', function () {
+            videoElement.play();
+          });
+        }
+
         videoItem.appendChild(videoThumbnail);
         videoItem.appendChild(videoTitle);
+        videoItem.appendChild(videoElement);
 
         videoItem.addEventListener('click', () => {
-          window.location.href = video.url;  // Navigate to the video page
+          // For non-streaming, you can navigate or open video on a new page.
+          window.location.href = video.url;
         });
 
         videoGrid.appendChild(videoItem);
