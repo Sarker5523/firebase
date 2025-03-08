@@ -269,9 +269,9 @@
         <img src="${video.thumbnail}" alt="${video.name}">
         ${video.name}
       `;
-      // Redirect to the search-result.html with the query
+      // Redirect to the search-results.html with the query
       suggestionItem.onclick = () => {
-        window.location.href = `search-result.html?q=${encodeURIComponent(query)}`;
+        window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
       };
       searchResultsContainer.appendChild(suggestionItem);
     });
