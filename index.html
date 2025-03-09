@@ -170,7 +170,7 @@
     let allVideos = [];
 
     // Fetch video data from JSON
-    ffetch('https://docs.google.com/spreadsheets/d/1ZXixp781QCijcGgh5r2butlvZZyWNMvmOytn_iu-Y1c/gviz/tq?tqx=out:csv')
+    fetch('https://docs.google.com/spreadsheets/d/1ZXixp781QCijcGgh5r2butlvZZyWNMvmOytn_iu-Y1c/gviz/tq?tqx=out:csv')
   .then(response => response.text())  // Fetch CSV as text
   .then(csvData => {
     console.log("Fetched CSV Data:", csvData); // Debugging
