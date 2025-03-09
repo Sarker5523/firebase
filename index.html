@@ -183,10 +183,13 @@
 
     // Map each row to a video object based on the columns
     const videos = rows.slice(1).map(row => {
+      const thumbnailUrl = row[2];  // Assuming thumbnail is in the third column
+      console.log("Thumbnail URL:", thumbnailUrl); // Debugging thumbnail URL
+
       return {
         id: row[0], // Assuming 'id' is in the first column
         name: row[1], // Assuming 'name' is in the second column
-        thumbnail: row[2], // Assuming 'thumbnail' is in the third column
+        thumbnail: thumbnailUrl, // Assuming 'thumbnail' is in the third column
         description: row[3], // Assuming 'description' is in the fourth column
         embed_code: `<iframe width="640" height="360" src="${row[4]}" frameborder="0" scrolling="0" allowfullscreen></iframe>`, // Assuming video URL is in the 5th column
       };
@@ -197,6 +200,7 @@
     displayVideos(allVideos); // Ensure this is called after data is parsed
   })
   .catch(error => console.error('Error fetching CSV data:', error));
+
 
 // Display videos on the homepage
 function displayVideos(videos) {
