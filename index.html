@@ -1,108 +1,127 @@
-<script>
-  let allVideos = [];
+<body>
 
-  // Fetch video data from CSV
-  fetch('https://docs.google.com/spreadsheets/d/1ZXixp781QCijcGgh5r2butlvZZyWNMvmOytn_iu-Y1c/gviz/tq?tqx=out:csv')
-    .then(response => response.text())  // Fetch CSV as text
-    .then(csvData => {
-      console.log("Fetched CSV Data:", csvData); // Debugging
+  <header>
+    <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
+    <h1 class="phub-title">
+      P<span>HUB</span>
+    </h1>
+    <input type="text" id="search" class="search-bar" placeholder="Search for videos..." onkeyup="searchVideos(event)">
+    <div id="search-suggestions" class="search-suggestions"></div>
+  </header>
 
-      // Split CSV into rows and columns
-      const rows = csvData.split("\n").map(row => row.split(","));
+  <div class="video-grid" id="video-grid"></div>
 
-      // Get headers (first row) and clean them up by trimming and removing extra spaces
-      const headers = rows[0].map(header => header.replace(/"/g, '').trim()); // Clean headers
-      console.log("Headers:", headers); // Debugging
+  <!-- Move script to the bottom -->
+  <script>
+    let allVideos = [];
 
-      // Map each row to a video object based on the cleaned headers
-      const videos = rows.slice(1).map(row => {
-        const timestamp = row[headers.indexOf("Timestamp")]?.trim() || '';  // Safe access with optional chaining
-        const name = row[headers.indexOf("Name")]?.trim() || '';
-        const videoUrl = row[headers.indexOf(" Video URL  ")]?.trim() || ''; // Handle extra spaces in column name
-        const thumbnailUrl = row[headers.indexOf("Thumbnail URL")]?.trim() || ''; // Ensure no missing data
-        const description = row[headers.indexOf("Description")]?.trim() || '';
+    // Fetch video data from CSV
+    fetch('https://docs.google.com/spreadsheets/d/1ZXixp781QCijcGgh5r2butlvZZyWNMvmOytn_iu-Y1c/gviz/tq?tqx=out:csv')
+      .then(response => response.text())  // Fetch CSV as text
+      .then(csvData => {
+        console.log("Fetched CSV Data:", csvData); // Debugging
 
-        // Debugging the fetched data
-        console.log("Thumbnail URL:", thumbnailUrl); // Ensure the correct thumbnail is fetched
-        console.log("Video URL:", videoUrl); // Ensure the correct video URL is fetched
+        // Split CSV into rows and columns
+        const rows = csvData.split("\n").map(row => row.split(","));
 
-        return {
-          id: timestamp,  // Use 'Timestamp' as the ID
-          name: name,
-          thumbnail: thumbnailUrl,  // Correct thumbnail URL
-          description: description,
-          embed_code: `<iframe width="640" height="360" src="${videoUrl}" frameborder="0" scrolling="0" allowfullscreen></iframe>`, // Correct video URL
-        };
-      });
+        // Get headers (first row) and clean them up by trimming and removing extra spaces
+        const headers = rows[0].map(header => header.replace(/"/g, '').trim()); // Clean headers
+        console.log("Headers:", headers); // Debugging
 
-      // Store the videos array and display them
-      allVideos = videos;
-      displayVideos(allVideos); // Ensure this is called after data is parsed
-    })
-    .catch(error => console.error('Error fetching CSV data:', error));
+        // Map each row to a video object based on the cleaned headers
+        const videos = rows.slice(1).map(row => {
+          const timestamp = row[headers.indexOf("Timestamp")]?.trim() || '';  // Safe access with optional chaining
+          const name = row[headers.indexOf("Name")]?.trim() || '';
+          const videoUrl = row[headers.indexOf(" Video URL  ")]?.trim() || ''; // Handle extra spaces in column name
+          const thumbnailUrl = row[headers.indexOf("Thumbnail URL")]?.trim() || ''; // Ensure no missing data
+          const description = row[headers.indexOf("Description")]?.trim() || '';
 
-  // Function to display videos on the page
-  function displayVideos(videos) {
-    const videoGrid = document.getElementById('video-grid');
-    videoGrid.innerHTML = ''; // Clear any previous content
+          // Debugging the fetched data
+          console.log("Thumbnail URL:", thumbnailUrl); // Ensure the correct thumbnail is fetched
+          console.log("Video URL:", videoUrl); // Ensure the correct video URL is fetched
 
-    // Reverse the order of the videos array so that the last item shows first
-    videos.reverse().forEach(video => {
-      const videoItem = document.createElement('div');
-      videoItem.classList.add('video-item');
-      videoItem.innerHTML = `
-        <a href="video.html?id=${video.id}">
-          <img src="${video.thumbnail}" alt="${video.name}">
-          <h3>${video.name}</h3>
-        </a>
-      `;
-      videoGrid.appendChild(videoItem);
-    });
-  }
+          return {
+            id: timestamp,  // Use 'Timestamp' as the ID
+            name: name,
+            thumbnail: thumbnailUrl,  // Correct thumbnail URL
+            description: description,
+            embed_code: `<iframe width="640" height="360" src="${videoUrl}" frameborder="0" scrolling="0" allowfullscreen></iframe>`, // Correct video URL
+          };
+        });
 
-  // Search for videos and show suggestions
-  function searchVideos(event) {
-    const query = document.getElementById('search').value.toLowerCase();
-    const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
+        // Store the videos array and display them
+        allVideos = videos;
+        displayVideos(allVideos); // Ensure this is called after data is parsed
+      })
+      .catch(error => console.error('Error fetching CSV data:', error));
 
-    // Display search suggestions as the user types
-    if (query) {
-      document.getElementById('search-suggestions').style.display = 'block';
-      document.getElementById('search-suggestions').innerHTML = '';
-      filteredVideos.slice(0, 5).forEach(video => {
-        const suggestionItem = document.createElement('div');
-        suggestionItem.innerHTML = `
-          <img src="${video.thumbnail}" alt="${video.name}">
-          ${video.name}
-        `;
-        suggestionItem.onclick = () => window.location.href = `video.html?id=${video.id}`;
-        document.getElementById('search-suggestions').appendChild(suggestionItem);
-      });
-    } else {
-      document.getElementById('search-suggestions').style.display = 'none';
+    // Function to display videos on the page
+    function displayVideos(videos) {
+      const videoGrid = document.getElementById('video-grid');
+      if (videoGrid) {  // Ensure videoGrid exists
+        videoGrid.innerHTML = ''; // Clear any previous content
+
+        // Reverse the order of the videos array so that the last item shows first
+        videos.reverse().forEach(video => {
+          const videoItem = document.createElement('div');
+          videoItem.classList.add('video-item');
+          videoItem.innerHTML = `
+            <a href="video.html?id=${video.id}">
+              <img src="${video.thumbnail}" alt="${video.name}">
+              <h3>${video.name}</h3>
+            </a>
+          `;
+          videoGrid.appendChild(videoItem);
+        });
+      } else {
+        console.error("video-grid element not found!");
+      }
     }
 
-    // Redirect to search-results page when Enter key is pressed
-    if (event.key === "Enter" && filteredVideos.length > 0) {
-      const queryParam = encodeURIComponent(query);
-      window.location.href = `search-results.html?q=${queryParam}`;
-    }
-  }
-
-  // Handle deep links for iOS Shortcuts (Custom URL Scheme)
-  function handleCustomURLScheme() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const searchQuery = urlParams.get('q'); // Fetch 'q' parameter for search queries
-    if (searchQuery) {
-      const query = decodeURIComponent(searchQuery);
+    // Search for videos and show suggestions
+    function searchVideos(event) {
+      const query = document.getElementById('search').value.toLowerCase();
       const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
-      displayVideos(filteredVideos); // Display filtered videos based on query
-    }
-  }
 
-  // Call this function on page load to handle deep links
-  window.onload = function() {
-    handleCustomURLScheme();
-    displayVideos(allVideos); // ✅ Ensure this runs
-  };
-</script>
+      // Display search suggestions as the user types
+      if (query) {
+        document.getElementById('search-suggestions').style.display = 'block';
+        document.getElementById('search-suggestions').innerHTML = '';
+        filteredVideos.slice(0, 5).forEach(video => {
+          const suggestionItem = document.createElement('div');
+          suggestionItem.innerHTML = `
+            <img src="${video.thumbnail}" alt="${video.name}">
+            ${video.name}
+          `;
+          suggestionItem.onclick = () => window.location.href = `video.html?id=${video.id}`;
+          document.getElementById('search-suggestions').appendChild(suggestionItem);
+        });
+      } else {
+        document.getElementById('search-suggestions').style.display = 'none';
+      }
+
+      // Redirect to search-results page when Enter key is pressed
+      if (event.key === "Enter" && filteredVideos.length > 0) {
+        const queryParam = encodeURIComponent(query);
+        window.location.href = `search-results.html?q=${queryParam}`;
+      }
+    }
+
+    // Handle deep links for iOS Shortcuts (Custom URL Scheme)
+    function handleCustomURLScheme() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const searchQuery = urlParams.get('q'); // Fetch 'q' parameter for search queries
+      if (searchQuery) {
+        const query = decodeURIComponent(searchQuery);
+        const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
+        displayVideos(filteredVideos); // Display filtered videos based on query
+      }
+    }
+
+    // Call this function on page load to handle deep links
+    window.onload = function() {
+      handleCustomURLScheme();
+      displayVideos(allVideos); // ✅ Ensure this runs after DOM is ready
+    };
+  </script>
+</body>
