@@ -184,15 +184,20 @@
 
     // Map each row to a video object based on the columns
     const videos = rows.slice(1).map(row => {
-      const thumbnailUrl = row[headers.indexOf("Thumbnail URL")].trim();  // Trim spaces and get the correct column for thumbnail
+      const timestamp = row[headers.indexOf("Timestamp")].trim(); // Ensure you are using the right header index
+      const name = row[headers.indexOf("Name")].trim(); // Ensure you are using the right header index
+      const videoUrl = row[headers.indexOf(" Video URL  ")].trim(); // Ensure you are using the right header index
+      const thumbnailUrl = row[headers.indexOf("Thumbnail URL")].trim(); // Ensure you are using the right header index
+      const description = row[headers.indexOf("Description")].trim(); // Ensure you are using the right header index
+
       console.log("Thumbnail URL:", thumbnailUrl); // Debugging thumbnail URL
 
       return {
-        id: row[headers.indexOf("Timestamp")], // Assuming 'Timestamp' is the id column
-        name: row[headers.indexOf("Name")], // Assuming 'Name' is the name column
-        thumbnail: thumbnailUrl, // Corrected thumbnail URL reference
-        description: row[headers.indexOf("Description")], // Assuming 'Description' is the description column
-        embed_code: `<iframe width="640" height="360" src="${row[headers.indexOf(" Video URL  ")].trim()}" frameborder="0" scrolling="0" allowfullscreen></iframe>`, // Correct video URL reference
+        id: timestamp,  // Use 'Timestamp' as the ID (if appropriate)
+        name: name,
+        thumbnail: thumbnailUrl,  // Corrected thumbnail URL reference
+        description: description,
+        embed_code: `<iframe width="640" height="360" src="${videoUrl}" frameborder="0" scrolling="0" allowfullscreen></iframe>`, // Correct video URL reference
       };
     });
 
