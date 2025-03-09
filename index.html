@@ -170,24 +170,34 @@
     let allVideos = [];
 
     // Fetch video data from JSON
-    fetch('https://spreadsheets.google.com/feeds/list/1Dn_CFEtUnTbl68XrxiuizKOiiBJyPuPyXwTO_cWvLnI/od6/public/values?alt=json')
-  .then(response => response.json())
-  .then(data => {
-    console.log("Fetched Data:", data); // Debugging
-    const videos = data.feed.entry.map(entry => {
+    fetch('https://docs.google.com/spreadsheets/d/1ZXixp781QCijcGgh5r2butlvZZyWNMvmOytn_iu-Y1c/gviz/tq?tqx=out:csv')
+  .then(response => response.text())  // Fetch CSV as text
+  .then(csvData => {
+    console.log("Fetched CSV Data:", csvData); // Debugging
+
+    // Split CSV into rows and columns
+    const rows = csvData.split("\n").map(row => row.split(","));
+    
+    // Get headers (first row)
+    const headers = rows[0];
+
+    // Map each row to a video object based on the columns
+    const videos = rows.slice(1).map(row => {
       return {
-        id: entry.gsx$id.$t, // Assuming 'id' is in the 'id' column
-        name: entry.gsx$name.$t, // Assuming 'name' is in the 'name' column
-        thumbnail: entry.gsx$thumbnail.$t, // Assuming 'thumbnail' is in the 'thumbnail' column
-        description: entry.gsx$description.$t, // Assuming 'description' is in the 'description' column
-        embed_code: `<iframe width="640" height="360" src="${entry.gsx$video_url.$t}" frameborder="0" scrolling="0" allowfullscreen></iframe>`,
-        suggestions: [] // You may implement a similar logic for suggestions
+        id: row[0], // Assuming 'id' is in the first column
+        name: row[1], // Assuming 'name' is in the second column
+        thumbnail: row[2], // Assuming 'thumbnail' is in the third column
+        description: row[3], // Assuming 'description' is in the fourth column
+        embed_code: `<iframe width="640" height="360" src="${row[4]}" frameborder="0" scrolling="0" allowfullscreen></iframe>`, // Assuming video URL is in the 5th column
       };
     });
+
+    // Store the videos array and display them
     allVideos = videos;
-    displayVideos(allVideos); // Ensure this is called
+    displayVideos(allVideos); // Ensure this is called after data is parsed
   })
-  .catch(error => console.error('Error fetching Google Sheets data:', error));
+  .catch(error => console.error('Error fetching CSV data:', error));
+
 // Display videos on the homepage
 function displayVideos(videos) {
   const videoGrid = document.getElementById('video-grid');
