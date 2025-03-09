@@ -178,28 +178,37 @@
     // Split CSV into rows and columns
     const rows = csvData.split("\n").map(row => row.split(","));
 
-    // Get headers (first row) and clean them up
-    const headers = rows[0].map(header => header.replace(/"/g, '').trim());  // Remove quotes and trim spaces
+    // Get headers (first row) and clean them up by trimming and removing extra spaces
+    const headers = rows[0].map(header => header.replace(/"/g, '').trim()); // Clean headers
     console.log("Headers:", headers); // Debugging
 
-    // Map each row to a video object based on the columns
+    // Map each row to a video object based on the cleaned headers
     const videos = rows.slice(1).map(row => {
-      const timestamp = row[headers.indexOf("Timestamp")].trim(); // Ensure you are using the right header index
-      const name = row[headers.indexOf("Name")].trim(); // Ensure you are using the right header index
-      const videoUrl = row[headers.indexOf(" Video URL  ")].trim(); // Ensure you are using the right header index
-      const thumbnailUrl = row[headers.indexOf("Thumbnail URL")].trim(); // Ensure you are using the right header index
-      const description = row[headers.indexOf("Description")].trim(); // Ensure you are using the right header index
+      const timestamp = row[headers.indexOf("Timestamp")]?.trim() || '';  // Safe access with optional chaining
+      const name = row[headers.indexOf("Name")]?.trim() || '';
+      const videoUrl = row[headers.indexOf(" Video URL  ")]?.trim() || ''; // Handle extra spaces in column name
+      const thumbnailUrl = row[headers.indexOf("Thumbnail URL")]?.trim() || ''; // Ensure no missing data
+      const description = row[headers.indexOf("Description")]?.trim() || '';
 
-      console.log("Thumbnail URL:", thumbnailUrl); // Debugging thumbnail URL
+      // Debugging the fetched data
+      console.log("Thumbnail URL:", thumbnailUrl); // Ensure the correct thumbnail is fetched
+      console.log("Video URL:", videoUrl); // Ensure the correct video URL is fetched
 
       return {
-        id: timestamp,  // Use 'Timestamp' as the ID (if appropriate)
+        id: timestamp,  // Use 'Timestamp' as the ID
         name: name,
-        thumbnail: thumbnailUrl,  // Corrected thumbnail URL reference
+        thumbnail: thumbnailUrl,  // Correct thumbnail URL
         description: description,
-        embed_code: `<iframe width="640" height="360" src="${videoUrl}" frameborder="0" scrolling="0" allowfullscreen></iframe>`, // Correct video URL reference
+        embed_code: `<iframe width="640" height="360" src="${videoUrl}" frameborder="0" scrolling="0" allowfullscreen></iframe>`, // Correct video URL
       };
     });
+
+    // Store the videos array and display them
+    allVideos = videos;
+    displayVideos(allVideos); // Ensure this is called after data is parsed
+  })
+  .catch(error => console.error('Error fetching CSV data:', error));
+
 
     // Store the videos array and display them
     allVideos = videos;
