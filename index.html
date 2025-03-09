@@ -169,7 +169,7 @@
   <script>
     let allVideos = [];
 
-    // Fetch video data from JSON
+    // Fetch video data from CSV
     fetch('https://docs.google.com/spreadsheets/d/1ZXixp781QCijcGgh5r2butlvZZyWNMvmOytn_iu-Y1c/gviz/tq?tqx=out:csv')
       .then(response => response.text())  // Fetch CSV as text
       .then(csvData => {
@@ -186,8 +186,8 @@
         const videos = rows.slice(1).map(row => {
           const timestamp = row[headers.indexOf("Timestamp")]?.trim() || '';
           const name = row[headers.indexOf("Name")]?.trim() || '';
-          const videoUrl = row[headers.indexOf("Video URL")]?.trim() || ''; // Removed extra spaces
-          const thumbnailUrl = row[headers.indexOf("Thumbnail URL")]?.trim() || '';
+          const videoUrl = row[headers.indexOf(" Video URL  ")]?.trim() || ''; // Adjusted column name to match extra spaces
+          const thumbnailUrl = row[headers.indexOf(" Thumbnail URL  ")]?.trim() || ''; // Adjusted column name to match extra spaces
           const description = row[headers.indexOf("Description")]?.trim() || '';
 
           console.log("Thumbnail URL:", thumbnailUrl); // Debugging
