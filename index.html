@@ -170,28 +170,29 @@
     let allVideos = [];
 
     // Fetch video data from JSON
-    fetch('https://docs.google.com/spreadsheets/d/1ZXixp781QCijcGgh5r2butlvZZyWNMvmOytn_iu-Y1c/gviz/tq?tqx=out:csv')
+    ffetch('https://docs.google.com/spreadsheets/d/1ZXixp781QCijcGgh5r2butlvZZyWNMvmOytn_iu-Y1c/gviz/tq?tqx=out:csv')
   .then(response => response.text())  // Fetch CSV as text
   .then(csvData => {
     console.log("Fetched CSV Data:", csvData); // Debugging
 
     // Split CSV into rows and columns
     const rows = csvData.split("\n").map(row => row.split(","));
-    
-    // Get headers (first row)
-    const headers = rows[0];
+
+    // Get headers (first row) and trim spaces
+    const headers = rows[0].map(header => header.trim()); // Trim spaces from headers
+    console.log("Headers:", headers); // Debugging
 
     // Map each row to a video object based on the columns
     const videos = rows.slice(1).map(row => {
-      const thumbnailUrl = row[2];  // Assuming thumbnail is in the third column
+      const thumbnailUrl = row[headers.indexOf("Thumbnail URL")].trim();  // Trim spaces and get the correct column for thumbnail
       console.log("Thumbnail URL:", thumbnailUrl); // Debugging thumbnail URL
 
       return {
-        id: row[0], // Assuming 'id' is in the first column
-        name: row[1], // Assuming 'name' is in the second column
-        thumbnail: thumbnailUrl, // Assuming 'thumbnail' is in the third column
-        description: row[3], // Assuming 'description' is in the fourth column
-        embed_code: `<iframe width="640" height="360" src="${row[4]}" frameborder="0" scrolling="0" allowfullscreen></iframe>`, // Assuming video URL is in the 5th column
+        id: row[headers.indexOf("Timestamp")], // Assuming 'Timestamp' is the id column
+        name: row[headers.indexOf("Name")], // Assuming 'Name' is the name column
+        thumbnail: thumbnailUrl, // Corrected thumbnail URL reference
+        description: row[headers.indexOf("Description")], // Assuming 'Description' is the description column
+        embed_code: `<iframe width="640" height="360" src="${row[headers.indexOf(" Video URL  ")].trim()}" frameborder="0" scrolling="0" allowfullscreen></iframe>`, // Correct video URL reference
       };
     });
 
@@ -200,8 +201,6 @@
     displayVideos(allVideos); // Ensure this is called after data is parsed
   })
   .catch(error => console.error('Error fetching CSV data:', error));
-
-
 // Display videos on the homepage
 function displayVideos(videos) {
   const videoGrid = document.getElementById('video-grid');
