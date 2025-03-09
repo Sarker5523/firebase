@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#141414" />
   <meta name="apple-mobile-web-app-title" content="PHUB" />
   <link rel="apple-touch-icon" href="icon.png" />
@@ -42,76 +40,10 @@
       border-radius: 8px;
       border: none;
       cursor: pointer;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
-      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
 
     .home-btn:hover {
       background-color: #444;
-      transform: translateY(-4px);
-      box-shadow: 0 6px 10px rgba(0, 0, 0, 0.7);
-    }
-
-    .home-btn:focus {
-      outline: none;
-    }
-
-    header .phub-title {
-      font-size: 30px;
-      font-weight: bold;
-      color: white;
-    }
-
-    header .phub-title span {
-      color: #000;
-      background-color: #ff8c00;
-      padding: 3px 10px;
-      border-radius: 4px;
-      border: 2px solid #ff8c00;
-    }
-
-    .search-bar {
-      width: 80%;
-      max-width: 400px;
-      padding: 8px 10px;
-      margin-top: 10px;
-      margin-bottom: 10px;
-      border-radius: 5px;
-      border: none;
-      font-size: 14px;
-      background-color: #222;
-      color: white;
-    }
-
-    .search-suggestions {
-      position: absolute;
-      background-color: #333;
-      color: white;
-      width: 80%;
-      max-width: 400px;
-      margin-top: 40px;
-      padding: 10px 0;
-      border-radius: 5px;
-      display: none;
-      z-index: 1;
-    }
-
-    .search-suggestions div {
-      display: flex;
-      align-items: center;
-      padding: 8px 10px;
-      cursor: pointer;
-    }
-
-    .search-suggestions div:hover {
-      background-color: #ff8c00;
-    }
-
-    .search-suggestions img {
-      width: 40px;
-      height: 40px;
-      border-radius: 4px;
-      margin-right: 10px;
     }
 
     .video-grid {
@@ -141,7 +73,7 @@
       right: 0;
       color: white;
       padding: 3px 10px;
-      font-size: 12px; 
+      font-size: 12px;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
       transform: translateY(10px);
       text-align: center;
@@ -157,11 +89,7 @@
 
   <header>
     <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
-    <h1 class="phub-title">
-      P<span>HUB</span>
-    </h1>
-    <input type="text" id="search" class="search-bar" placeholder="Search for videos..." onkeyup="searchVideos(event)">
-    <div id="search-suggestions" class="search-suggestions"></div>
+    <h1 class="phub-title">P<span>HUB</span></h1>
   </header>
 
   <div class="video-grid" id="video-grid"></div>
@@ -190,6 +118,7 @@
           const thumbnailUrl = row[headers.indexOf(" Thumbnail URL  ")]?.trim() || ''; // Adjusted column name to match extra spaces
           const description = row[headers.indexOf("Description")]?.trim() || '';
 
+          // Log to debug
           console.log("Thumbnail URL:", thumbnailUrl); // Debugging
           console.log("Video URL:", videoUrl); // Debugging
 
@@ -214,62 +143,23 @@
       videoGrid.innerHTML = ''; // Clear any previous content
 
       videos.reverse().forEach(video => {
-        const videoItem = document.createElement('div');
-        videoItem.classList.add('video-item');
-        videoItem.innerHTML = `
-          <a href="video.html?id=${video.id}">
-            <img src="${video.thumbnail}" alt="${video.name}">
-            <h3>${video.name}</h3>
-          </a>
-        `;
-        videoGrid.appendChild(videoItem);
+        if (video.thumbnail && video.thumbnail.trim() !== '') {
+          const videoItem = document.createElement('div');
+          videoItem.classList.add('video-item');
+          videoItem.innerHTML = `
+            <a href="video.html?id=${video.id}">
+              <img src="${video.thumbnail}" alt="${video.name}">
+              <h3>${video.name}</h3>
+            </a>
+          `;
+          videoGrid.appendChild(videoItem);
+        }
       });
     }
 
-    // Search for videos and show suggestions
-    function searchVideos(event) {
-      const query = document.getElementById('search').value.toLowerCase();
-      const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
-
-      // Display search suggestions as the user types
-      if (query) {
-        document.getElementById('search-suggestions').style.display = 'block';
-        document.getElementById('search-suggestions').innerHTML = '';
-        filteredVideos.slice(0, 5).forEach(video => {
-          const suggestionItem = document.createElement('div');
-          suggestionItem.innerHTML = `
-            <img src="${video.thumbnail}" alt="${video.name}">
-            ${video.name}
-          `;
-          suggestionItem.onclick = () => window.location.href = `video.html?id=${video.id}`;
-          document.getElementById('search-suggestions').appendChild(suggestionItem);
-        });
-      } else {
-        document.getElementById('search-suggestions').style.display = 'none';
-      }
-
-      // Redirect to search-results page when Enter key is pressed
-      if (event.key === "Enter" && filteredVideos.length > 0) {
-        const queryParam = encodeURIComponent(query);
-        window.location.href = `search-results.html?q=${queryParam}`;
-      }
-    }
-
-    // Handle deep links for iOS Shortcuts (Custom URL Scheme)
-    function handleCustomURLScheme() {
-      const urlParams = new URLSearchParams(window.location.search);
-      const searchQuery = urlParams.get('q'); // Fetch 'q' parameter for search queries
-      if (searchQuery) {
-        const query = decodeURIComponent(searchQuery);
-        const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
-        displayVideos(filteredVideos); // Display filtered videos based on query
-      }
-    }
-
-    // Call this function on page load to handle deep links
+    // Ensure thumbnails and video URLs are being fetched properly
     window.onload = function() {
-      handleCustomURLScheme();
-      displayVideos(allVideos); // ✅ Ensure this runs
+      displayVideos(allVideos); // Display videos after the page loads
     };
   </script>
 </body>
