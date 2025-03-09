@@ -178,8 +178,8 @@
     // Split CSV into rows and columns
     const rows = csvData.split("\n").map(row => row.split(","));
 
-    // Get headers (first row) and trim spaces
-    const headers = rows[0].map(header => header.trim()); // Trim spaces from headers
+    // Get headers (first row) and clean them up
+    const headers = rows[0].map(header => header.replace(/"/g, '').trim());  // Remove quotes and trim spaces
     console.log("Headers:", headers); // Debugging
 
     // Map each row to a video object based on the columns
