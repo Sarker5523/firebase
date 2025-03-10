@@ -186,6 +186,7 @@
   <div class="video-details">
     <h2 id="video-title"></h2>
     <p id="video-description"></p>
+    <p id="video-categories"></p>
   </div>
 
   <div class="suggested-videos" id="suggested-videos"></div>
@@ -209,7 +210,7 @@
         if (video) {
           document.getElementById('video-title').innerText = video.name;
           document.getElementById('video-description').innerText = video.description || "No description available.";
-          document.getElementById('video-category').innerHTML = `Category: <a href="search-results.html?category=${encodeURIComponent(video.category)}">${video.category}</a>`;
+          document.getElementById('video-categories').innerHTML = `Categories: ${video.categories.map(category => `<a href="search-results.html?category=${encodeURIComponent(category)}">${category}</a>`).join(', ')}`;
 
           // Dynamically set the webpage title to the video's title
           document.title = video.name;
