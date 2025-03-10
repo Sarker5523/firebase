@@ -171,7 +171,7 @@
     let currentPage = 1;
     const itemsPerPage = 10;
 
-    fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/refs/heads/main/videos.json')
+    fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/videos.json')
       .then(response => response.json())
       .then(data => {
         allVideos = data;
@@ -184,7 +184,7 @@
           filteredVideos = data.filter(video => video.name.toLowerCase().includes(query.toLowerCase()));
         } else if (categoryParam) {
           const category = decodeURIComponent(categoryParam);
-          filteredVideos = data.filter(video => video.category === category);
+          filteredVideos = data.filter(video => video.categories && video.categories.includes(category));
         }
 
         filteredVideos.reverse(); // Display results in reverse order
@@ -228,7 +228,17 @@
         button.innerText = i;
         button.onclick = () => {
           currentPage = i;
-          displayVideos(allVideos.filter(video => video.name.toLowerCase().includes(new URLSearchParams(window.location.search).get('q').toLowerCase())));
+          displayVideos(allVideos.filter(video => {
+            const queryParam = new URLSearchParams(window.location.search).get('q');
+            const categoryParam = new URLSearchParams(window.location.search).get('category');
+            if (queryParam) {
+              const query = decodeURIComponent(queryParam);
+              return video.name.toLowerCase().includes(query.toLowerCase());
+            } else if (categoryParam) {
+              const category = decodeURIComponent(categoryParam);
+              return video.categories && video.categories.includes(category);
+            }
+          }).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
         };
         if (i === currentPage) {
           button.disabled = true;
