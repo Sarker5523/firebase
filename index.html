@@ -215,7 +215,7 @@
 
       const startIndex = (page - 1) * videosPerPage;
       const endIndex = startIndex + videosPerPage;
-      const videosToShow = allVideos.slice(startIndex, endIndex);
+      const videosToShow = allVideos.slice(startIndex, endIndex).reverse();
 
       videosToShow.forEach(video => {
         const videoItem = document.createElement('div');
