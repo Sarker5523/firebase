@@ -99,7 +99,6 @@
     video {
       width: 100%;
       max-width: 1000px;
-      height: auto;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
     }
@@ -174,12 +173,12 @@
     /* Media queries for responsive design */
     @media (min-width: 1024px) {
       video {
-        height: 500px; /* Adjust as needed for PC */
+        height: 500px; /* Fixed height for PC */
       }
     }
     @media (max-width: 1023px) {
       video {
-        height: auto; /* Adjust as needed for mobile */
+        height: auto; /* Responsive height for other devices */
       }
     }
   </style>
