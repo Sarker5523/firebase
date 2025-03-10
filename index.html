@@ -116,7 +116,7 @@
 
     .video-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
       gap: 20px;
       margin-top: 30px;
       padding: 0 20px;
@@ -153,18 +153,17 @@
     }
 
     .pagination {
-      display: flex;
-      justify-content: center;
-      padding: 20px;
+      text-align: center;
+      margin: 20px 0;
     }
 
     .pagination button {
       background-color: #333;
       color: #ff8c00;
       border: none;
-      border-radius: 5px;
-      padding: 10px 15px;
+      padding: 8px 12px;
       margin: 0 5px;
+      border-radius: 5px;
       cursor: pointer;
       transition: background-color 0.2s ease-in-out;
     }
@@ -174,8 +173,8 @@
     }
 
     .pagination button:disabled {
-      background-color: #222;
-      cursor: default;
+      background-color: #555;
+      cursor: not-allowed;
     }
   </style>
 </head>
@@ -190,36 +189,38 @@
     <div id="search-suggestions" class="search-suggestions"></div>
   </header>
 
-  <div class="pagination" id="top-pagination"></div>
+  <div id="top-pagination" class="pagination"></div>
   <div class="video-grid" id="video-grid"></div>
-  <div class="pagination" id="pagination"></div>
+  <div id="bottom-pagination" class="pagination"></div>
 
   <script>
     let allVideos = [];
-    const videosPerPage = 8;
     let currentPage = 1;
+    const videosPerPage = 10;
 
     // Fetch video data from JSON
     fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/refs/heads/main/videos.json')
-      .then(response => response.json())
+      .then(response => {
+        console.log("Response Status:", response.status); // Debugging
+        return response.json();
+      })
       .then(data => {
+        console.log("Fetched Data:", data); // Debugging
         allVideos = data.reverse();
-        displayVideos(currentPage);
-        createPaginationControls();
+        displayVideos(allVideos, currentPage); // Ensure this is called
       })
       .catch(error => console.error('Error fetching JSON:', error));
 
     // Display videos on the homepage
-    function displayVideos(page) {
+    function displayVideos(videos, page) {
       const videoGrid = document.getElementById('video-grid');
       videoGrid.innerHTML = '';
 
-      const startIndex = (page - 1) * videosPerPage;
-      const endIndex = startIndex + videosPerPage;
-      const videosToShow = [...allVideos].slice(startIndex, endIndex); // Ensure slicing works correctly
+      const start = (page - 1) * videosPerPage;
+      const end = start + videosPerPage;
+      const paginatedVideos = videos.slice(start, end);
 
-
-      videosToShow.forEach(video => {
+      paginatedVideos.forEach(video => {
         const videoItem = document.createElement('div');
         videoItem.classList.add('video-item');
         videoItem.innerHTML = `
@@ -230,71 +231,34 @@
         `;
         videoGrid.appendChild(videoItem);
       });
+
+      renderPagination(videos.length, page);
     }
 
-    // Create pagination controls
-  // Create pagination controls
-function createPaginationControls() {
-  const paginations = [
-    document.getElementById('pagination'),
-    document.getElementById('top-pagination')
-  ];
+    // Render pagination controls
+    function renderPagination(totalVideos, page) {
+      const totalPages = Math.ceil(totalVideos / videosPerPage);
+      const topPagination = document.getElementById('top-pagination');
+      const bottomPagination = document.getElementById('bottom-pagination');
 
-  paginations.forEach(pagination => {
-    pagination.innerHTML = ''; // Clear existing buttons
-  });
+      const createButton = (text, pageNumber) => {
+        const button = document.createElement('button');
+        button.textContent = text;
+        button.disabled = pageNumber === page;
+        button.onclick = () => {
+          currentPage = pageNumber;
+          displayVideos(allVideos, currentPage);
+        };
+        return button;
+      };
 
-  const totalPages = Math.ceil(allVideos.length / videosPerPage);
-
-  for (let i = 1; i <= totalPages; i++) {
-    const button = document.createElement('button');
-    button.textContent = i;
-    button.onclick = function () {
-      currentPage = i;
-      displayVideos(currentPage);
-      createPaginationControls();
-    };
-
-    if (i === currentPage) {
-      button.disabled = true;
-    }
-
-    paginations.forEach(pagination => pagination.appendChild(button.cloneNode(true)));
-  }
-}
-
-  const totalPages = Math.ceil(allVideos.length / videosPerPage);
-
-  for (let i = 1; i <= totalPages; i++) {
-    const button = document.createElement('button');
-    button.textContent = i;
-    button.onclick = function () {
-      currentPage = i;
-      displayVideos(currentPage);
-      createPaginationControls();
-    };
-
-    if (i === currentPage) {
-      button.disabled = true;
-    }
-
-    paginations.forEach(pagination => pagination.appendChild(button.cloneNode(true)));
-  }
-}
-      const totalPages = Math.ceil(allVideos.length / videosPerPage);
+      topPagination.innerHTML = '';
+      bottomPagination.innerHTML = '';
 
       for (let i = 1; i <= totalPages; i++) {
-        const button = document.createElement('button');
-        button.textContent = i;
-        button.onclick = () => {
-          currentPage = i;
-          displayVideos(currentPage);
-          createPaginationControls();
-        };
-        if (i === currentPage) {
-          button.disabled = true;
-        }
-        paginations.forEach(pagination => pagination.appendChild(button.cloneNode(true)));
+        const button = createButton(i, i);
+        topPagination.appendChild(button);
+        bottomPagination.appendChild(button.cloneNode(true));
       }
     }
 
@@ -334,16 +298,15 @@ function createPaginationControls() {
       if (searchQuery) {
         const query = decodeURIComponent(searchQuery);
         const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
-        displayVideos(filteredVideos); // Display filtered videos based on query
+        displayVideos(filteredVideos, 1); // Display filtered videos based on query
       }
     }
 
     // Call this function on page load to handle deep links
     window.onload = function() {
-  handleCustomURLScheme();
-  displayVideos(currentPage);
-  createPaginationControls(); // Ensure pagination initializes
-};
+      handleCustomURLScheme();
+      displayVideos(allVideos, currentPage); // ✅ Ensure this runs
+    };
   </script>
 </body>
 </html>
