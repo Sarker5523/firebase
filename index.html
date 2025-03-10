@@ -233,7 +233,8 @@
     }
 
     // Create pagination controls
-  function createPaginationControls() {
+  // Create pagination controls
+function createPaginationControls() {
   const paginations = [
     document.getElementById('pagination'),
     document.getElementById('top-pagination')
@@ -242,6 +243,25 @@
   paginations.forEach(pagination => {
     pagination.innerHTML = ''; // Clear existing buttons
   });
+
+  const totalPages = Math.ceil(allVideos.length / videosPerPage);
+
+  for (let i = 1; i <= totalPages; i++) {
+    const button = document.createElement('button');
+    button.textContent = i;
+    button.onclick = function () {
+      currentPage = i;
+      displayVideos(currentPage);
+      createPaginationControls();
+    };
+
+    if (i === currentPage) {
+      button.disabled = true;
+    }
+
+    paginations.forEach(pagination => pagination.appendChild(button.cloneNode(true)));
+  }
+}
 
   const totalPages = Math.ceil(allVideos.length / videosPerPage);
 
