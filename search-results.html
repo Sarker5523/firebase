@@ -171,13 +171,23 @@
     let currentPage = 1;
     const itemsPerPage = 10;
 
-    fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/refs/heads/main/videos.json')
+    fetch('videos.json')
       .then(response => response.json())
       .then(data => {
         allVideos = data;
         const queryParam = new URLSearchParams(window.location.search).get('q');
-        const query = queryParam ? decodeURIComponent(queryParam) : '';
-        const filteredVideos = query ? data.filter(video => video.name.toLowerCase().includes(query.toLowerCase())) : [];
+        const categoryParam = new URLSearchParams(window.location.search).get('category');
+        let filteredVideos = [];
+
+        if (queryParam) {
+          const query = decodeURIComponent(queryParam);
+          filteredVideos = data.filter(video => video.name.toLowerCase().includes(query.toLowerCase()));
+        } else if (categoryParam) {
+          const category = decodeURIComponent(categoryParam);
+          filteredVideos = data.filter(video => video.category === category);
+        }
+
+        filteredVideos.reverse(); // Display results in reverse order
         displayVideos(filteredVideos);
         setupPagination(filteredVideos.length);
       })
