@@ -203,7 +203,7 @@
     fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/refs/heads/main/videos.json')
       .then(response => response.json())
       .then(data => {
-        allVideos = data;
+        allVideos = data.reverse();
         displayVideos(currentPage);
         createPaginationControls();
       })
