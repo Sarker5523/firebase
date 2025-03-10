@@ -246,8 +246,8 @@
             if (suggestedVideo) {
               const suggestedVideoItem = document.createElement('div');
               suggestedVideoItem.classList.add('suggested-video-item');
-              suggestedVideoItem.innerHTML = 
-                `<a href="video.html?id=${suggestedVideo.id}">
+              suggestedVideoItem.innerHTML = `
+                <a href="video.html?id=${suggestedVideo.id}">
                   <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}" />
                   <h3>${suggestedVideo.name}</h3>
                 </a>`;
