@@ -180,13 +180,13 @@
     /* Media queries for responsive design */
     @media (max-width: 1023px) {
       .video-grid {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        grid-template-columns: 1fr; /* Change to 1 column for mobile */
         gap: 10px;
         padding: 20px;
       }
 
       .video-item h3 {
-        font-size: 12px;
+        font-size: 14px; /* Slightly smaller font-size */
       }
     }
   </style>
@@ -321,5 +321,6 @@
       displayVideos(allVideos, currentPage); // Ensure this runs
     };
   </script>
+
 </body>
 </html>
