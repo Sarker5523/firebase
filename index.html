@@ -151,6 +151,32 @@
       letter-spacing: 1px;
       filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.6));
     }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .pagination button {
+      background-color: #333;
+      color: #ff8c00;
+      border: none;
+      border-radius: 5px;
+      padding: 10px 15px;
+      margin: 0 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease-in-out;
+    }
+
+    .pagination button:hover {
+      background-color: #444;
+    }
+
+    .pagination button:disabled {
+      background-color: #222;
+      cursor: default;
+    }
   </style>
 </head>
 <body>
@@ -165,43 +191,66 @@
   </header>
 
   <div class="video-grid" id="video-grid"></div>
+  <div class="pagination" id="pagination"></div>
 
   <script>
     let allVideos = [];
+    const videosPerPage = 8;
+    let currentPage = 1;
 
     // Fetch video data from JSON
     fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/refs/heads/main/videos.json')
-  .then(response => {
-    console.log("Response Status:", response.status); // Debugging
-    return response.json();
-  })
-  .then(data => {
-    console.log("Fetched Data:", data); // Debugging
-    allVideos = data;
-    displayVideos(allVideos); // Ensure this is called
-  })
-  .catch(error => console.error('Error fetching JSON:', error));
+      .then(response => response.json())
+      .then(data => {
+        allVideos = data;
+        displayVideos(currentPage);
+        createPaginationControls();
+      })
+      .catch(error => console.error('Error fetching JSON:', error));
+
     // Display videos on the homepage
-// Display videos on the homepage
-function displayVideos(videos) {
-  const videoGrid = document.getElementById('video-grid');
-  videoGrid.innerHTML = '';
+    function displayVideos(page) {
+      const videoGrid = document.getElementById('video-grid');
+      videoGrid.innerHTML = '';
 
-  // Reverse the order of the videos array so that the last item shows first
-  videos.reverse().forEach(video => {
-    const videoItem = document.createElement('div');
-    videoItem.classList.add('video-item');
-    videoItem.innerHTML = `
-      <a href="video.html?id=${video.id}">
-        <img src="${video.thumbnail}" alt="${video.name}">
-        <h3>${video.name}</h3>
-      </a>
-    `;
-    videoGrid.appendChild(videoItem);
-  });
-}
+      const startIndex = (page - 1) * videosPerPage;
+      const endIndex = startIndex + videosPerPage;
+      const videosToShow = allVideos.slice(startIndex, endIndex);
 
+      videosToShow.forEach(video => {
+        const videoItem = document.createElement('div');
+        videoItem.classList.add('video-item');
+        videoItem.innerHTML = `
+          <a href="video.html?id=${video.id}">
+            <img src="${video.thumbnail}" alt="${video.name}">
+            <h3>${video.name}</h3>
+          </a>
+        `;
+        videoGrid.appendChild(videoItem);
+      });
+    }
 
+    // Create pagination controls
+    function createPaginationControls() {
+      const pagination = document.getElementById('pagination');
+      pagination.innerHTML = '';
+
+      const totalPages = Math.ceil(allVideos.length / videosPerPage);
+
+      for (let i = 1; i <= totalPages; i++) {
+        const button = document.createElement('button');
+        button.textContent = i;
+        button.onclick = () => {
+          currentPage = i;
+          displayVideos(currentPage);
+          createPaginationControls();
+        };
+        if (i === currentPage) {
+          button.disabled = true;
+        }
+        pagination.appendChild(button);
+      }
+    }
 
     // Search for videos and show suggestions
     function searchVideos(event) {
@@ -245,9 +294,9 @@ function displayVideos(videos) {
 
     // Call this function on page load to handle deep links
     window.onload = function() {
-  handleCustomURLScheme();
-  displayVideos(allVideos); // ✅ Ensure this runs
-};
+      handleCustomURLScheme();
+      displayVideos(currentPage);
+    };
   </script>
 </body>
 </html>
