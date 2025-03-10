@@ -5,8 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Search Results</title>
   <style>
-    body { font-family: Arial, sans-serif; background-color: #141414; color: #fff; margin: 0; padding: 0; }
-    
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #141414;
+      color: #fff;
+      margin: 0;
+      padding: 0;
+    }
     header {
       text-align: center;
       padding: 10px 20px;
@@ -14,14 +19,12 @@
       color: #ff8c00;
       position: relative;
     }
-    
     header h1 {
       font-size: 30px;
       font-weight: bold;
       color: white;
       margin: 0;
     }
-
     header .phub-title span {
       color: #000;
       background-color: #ff8c00;
@@ -29,7 +32,6 @@
       border-radius: 4px;
       border: 2px solid #ff8c00;
     }
-
     .home-btn {
       position: absolute;
       left: 10px;
@@ -44,13 +46,11 @@
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
       transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
-
     .home-btn:hover {
       background-color: #444;
       transform: translateY(-4px);
       box-shadow: 0 6px 10px rgba(0, 0, 0, 0.7);
     }
-
     .search-bar {
       width: 80%;
       max-width: 400px;
@@ -63,7 +63,6 @@
       background-color: #222;
       color: white;
     }
-
     .search-suggestions {
       position: absolute;
       background-color: #333;
@@ -76,25 +75,21 @@
       display: none;
       z-index: 1;
     }
-
     .search-suggestions div {
       display: flex;
       align-items: center;
       padding: 8px 10px;
       cursor: pointer;
     }
-
     .search-suggestions div:hover {
       background-color: #ff8c00;
     }
-
     .search-suggestions img {
       width: 40px;
       height: 40px;
       border-radius: 4px;
       margin-right: 10px;
     }
-
     .video-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
@@ -102,7 +97,6 @@
       margin-top: 30px;
       padding: 0 20px;
     }
-
     .video-item {
       cursor: pointer;
       position: relative;
@@ -110,15 +104,17 @@
       border-radius: 8px;
       overflow: hidden;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+      transition: transform 0.2s ease-in-out;
     }
-
+    .video-item:hover {
+      transform: translateY(-4px);
+    }
     .video-item img {
       width: 100%;
       height: auto;
       display: block;
       border-radius: 8px;
     }
-
     .video-item h4 {
       position: absolute;
       top: 10px;
@@ -128,12 +124,10 @@
       color: #fff;
       text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
     }
-
     .pagination {
       text-align: center;
       padding: 10px 0;
     }
-
     .pagination button {
       margin: 0 5px;
       padding: 5px 10px;
@@ -144,7 +138,6 @@
       color: #fff;
       font-size: 14px;
     }
-
     .pagination button[disabled] {
       background-color: #555;
       cursor: not-allowed;
