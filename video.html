@@ -156,7 +156,7 @@
       padding-bottom: 56.25%; /* 16:9 aspect ratio */
       height: 0;
       overflow: hidden;
-      max-width: 1280px;
+      max-width: 640px;
       margin: 20px auto;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
@@ -173,7 +173,8 @@
     /* Media queries for responsive design */
     @media (min-width: 1024px) {
       video {
-        height: 720px; /* Fixed height for PC */
+        height: 360px; /* Fixed height for PC */
+        max-width: 640px;
       }
     }
     @media (max-width: 1023px) {
