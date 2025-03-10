@@ -190,6 +190,7 @@
     <div id="search-suggestions" class="search-suggestions"></div>
   </header>
 
+  <div class="pagination" id="top-pagination"></div>
   <div class="video-grid" id="video-grid"></div>
   <div class="pagination" id="pagination"></div>
 
@@ -232,8 +233,11 @@
 
     // Create pagination controls
     function createPaginationControls() {
-      const pagination = document.getElementById('pagination');
-      pagination.innerHTML = '';
+      const paginations = [document.getElementById('pagination'), document.getElementById('top-pagination')];
+paginations.forEach(pagination => {
+  pagination.innerHTML = '';
+});
+
 
       const totalPages = Math.ceil(allVideos.length / videosPerPage);
 
@@ -248,7 +252,7 @@
         if (i === currentPage) {
           button.disabled = true;
         }
-        pagination.appendChild(button);
+        paginations.forEach(pagination => pagination.appendChild(button.cloneNode(true)));
       }
     }
 
