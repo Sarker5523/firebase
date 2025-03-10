@@ -153,7 +153,7 @@
 
   <script>
     const queryParam = new URLSearchParams(window.location.search).get('q');
-    const query = decodeURIComponent(queryParam);
+    const query = queryParam ? decodeURIComponent(queryParam) : '';
     let allVideos = [];
 
     // Fetch video data from JSON
@@ -161,8 +161,14 @@
       .then(response => response.json())
       .then(data => {
         allVideos = data;
-        const filteredVideos = data.filter(video => video.name.toLowerCase().includes(query.toLowerCase()));
-        displayVideos(filteredVideos);
+        console.log('All videos:', allVideos);  // Debugging
+        if (query) {
+          const filteredVideos = data.filter(video => video.name.toLowerCase().includes(query.toLowerCase()));
+          console.log('Filtered videos:', filteredVideos);  // Debugging
+          displayVideos(filteredVideos);
+        } else {
+          displayVideos([]);
+        }
       })
       .catch(error => console.error('Error loading JSON:', error));
 
