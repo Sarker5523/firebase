@@ -116,7 +116,7 @@
 
     .video-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 20px;
       margin-top: 30px;
       padding: 0 20px;
@@ -216,7 +216,8 @@
 
       const startIndex = (page - 1) * videosPerPage;
       const endIndex = startIndex + videosPerPage;
-      const videosToShow = allVideos.slice(startIndex, endIndex).reverse();
+      const videosToShow = [...allVideos].slice(startIndex, endIndex); // Ensure slicing works correctly
+
 
       videosToShow.forEach(video => {
         const videoItem = document.createElement('div');
@@ -319,9 +320,10 @@
 
     // Call this function on page load to handle deep links
     window.onload = function() {
-      handleCustomURLScheme();
-      displayVideos(currentPage);
-    };
+  handleCustomURLScheme();
+  displayVideos(currentPage);
+  createPaginationControls(); // Ensure pagination initializes
+};
   </script>
 </body>
 </html>
