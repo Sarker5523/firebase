@@ -214,6 +214,10 @@
           }
           return acc;
         }, []);
+
+        // Sort videos by id in descending order
+        allVideos.sort((a, b) => b.id - a.id);
+
         renderVideos();
         renderPagination();
       })
@@ -292,7 +296,10 @@
             }
             return acc;
           }, []);
-          allVideos = filteredVideos;
+
+          // Sort filtered videos by id in descending order
+          allVideos = filteredVideos.sort((a, b) => b.id - a.id);
+
           currentPage = 1;
           renderVideos();
           renderPagination();
