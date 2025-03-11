@@ -171,19 +171,17 @@
     const paginationBottom = document.getElementById('pagination-bottom');
 
     function parseCSV(text) {
-      const lines = text.split('\n');
-      const headers = lines[0].split(',');
+      const lines = text.split('\n').filter(line => line.trim());
+      const headers = lines[0].split(',').map(header => header.trim());
       const result = [];
 
       for (let i = 1; i < lines.length; i++) {
-        const obj = {};
-        const currentline = lines[i].split(',');
-
-        for (let j = 0; j < headers.length; j++) {
-          obj[headers[j].trim()] = currentline[j].trim();
-        }
-
-        if (obj.id) { // Ensure we only push valid entries
+        const currentline = lines[i].split(',').map(value => value.trim());
+        if (currentline.length === headers.length) {
+          const obj = {};
+          for (let j = 0; j < headers.length; j++) {
+            obj[headers[j]] = currentline[j];
+          }
           result.push(obj);
         }
       }
@@ -266,7 +264,7 @@
 
     function handleSearch() {
       const query = searchInput.value.toLowerCase();
-      fetch('videos1.csv')
+      fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/tv_series.csv')
         .then(response => response.text())
         .then(text => {
           const data = parseCSV(text);
