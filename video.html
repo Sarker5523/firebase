@@ -220,7 +220,6 @@
   <div class="video-details">
     <h2 id="video-title"></h2>
     <p id="video-description"></p>
-    <p id="video-categories"></p>
     <div class="resolution-switch" id="resolution-switch"></div>
     <div class="episode-list" id="episode-list"></div>
   </div>
@@ -237,9 +236,14 @@
     const episodeList = document.getElementById('episode-list');
 
     function loadVideo(video) {
+      if (!video) {
+        document.getElementById('video-title').innerText = "Video not found";
+        document.getElementById('video-description').innerText = "This video could not be found.";
+        return;
+      }
+
       document.getElementById('video-title').innerText = video.name;
       document.getElementById('video-description').innerText = video.description || "No description available.";
-      document.getElementById('video-categories').innerHTML = `Categories: ${video.categories.map(category => `<a href="search-results.html?category=${encodeURIComponent(category)}">${category}</a>`).join(', ')}`;
 
       // Dynamically set the webpage title to the video's title
       document.title = video.name;
@@ -297,7 +301,7 @@
       .then(response => response.json())
       .then(data => {
         const videoId = new URLSearchParams(window.location.search).get('episode_id');
-        const series = data.find(v => v.id === "1");
+        const series = data.find(v => v.episodes.some(e => e.episode_id === videoId));
         if (series) {
           const currentEpisode = series.episodes.find(ep => ep.episode_id === videoId) || series.episodes[0];
           loadVideo(currentEpisode);
@@ -319,32 +323,25 @@
         .then(response => response.json())
         .then(data => {
           const filteredVideos = data.filter(video => video.id.toLowerCase().includes(query));
-          if (query) {
-            searchResultsContainer.style.display = 'block';
-            searchResultsContainer.innerHTML = '';
-            filteredVideos.slice(0, 5).forEach(video => {
-              const suggestionItem = document.createElement('div');
-              suggestionItem.innerHTML = `
-                <img src="${video.thumbnail}" alt="${video.name}">
-                ${video.name}
-              `;
-              suggestionItem.onclick = () => {
-                window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
-              };
-              searchResultsContainer.appendChild(suggestionItem);
-            });
-          } else {
-            searchResultsContainer.style.display = 'none';
-          }
+          searchResultsContainer.style.display = 'block';
+          searchResultsContainer.innerHTML = '';
+          filteredVideos.slice(0, 5).forEach(video => {
+            const suggestionItem = document.createElement('div');
+            suggestionItem.innerHTML = `
+              <img src="${video.thumbnail}" alt="${video.name}">
+              ${video.name}
+            `;
+            suggestionItem.onclick = () => {
+              window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
+            };
+            searchResultsContainer.appendChild(suggestionItem);
+          });
         });
     }
 
     function handleEnter(event) {
       if (event.key === "Enter") {
-        const query = searchInput.value.toLowerCase();
-        if (query) {
-          window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
-        }
+        handleSearch();
       }
     }
   </script>
