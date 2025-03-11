@@ -232,7 +232,7 @@
           const videoItem = document.createElement('div');
           videoItem.classList.add('video-item');
           videoItem.innerHTML = `
-            <a href="video.html?episode_id=${video.episodes[0]?.episode_id || ''}">
+            <a href="video.html?id=${video.id}">
               <img src="${video.thumbnail}" alt="${video.name}">
               <h3>${video.name}</h3>
             </a>`;
