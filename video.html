@@ -98,13 +98,6 @@
       width: 100%;
       box-sizing: border-box;
     }
-    video {
-      width: 100%;
-      max-width: 100%;
-      height: auto;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
-    }
     .iframe-container {
       width: 100%;
       position: relative;
@@ -157,13 +150,17 @@
       color: #000;
       transform: translateY(-4px);
     }
+    .episode-list button.active {
+      background-color: #ff8c00;
+      color: #000;
+    }
     @media (max-width: 767px) {
       .video-container {
         max-width: 100%;
         padding: 10px;
         height: auto;
       }
-      video, .iframe-container {
+      .iframe-container {
         width: 100%;
         height: auto;
         border-radius: 10px;
@@ -184,10 +181,6 @@
   </header>
 
   <div class="video-container" id="video-container">
-    <video id="video-player" controls style="display: none;">
-      <source id="video-source" src="" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
     <div class="iframe-container" id="iframe-container" style="display: none;"></div>
   </div>
 
@@ -196,13 +189,9 @@
     <div class="episode-list" id="episode-list"></div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
     const searchInput = document.getElementById('search-input');
     const searchResultsContainer = document.getElementById('search-suggestions');
-    const videoContainer = document.getElementById('video-container');
-    const videoPlayer = document.getElementById('video-player');
-    const videoSource = document.getElementById('video-source');
     const iframeContainer = document.getElementById('iframe-container');
     const episodeList = document.getElementById('episode-list');
 
@@ -212,20 +201,26 @@
         return;
       }
 
-      document.getElementById('video-title').innerText = video.episode_name;
+      document.getElementById('video-title').innerText = `${video.name} - ${video.episode_name}`;
 
       // Dynamically set the webpage title to the episode's title
-      document.title = video.episode_name;
+      document.title = `${video.name} - ${video.episode_name}`;
 
       if (video.embed_code) {
         iframeContainer.innerHTML = video.embed_code;
         iframeContainer.style.display = 'block';
-        videoPlayer.style.display = 'none';
       } else {
-        videoPlayer.style.display = "block";
-        iframeContainer.style.display = "none";
-        videoSource.src = video.url;
-        videoPlayer.load();
+        iframeContainer.style.display = 'none';
+      }
+
+      // Highlight the current episode button
+      const buttons = episodeList.getElementsByTagName('button');
+      for (let button of buttons) {
+        if (button.dataset.episodeId === video.episode_id) {
+          button.classList.add('active');
+        } else {
+          button.classList.remove('active');
+        }
       }
     }
 
@@ -234,12 +229,12 @@
       episodes.forEach(episode => {
         const button = document.createElement('button');
         button.innerText = episode.episode_name;
+        button.dataset.episodeId = episode.episode_id;
         button.onclick = () => {
           loadVideo(episode);
         };
         if (episode.episode_id === currentEpisodeId) {
-          button.style.backgroundColor = '#ff8c00';
-          button.style.color = '#000';
+          button.classList.add('active');
         }
         episodeList.appendChild(button);
       });
