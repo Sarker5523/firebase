@@ -165,24 +165,6 @@
       color: #000;
       transform: translateY(-4px);
     }
-    .resolution-switch {
-      margin-top: 10px;
-    }
-    .resolution-switch button {
-      background-color: #444;
-      color: #ff8c00;
-      border: none;
-      padding: 10px 20px;
-      margin: 5px;
-      cursor: pointer;
-      border-radius: 8px;
-      transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
-    }
-    .resolution-switch button:hover {
-      background-color: #ff8c00;
-      color: #000;
-      transform: translateY(-4px);
-    }
     @media (max-width: 767px) {
       .video-container {
         max-width: 100%;
@@ -210,17 +192,16 @@
   </header>
 
   <div class="video-container" id="video-container">
-    <video id="video-player" controls style="display: none;">
-      <source id="video-source" src="" type="application/x-mpegURL">
+    <video id="video-player" controls style="display: block;">
+      <source id="video-source" src="https://0.zxc68.workers.dev/2d970aedf7bb134bb14ea446ac7be41d/driveseed.org/When.Life.Gives.You.Tangerines.S01E01.Spring.in.a.Heartbeat.1080p.x264.Hindi.Korean.English.Msubs.MoviesMod.org.mkv" type="video/mp4">
       Your browser does not support the video tag.
     </video>
     <div class="iframe-container" id="iframe-container" style="display: none;"></div>
   </div>
 
   <div class="video-details">
-    <h2 id="video-title"></h2>
-    <p id="video-description"></p>
-    <div class="resolution-switch" id="resolution-switch"></div>
+    <h2 id="video-title">When Life Gives You Tangerines - Episode 1</h2>
+    <p id="video-description">Spring in a Heartbeat</p>
     <div class="episode-list" id="episode-list"></div>
   </div>
 
@@ -232,7 +213,6 @@
     const videoPlayer = document.getElementById('video-player');
     const videoSource = document.getElementById('video-source');
     const iframeContainer = document.getElementById('iframe-container');
-    const resolutionSwitch = document.getElementById('resolution-switch');
     const episodeList = document.getElementById('episode-list');
 
     function loadVideo(video) {
@@ -251,26 +231,8 @@
       videoPlayer.style.display = "block";
       iframeContainer.style.display = "none";
 
-      // Add resolution switch buttons
-      resolutionSwitch.innerHTML = '';
-      for (const [resolution, url] of Object.entries(video.urls)) {
-        const button = document.createElement('button');
-        button.innerText = resolution;
-        button.onclick = () => {
-          if (Hls.isSupported() && url.endsWith('.m3u8')) {
-            const hls = new Hls();
-            hls.loadSource(url);
-            hls.attachMedia(videoPlayer);
-          } else {
-            videoSource.src = url;
-            videoPlayer.load();
-          }
-        };
-        resolutionSwitch.appendChild(button);
-      }
-
-      // Load the default resolution (720p)
-      const defaultUrl = video.urls['720p'] || Object.values(video.urls)[0];
+      // Load the default resolution (1080p)
+      const defaultUrl = video.urls['1080p'] || Object.values(video.urls)[0];
       if (Hls.isSupported() && defaultUrl.endsWith('.m3u8')) {
         const hls = new Hls();
         hls.loadSource(defaultUrl);
