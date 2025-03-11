@@ -173,7 +173,7 @@
     fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/videos1.json')
       .then(response => response.json())
       .then(data => {
-        allVideos = [data]; // Assuming there's only one main ID
+        allVideos = data; // Assuming there are multiple main IDs
         renderVideos();
         renderPagination();
       })
@@ -187,16 +187,20 @@
       const endIndex = startIndex + itemsPerPage;
       const videosToShow = allVideos.slice(startIndex, endIndex);
 
-      videosToShow.forEach(video => {
-        const videoItem = document.createElement('div');
-        videoItem.classList.add('video-item');
-        videoItem.innerHTML = `
-          <a href="video.html?episode_id=${video.episodes[0].episode_id}">
-            <img src="${video.thumbnail}" alt="${video.name}">
-            <h3>${video.name}</h3>
-          </a>`;
-        videoListContainer.appendChild(videoItem);
-      });
+      if (videosToShow.length > 0) {
+        videosToShow.forEach(video => {
+          const videoItem = document.createElement('div');
+          videoItem.classList.add('video-item');
+          videoItem.innerHTML = `
+            <a href="video.html?episode_id=${video.episodes[0]?.episode_id || ''}">
+              <img src="${video.thumbnail}" alt="${video.name}">
+              <h3>${video.name}</h3>
+            </a>`;
+          videoListContainer.appendChild(videoItem);
+        });
+      } else {
+        videoListContainer.innerHTML = '<p>No videos found.</p>';
+      }
     }
 
     function renderPagination() {
@@ -204,15 +208,17 @@
       paginationTop.innerHTML = '';
       paginationBottom.innerHTML = '';
 
-      for (let i = 1; i <= totalPages; i++) {
-        const button = document.createElement('button');
-        button.innerText = i;
-        button.onclick = () => {
-          currentPage = i;
-          renderVideos();
-        };
-        paginationTop.appendChild(button);
-        paginationBottom.appendChild(button);
+      if (totalPages > 1) {
+        for (let i = 1; i <= totalPages; i++) {
+          const button = document.createElement('button');
+          button.innerText = i;
+          button.onclick = () => {
+            currentPage = i;
+            renderVideos();
+          };
+          paginationTop.appendChild(button);
+          paginationBottom.appendChild(button);
+        }
       }
     }
 
@@ -221,7 +227,7 @@
       fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/videos1.json')
         .then(response => response.json())
         .then(data => {
-          const filteredVideos = [data].filter(video => video.id.toLowerCase().includes(query));
+          const filteredVideos = data.filter(video => video.id.toLowerCase().includes(query));
           allVideos = filteredVideos;
           currentPage = 1;
           renderVideos();
