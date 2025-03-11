@@ -136,17 +136,6 @@
       padding-bottom: 10px;
       border-bottom: 1px solid #444;
     }
-    .video-details p {
-      font-size: 14px;
-      color: #bbb;
-    }
-    .video-details a {
-      color: #00ff00;
-      text-decoration: none;
-    }
-    .video-details a:hover {
-      text-decoration: underline;
-    }
     .episode-list {
       margin: 20px 0;
     }
@@ -229,7 +218,7 @@
         iframeContainer.innerHTML = video.embed_code;
         iframeContainer.style.display = 'block';
         videoPlayer.style.display = 'none';
-      } else if (video.url.includes('drive.google.com')) {
+      } else if (video.url && video.url.includes('drive.google.com')) {
         iframeContainer.innerHTML = `<iframe src="${video.url}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
         iframeContainer.style.display = 'block';
         videoPlayer.style.display = 'none';
@@ -257,15 +246,36 @@
       });
     }
 
-    fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/videos1.json')
-      .then(response => response.json())
-      .then(data => {
+    function parseCSV(text) {
+      const lines = text.split('\n');
+      const headers = lines[0].split(',');
+      const result = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const obj = {};
+        const currentline = lines[i].split(',');
+
+        for (let j = 0; j < headers.length; j++) {
+          obj[headers[j]] = currentline[j];
+        }
+
+        result.push(obj);
+      }
+
+      return result;
+    }
+
+    fetch('videos1.csv')
+      .then(response => response.text())
+      .then(text => {
+        const data = parseCSV(text);
         const videoId = new URLSearchParams(window.location.search).get('episode_id');
-        const series = data.find(v => v.episodes.some(e => e.episode_id === videoId));
+        const series = data.find(v => v.episode_id === videoId);
         if (series) {
-          const currentEpisode = series.episodes.find(ep => ep.episode_id === videoId) || series.episodes[0];
+          const currentEpisode = series;
           loadVideo(currentEpisode);
-          loadEpisodes(series.episodes, currentEpisode.episode_id);
+          const episodes = data.filter(v => v.id === series.id);
+          loadEpisodes(episodes, currentEpisode.episode_id);
         } else {
           document.getElementById('video-title').innerText = "Video not found";
         }
@@ -277,9 +287,10 @@
 
     function handleSearch() {
       const query = searchInput.value.toLowerCase();
-      fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/videos1.json')
-        .then(response => response.json())
-        .then(data => {
+      fetch('videos1.csv')
+        .then(response => response.text())
+        .then(text => {
+          const data = parseCSV(text);
           const filteredVideos = data.filter(video => video.name.toLowerCase().includes(query));
           searchResultsContainer.style.display = 'block';
           searchResultsContainer.innerHTML = '';
