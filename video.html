@@ -95,18 +95,18 @@
       justify-content: center;
       align-items: center;
       padding: 20px;
+      width: 100%;
+      box-sizing: border-box;
     }
     video {
       width: 100%;
       max-width: 100%;
-      height: auto; /* Ensure auto height to maintain aspect ratio */
+      height: auto;
       border-radius: 10px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
     }
     .iframe-container {
       width: 100%;
-      max-width: 100%;
-      padding-bottom: 56.25%; /* 16:9 aspect ratio */
       position: relative;
       height: 0;
       border-radius: 10px;
@@ -127,6 +127,8 @@
       border-radius: 15px;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
       margin: 20px;
+      width: 80%;
+      box-sizing: border-box;
     }
     .video-details h2 {
       font-size: 20px;
@@ -139,72 +141,59 @@
       color: #bbb;
     }
     .video-details a {
-      color: #00ff00; /* Green color */
-      text-decoration: none; /* Remove underline */
+      color: #00ff00;
+      text-decoration: none;
     }
     .video-details a:hover {
-      text-decoration: underline; /* Add underline on hover if needed */
+      text-decoration: underline;
     }
-    .suggested-videos {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr); /* 4 columns for PC */
-      gap: 20px;
-      margin-top: 30px;
-      padding: 0 20px;
+    .episode-list {
+      margin: 20px 0;
     }
-    .suggested-video-item {
-      position: relative;
+    .episode-list button {
+      background-color: #444;
+      color: #ff8c00;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
       cursor: pointer;
-      text-align: center;
-    }
-    .suggested-video-item img {
-      width: 100%;
-      height: auto;
       border-radius: 8px;
+      transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
     }
-    .suggested-video-item h3 {
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      color: white;
-      padding: 3px 10px;
-      font-size: 16px; /* Increased font-size */
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-      transform: translateY(10px);
-      text-align: center;
-      font-family: Arial, sans-serif;
-      font-weight: bold;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.6));
+    .episode-list button:hover {
+      background-color: #ff8c00;
+      color: #000;
+      transform: translateY(-4px);
     }
-    /* Media queries for responsive design */
-    @media (max-width: 1023px) {
-      .suggested-videos {
-        grid-template-columns: repeat(2, 1fr); /* Change to 2 columns for tablets */
-        gap: 10px;
-        padding: 20px;
-      }
-      .suggested-video-item h3 {
-        font-size: 12px; /* Smaller font-size */
-      }
+    .resolution-switch {
+      margin-top: 10px;
+    }
+    .resolution-switch button {
+      background-color: #444;
+      color: #ff8c00;
+      border: none;
+      padding: 10px 20px;
+      margin: 5px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+    }
+    .resolution-switch button:hover {
+      background-color: #ff8c00;
+      color: #000;
+      transform: translateY(-4px);
     }
     @media (max-width: 767px) {
       .video-container {
         max-width: 100%;
         padding: 10px;
+        height: auto;
       }
       video, .iframe-container {
-        max-width: 100%;
-        height: auto; /* Ensure auto height to maintain aspect ratio */
+        width: 100%;
+        height: auto;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
-      }
-      .suggested-videos {
-        grid-template-columns: repeat(1, 1fr); /* Change to 1 column for mobile */
-        gap: 10px;
-        padding: 20px;
       }
     }
   </style>
@@ -232,70 +221,87 @@
     <h2 id="video-title"></h2>
     <p id="video-description"></p>
     <p id="video-categories"></p>
+    <div class="resolution-switch" id="resolution-switch"></div>
+    <div class="episode-list" id="episode-list"></div>
   </div>
-
-  <div class="suggested-videos" id="suggested-videos"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
-    let allVideos = [];
     const searchInput = document.getElementById('search-input');
     const searchResultsContainer = document.getElementById('search-suggestions');
+    const videoContainer = document.getElementById('video-container');
+    const videoPlayer = document.getElementById('video-player');
+    const videoSource = document.getElementById('video-source');
+    const iframeContainer = document.getElementById('iframe-container');
+    const resolutionSwitch = document.getElementById('resolution-switch');
+    const episodeList = document.getElementById('episode-list');
 
-    fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/refs/heads/main/videos1.json')
+    function loadVideo(video) {
+      document.getElementById('video-title').innerText = video.name;
+      document.getElementById('video-description').innerText = video.description || "No description available.";
+      document.getElementById('video-categories').innerHTML = `Categories: ${video.categories.map(category => `<a href="search-results.html?category=${encodeURIComponent(category)}">${category}</a>`).join(', ')}`;
+
+      // Dynamically set the webpage title to the video's title
+      document.title = video.name;
+
+      videoPlayer.style.display = "block";
+      iframeContainer.style.display = "none";
+
+      // Add resolution switch buttons
+      resolutionSwitch.innerHTML = '';
+      for (const [resolution, url] of Object.entries(video.urls)) {
+        const button = document.createElement('button');
+        button.innerText = resolution;
+        button.onclick = () => {
+          if (Hls.isSupported() && url.endsWith('.m3u8')) {
+            const hls = new Hls();
+            hls.loadSource(url);
+            hls.attachMedia(videoPlayer);
+          } else {
+            videoSource.src = url;
+            videoPlayer.load();
+          }
+        };
+        resolutionSwitch.appendChild(button);
+      }
+
+      // Load the default resolution (720p)
+      const defaultUrl = video.urls['720p'] || Object.values(video.urls)[0];
+      if (Hls.isSupported() && defaultUrl.endsWith('.m3u8')) {
+        const hls = new Hls();
+        hls.loadSource(defaultUrl);
+        hls.attachMedia(videoPlayer);
+      } else {
+        videoSource.src = defaultUrl;
+        videoPlayer.load();
+      }
+    }
+
+    function loadEpisodes(episodes, currentEpisodeId) {
+      episodeList.innerHTML = '';
+      episodes.forEach(episode => {
+        const button = document.createElement('button');
+        button.innerText = episode.name;
+        button.onclick = () => {
+          loadVideo(episode);
+        };
+        if (episode.episode_id === currentEpisodeId) {
+          button.style.backgroundColor = '#ff8c00';
+          button.style.color = '#000';
+        }
+        episodeList.appendChild(button);
+      });
+    }
+
+    fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/videos1.json')
       .then(response => response.json())
       .then(data => {
-        allVideos = data;
-        const videoId = new URLSearchParams(window.location.search).get('id');
-        const video = data.find(v => v.id === videoId);
-        const videoContainer = document.getElementById('video-container');
-        const videoPlayer = document.getElementById('video-player');
-        const videoSource = document.getElementById('video-source');
-        const iframeContainer = document.getElementById('iframe-container');
-
-        if (video) {
-          document.getElementById('video-title').innerText = video.name;
-          document.getElementById('video-description').innerText = video.description || "No description available.";
-          document.getElementById('video-categories').innerHTML = `Categories: ${video.categories.map(category => `<a href="search-results.html?category=${encodeURIComponent(category)}">${category}</a>`).join(', ')}`;
-
-          // Dynamically set the webpage title to the video's title
-          document.title = video.name;
-
-          if (video.embed_code) {
-            iframeContainer.style.display = "block";
-            iframeContainer.innerHTML = video.embed_code;
-            videoPlayer.style.display = "none";
-          } else if (video.url) {
-            videoPlayer.style.display = "block";
-            videoSource.src = video.url;
-            iframeContainer.style.display = "none";
-
-            if (Hls.isSupported() && video.url.endsWith('.m3u8')) {
-              const hls = new Hls();
-              hls.loadSource(video.url);
-              hls.attachMedia(videoPlayer);
-            } else {
-              videoPlayer.load();
-            }
-          } else {
-            videoContainer.innerHTML = "<p>Video not available.</p>";
-          }
-
-          const suggestedVideosContainer = document.getElementById('suggested-videos');
-          suggestedVideosContainer.innerHTML = '';
-          video.suggestions.forEach(suggestionId => {
-            const suggestedVideo = data.find(v => v.id === String(suggestionId));
-            if (suggestedVideo) {
-              const suggestedVideoItem = document.createElement('div');
-              suggestedVideoItem.classList.add('suggested-video-item');
-              suggestedVideoItem.innerHTML = `
-                <a href="video.html?id=${suggestedVideo.id}">
-                  <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}">
-                  <h3>${suggestedVideo.name}</h3>
-                </a>`;
-              suggestedVideosContainer.appendChild(suggestedVideoItem);
-            }
-          });
+        const videoId = new URLSearchParams(window.location.search).get('episode_id');
+        const series = data.find(v => v.id === "1");
+        if (series) {
+          const currentEpisode = series.episodes.find(ep => ep.episode_id === videoId) || series.episodes[0];
+          loadVideo(currentEpisode);
+          loadEpisodes(series.episodes, currentEpisode.episode_id);
         } else {
           document.getElementById('video-title').innerText = "Video not found";
           document.getElementById('video-description').innerText = "This video could not be found.";
@@ -309,25 +315,28 @@
 
     function handleSearch() {
       const query = searchInput.value.toLowerCase();
-      const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
-
-      if (query) {
-        searchResultsContainer.style.display = 'block';
-        searchResultsContainer.innerHTML = '';
-        filteredVideos.slice(0, 5).forEach(video => {
-          const suggestionItem = document.createElement('div');
-          suggestionItem.innerHTML = `
-            <img src="${video.thumbnail}" alt="${video.name}">
-            ${video.name}
-          `;
-          suggestionItem.onclick = () => {
-            window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
-          };
-          searchResultsContainer.appendChild(suggestionItem);
+      fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/videos1.json')
+        .then(response => response.json())
+        .then(data => {
+          const filteredVideos = data.filter(video => video.id.toLowerCase().includes(query));
+          if (query) {
+            searchResultsContainer.style.display = 'block';
+            searchResultsContainer.innerHTML = '';
+            filteredVideos.slice(0, 5).forEach(video => {
+              const suggestionItem = document.createElement('div');
+              suggestionItem.innerHTML = `
+                <img src="${video.thumbnail}" alt="${video.name}">
+                ${video.name}
+              `;
+              suggestionItem.onclick = () => {
+                window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
+              };
+              searchResultsContainer.appendChild(suggestionItem);
+            });
+          } else {
+            searchResultsContainer.style.display = 'none';
+          }
         });
-      } else {
-        searchResultsContainer.style.display = 'none';
-      }
     }
 
     function handleEnter(event) {
