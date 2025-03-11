@@ -201,7 +201,6 @@
 
   <div class="video-details">
     <h2 id="video-title"></h2>
-    <p id="video-description"></p>
     <div class="episode-list" id="episode-list"></div>
   </div>
 
@@ -218,12 +217,10 @@
     function loadVideo(video) {
       if (!video) {
         document.getElementById('video-title').innerText = "Video not found";
-        document.getElementById('video-description').innerText = "This video could not be found.";
         return;
       }
 
       document.getElementById('video-title').innerText = video.name;
-      document.getElementById('video-description').innerText = video.description || "No description available.";
 
       // Dynamically set the webpage title to the video's title
       document.title = video.name;
@@ -271,13 +268,11 @@
           loadEpisodes(series.episodes, currentEpisode.episode_id);
         } else {
           document.getElementById('video-title').innerText = "Video not found";
-          document.getElementById('video-description').innerText = "This video could not be found.";
         }
       })
       .catch(error => {
         console.error('Error loading video data:', error);
         document.getElementById('video-title').innerText = "Error loading video";
-        document.getElementById('video-description').innerText = "There was an error loading the video details.";
       });
 
     function handleSearch() {
@@ -285,14 +280,14 @@
       fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/videos1.json')
         .then(response => response.json())
         .then(data => {
-          const filteredVideos = data.filter(video => video.title.toLowerCase().includes(query));
+          const filteredVideos = data.filter(video => video.name.toLowerCase().includes(query));
           searchResultsContainer.style.display = 'block';
           searchResultsContainer.innerHTML = '';
           filteredVideos.slice(0, 5).forEach(video => {
             const suggestionItem = document.createElement('div');
             suggestionItem.innerHTML = `
-              <img src="${video.thumbnail}" alt="${video.title}">
-              ${video.title}
+              <img src="${video.thumbnail}" alt="${video.name}">
+              ${video.name}
             `;
             suggestionItem.onclick = () => {
               window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
