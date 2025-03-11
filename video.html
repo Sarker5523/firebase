@@ -228,14 +228,18 @@
       // Dynamically set the webpage title to the video's title
       document.title = video.name;
 
-      if (video.urls['1080p'].includes('drive.google.com')) {
-        iframeContainer.innerHTML = `<iframe src="${video.urls['1080p']}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+      if (video.embed_code) {
+        iframeContainer.innerHTML = video.embed_code;
+        iframeContainer.style.display = 'block';
+        videoPlayer.style.display = 'none';
+      } else if (video.url.includes('drive.google.com')) {
+        iframeContainer.innerHTML = `<iframe src="${video.url}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
         iframeContainer.style.display = 'block';
         videoPlayer.style.display = 'none';
       } else {
         videoPlayer.style.display = "block";
         iframeContainer.style.display = "none";
-        videoSource.src = video.urls['1080p'];
+        videoSource.src = video.url;
         videoPlayer.load();
       }
     }
@@ -281,14 +285,14 @@
       fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/videos1.json')
         .then(response => response.json())
         .then(data => {
-          const filteredVideos = data.filter(video => video.id.toLowerCase().includes(query));
+          const filteredVideos = data.filter(video => video.title.toLowerCase().includes(query));
           searchResultsContainer.style.display = 'block';
           searchResultsContainer.innerHTML = '';
           filteredVideos.slice(0, 5).forEach(video => {
             const suggestionItem = document.createElement('div');
             suggestionItem.innerHTML = `
-              <img src="${video.thumbnail}" alt="${video.name}">
-              ${video.name}
+              <img src="${video.thumbnail}" alt="${video.title}">
+              ${video.title}
             `;
             suggestionItem.onclick = () => {
               window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
