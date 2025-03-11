@@ -102,7 +102,7 @@
       width: 100%;
       max-width: 800px; /* Set a maximum width */
       position: relative;
-      padding-bottom: 50%; /* Adjusted aspect ratio */
+      padding-bottom: 56.25%; /* 16:9 aspect ratio */
       height: 0;
       overflow: hidden;
       border-radius: 10px;
@@ -134,27 +134,62 @@
       padding-bottom: 10px;
       border-bottom: 1px solid #444;
     }
-    .episode-list {
-      margin: 20px 0;
+    .video-details p {
+      font-size: 14px;
+      color: #bbb;
     }
-    .episode-list button {
-      background-color: #444;
-      color: #ff8c00;
-      border: none;
-      padding: 10px 20px;
-      margin: 5px;
+    .video-details a {
+      color: #00ff00;
+      text-decoration: none;
+    }
+    .video-details a:hover {
+      text-decoration: underline;
+    }
+    .suggested-videos {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-top: 30px;
+      padding: 0 20px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .suggested-video-item {
+      position: relative;
       cursor: pointer;
+      text-align: center;
+    }
+    .suggested-video-item img {
+      width: 100%;
+      height: auto;
       border-radius: 8px;
-      transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
     }
-    .episode-list button:hover {
-      background-color: #ff8c00;
-      color: #000;
-      transform: translateY(-4px);
+    .suggested-video-item h3 {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      color: white;
+      padding: 3px 10px;
+      font-size: 16px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+      transform: translateY(10px);
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      filter: drop-shadow(2px 2px 5px rgba(0, 0, 0, 0.6));
     }
-    .episode-list button.active {
-      background-color: #ff8c00;
-      color: #000;
+    @media (max-width: 1023px) {
+      .suggested-videos {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 20px;
+      }
+      .suggested-video-item h3 {
+        font-size: 12px;
+      }
     }
     @media (max-width: 767px) {
       .video-container {
@@ -167,6 +202,11 @@
         height: auto;
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+      }
+      .suggested-videos {
+        grid-template-columns: repeat(1, 1fr);
+        gap: 10px;
+        padding: 20px;
       }
     }
   </style>
@@ -188,125 +228,119 @@
 
   <div class="video-details">
     <h2 id="video-title"></h2>
-    <div class="episode-list" id="episode-list"></div>
+    <p id="video-description"></p>
+    <p id="video-categories"></p>
   </div>
 
+  <div class="suggested-videos" id="suggested-videos"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
   <script>
+    let allVideos = [];
     const searchInput = document.getElementById('search-input');
     const searchResultsContainer = document.getElementById('search-suggestions');
-    const iframeContainer = document.getElementById('iframe-container');
-    const episodeList = document.getElementById('episode-list');
-
-    function loadVideo(video) {
-      if (!video) {
-        document.getElementById('video-title').innerText = "Video not found";
-        return;
-      }
-
-      document.getElementById('video-title').innerText = `${video.name} - ${video.episode_name}`;
-
-      // Dynamically set the webpage title to the episode's title
-      document.title = `${video.name} - ${video.episode_name}`;
-
-      if (video.embed_code) {
-        iframeContainer.innerHTML = video.embed_code;
-        iframeContainer.style.display = 'block';
-      } else {
-        iframeContainer.style.display = 'none';
-      }
-
-      // Highlight the current episode button
-      const buttons = episodeList.getElementsByTagName('button');
-      for (let button of buttons) {
-        if (button.dataset.episodeId === video.episode_id) {
-          button.classList.add('active');
-        } else {
-          button.classList.remove('active');
-        }
-      }
-    }
-
-    function loadEpisodes(episodes, currentEpisodeId) {
-      episodeList.innerHTML = '';
-      episodes.forEach(episode => {
-        const button = document.createElement('button');
-        button.innerText = episode.episode_name;
-        button.dataset.episodeId = episode.episode_id;
-        button.onclick = () => {
-          loadVideo(episode);
-        };
-        if (episode.episode_id === currentEpisodeId) {
-          button.classList.add('active');
-        }
-        episodeList.appendChild(button);
-      });
-    }
-
-    function parseCSV(text) {
-      const lines = text.split('\n').map(line => line.trim()).filter(line => line);
-      const headers = lines.shift().split(',').map(header => header.trim());
-      const result = [];
-
-      lines.forEach(line => {
-        const currentline = line.split(',').map(value => value.trim());
-        if (currentline.length === headers.length) {
-          const obj = {};
-          headers.forEach((header, index) => {
-            obj[header] = currentline[index];
-          });
-          result.push(obj);
-        }
-      });
-
-      return result;
-    }
 
     fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/tv_series.csv')
-      .then(response => response.text())
-      .then(text => {
-        const data = parseCSV(text);
-        const videoId = new URLSearchParams(window.location.search).get('episode_id');
-        const series = data.find(v => v.episode_id === videoId);
-        if (series) {
-          const currentEpisode = series;
-          loadVideo(currentEpisode);
-          const episodes = data.filter(v => v.id === series.id);
-          loadEpisodes(episodes, currentEpisode.episode_id);
+      .then(response => response.json())
+      .then(data => {
+        allVideos = data;
+        const videoId = new URLSearchParams(window.location.search).get('id');
+        const video = data.find(v => v.id === videoId);
+        const videoContainer = document.getElementById('video-container');
+        const iframeContainer = document.getElementById('iframe-container');
+
+        if (video) {
+          document.getElementById('video-title').innerText = video.name;
+          document.getElementById('video-description').innerText = video.description || "No description available.";
+          document.getElementById('video-categories').innerHTML = `Categories: ${video.categories.map(category => `<a href="search-results.html?category=${encodeURIComponent(category)}">${category}</a>`).join(', ')}`;
+
+          // Dynamically set the webpage title to the video's title
+          document.title = video.name;
+
+          if (video.embed_code) {
+            iframeContainer.style.display = "block";
+            iframeContainer.innerHTML = video.embed_code;
+
+            // Extract width and height from the iframe code
+            const iframe = iframeContainer.querySelector('iframe');
+            if (iframe) {
+              iframe.style.width = '100%';
+              iframe.style.height = '100%';
+            }
+          } else if (video.url) {
+            const videoPlayer = document.createElement('video');
+            videoPlayer.controls = true;
+            videoPlayer.style.width = '100%';
+            videoPlayer.style.height = 'auto';
+            videoPlayer.src = video.url;
+            iframeContainer.appendChild(videoPlayer);
+
+            if (Hls.isSupported() && video.url.endsWith('.m3u8')) {
+              const hls = new Hls();
+              hls.loadSource(video.url);
+              hls.attachMedia(videoPlayer);
+            } else {
+              videoPlayer.load();
+            }
+          } else {
+            videoContainer.innerHTML = "<p>Video not available.</p>";
+          }
+
+          const suggestedVideosContainer = document.getElementById('suggested-videos');
+          suggestedVideosContainer.innerHTML = '';
+          video.suggestions.forEach(suggestionId => {
+            const suggestedVideo = data.find(v => v.id === String(suggestionId));
+            if (suggestedVideo) {
+              const suggestedVideoItem = document.createElement('div');
+              suggestedVideoItem.classList.add('suggested-video-item');
+              suggestedVideoItem.innerHTML = `
+                <a href="video.html?id=${suggestedVideo.id}">
+                  <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}">
+                  <h3>${suggestedVideo.name}</h3>
+                </a>`;
+              suggestedVideosContainer.appendChild(suggestedVideoItem);
+            }
+          });
         } else {
           document.getElementById('video-title').innerText = "Video not found";
+          document.getElementById('video-description').innerText = "This video could not be found.";
         }
       })
       .catch(error => {
         console.error('Error loading video data:', error);
         document.getElementById('video-title').innerText = "Error loading video";
+        document.getElementById('video-description').innerText = "There was an error loading the video details.";
       });
 
     function handleSearch() {
       const query = searchInput.value.toLowerCase();
-      fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/tv_series.csv')
-        .then(response => response.text())
-        .then(text => {
-          const data = parseCSV(text);
-          const filteredVideos = data.filter(video => video.name.toLowerCase().includes(query));
-          searchResultsContainer.style.display = 'block';
-          searchResultsContainer.innerHTML = '';
-          filteredVideos.slice(0, 5).forEach(video => {
-            const suggestionItem = document.createElement('div');
-            suggestionItem.innerHTML = `
-              <img src="${video.thumbnail}" alt="${video.name}">
-              ${video.name}
-            `;
-            suggestionItem.onclick = () => {
-              window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
-            };
-            searchResultsContainer.appendChild(suggestionItem);
-          });
+      const filteredVideos = allVideos.filter(video => video.name.toLowerCase().includes(query));
+
+      if (query) {
+        searchResultsContainer.style.display = 'block';
+        searchResultsContainer.innerHTML = '';
+        filteredVideos.slice(0, 5).forEach(video => {
+          const suggestionItem = document.createElement('div');
+          suggestionItem.innerHTML = `
+            <img src="${video.thumbnail}" alt="${video.name}">
+            ${video.name}
+          `;
+          suggestionItem.onclick = () => {
+            window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
+          };
+          searchResultsContainer.appendChild(suggestionItem);
         });
+      } else {
+        searchResultsContainer.style.display = 'none';
+      }
     }
 
     function handleEnter(event) {
       if (event.key === "Enter") {
-        handleSearch();
+        const query = searchInput.value.toLowerCase();
+        if (query) {
+          window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
+        }
       }
     }
   </script>
