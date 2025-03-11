@@ -170,10 +170,52 @@
     const paginationTop = document.getElementById('pagination-top');
     const paginationBottom = document.getElementById('pagination-bottom');
 
-    fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/videos1.json')
-      .then(response => response.json())
-      .then(data => {
-        allVideos = data; // Assuming there are multiple main IDs
+    function parseCSV(text) {
+      const lines = text.split('\n');
+      const headers = lines[0].split(',');
+      const result = [];
+
+      for (let i = 1; i < lines.length; i++) {
+        const obj = {};
+        const currentline = lines[i].split(',');
+
+        for (let j = 0; j < headers.length; j++) {
+          obj[headers[j].trim()] = currentline[j].trim();
+        }
+
+        if (obj.id) { // Ensure we only push valid entries
+          result.push(obj);
+        }
+      }
+
+      return result;
+    }
+
+    fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/tv_series.csv')
+      .then(response => response.text())
+      .then(text => {
+        allVideos = parseCSV(text).reduce((acc, video) => {
+          const existing = acc.find(v => v.id === video.id);
+          if (existing) {
+            existing.episodes.push({
+              episode_id: video.episode_id,
+              name: video.episode_name,
+              embed_code: video.embed_code
+            });
+          } else {
+            acc.push({
+              id: video.id,
+              name: video.name,
+              thumbnail: video.thumbnail,
+              episodes: [{
+                episode_id: video.episode_id,
+                name: video.episode_name,
+                embed_code: video.embed_code
+              }]
+            });
+          }
+          return acc;
+        }, []);
         renderVideos();
         renderPagination();
       })
@@ -224,10 +266,34 @@
 
     function handleSearch() {
       const query = searchInput.value.toLowerCase();
-      fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/videos1.json')
-        .then(response => response.json())
-        .then(data => {
-          const filteredVideos = data.filter(video => video.id.toLowerCase().includes(query));
+      fetch('videos1.csv')
+        .then(response => response.text())
+        .then(text => {
+          const data = parseCSV(text);
+          const filteredVideos = data.reduce((acc, video) => {
+            if (video.name.toLowerCase().includes(query)) {
+              const existing = acc.find(v => v.id === video.id);
+              if (existing) {
+                existing.episodes.push({
+                  episode_id: video.episode_id,
+                  name: video.episode_name,
+                  embed_code: video.embed_code
+                });
+              } else {
+                acc.push({
+                  id: video.id,
+                  name: video.name,
+                  thumbnail: video.thumbnail,
+                  episodes: [{
+                    episode_id: video.episode_id,
+                    name: video.episode_name,
+                    embed_code: video.embed_code
+                  }]
+                });
+              }
+            }
+            return acc;
+          }, []);
           allVideos = filteredVideos;
           currentPage = 1;
           renderVideos();
