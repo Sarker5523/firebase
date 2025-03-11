@@ -263,8 +263,8 @@
       .then(response => response.text())
       .then(text => {
         const data = parseCSV(text);
-        const videoId = new URLSearchParams(window.location.search).get('episode_id');
-        const series = data.find(v => v.episode_id === videoId);
+        const videoId = new URLSearchParams(window.location.search).get('id');
+        const series = data.find(v => v.id === videoId);
         if (series) {
           const currentEpisode = series;
           loadVideo(currentEpisode);
