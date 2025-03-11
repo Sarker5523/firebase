@@ -240,19 +240,38 @@
     const searchInput = document.getElementById('search-input');
     const searchResultsContainer = document.getElementById('search-suggestions');
 
+    function parseCSV(text) {
+      const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+      const headers = lines.shift().split(',').map(header => header.trim());
+      const result = [];
+
+      lines.forEach(line => {
+        const currentline = line.split(',').map(value => value.trim());
+        if (currentline.length === headers.length) {
+          const obj = {};
+          headers.forEach((header, index) => {
+            obj[header] = currentline[index];
+          });
+          result.push(obj);
+        }
+      });
+
+      return result;
+    }
+
     fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/tv_series.csv')
-      .then(response => response.json())
-      .then(data => {
-        allVideos = data;
-        const videoId = new URLSearchParams(window.location.search).get('id');
-        const video = data.find(v => v.id === videoId);
+      .then(response => response.text())
+      .then(text => {
+        allVideos = parseCSV(text);
+        const videoId = new URLSearchParams(window.location.search).get('episode_id');
+        const video = allVideos.find(v => v.episode_id === videoId);
         const videoContainer = document.getElementById('video-container');
         const iframeContainer = document.getElementById('iframe-container');
 
         if (video) {
           document.getElementById('video-title').innerText = video.name;
           document.getElementById('video-description').innerText = video.description || "No description available.";
-          document.getElementById('video-categories').innerHTML = `Categories: ${video.categories.map(category => `<a href="search-results.html?category=${encodeURIComponent(category)}">${category}</a>`).join(', ')}`;
+          document.getElementById('video-categories').innerHTML = `Categories: ${video.categories.split('|').map(category => `<a href="search-results.html?category=${encodeURIComponent(category)}">${category}</a>`).join(', ')}`;
 
           // Dynamically set the webpage title to the video's title
           document.title = video.name;
@@ -288,13 +307,13 @@
 
           const suggestedVideosContainer = document.getElementById('suggested-videos');
           suggestedVideosContainer.innerHTML = '';
-          video.suggestions.forEach(suggestionId => {
-            const suggestedVideo = data.find(v => v.id === String(suggestionId));
+          video.suggestions.split('|').forEach(suggestionId => {
+            const suggestedVideo = allVideos.find(v => v.episode_id === suggestionId);
             if (suggestedVideo) {
               const suggestedVideoItem = document.createElement('div');
               suggestedVideoItem.classList.add('suggested-video-item');
               suggestedVideoItem.innerHTML = `
-                <a href="video.html?id=${suggestedVideo.id}">
+                <a href="video.html?episode_id=${suggestedVideo.episode_id}">
                   <img src="${suggestedVideo.thumbnail}" alt="${suggestedVideo.name}">
                   <h3>${suggestedVideo.name}</h3>
                 </a>`;
@@ -344,6 +363,5 @@
       }
     }
   </script>
-
 </body>
 </html>
