@@ -209,10 +209,10 @@
         return;
       }
 
-      document.getElementById('video-title').innerText = video.name;
+      document.getElementById('video-title').innerText = video.episode_name;
 
       // Dynamically set the webpage title to the video's title
-      document.title = video.name;
+      document.title = video.episode_name;
 
       if (video.embed_code) {
         iframeContainer.innerHTML = video.embed_code;
@@ -234,7 +234,7 @@
       episodeList.innerHTML = '';
       episodes.forEach(episode => {
         const button = document.createElement('button');
-        button.innerText = episode.name;
+        button.innerText = episode.episode_name;
         button.onclick = () => {
           loadVideo(episode);
         };
@@ -256,7 +256,7 @@
         const currentline = lines[i].split(',');
 
         for (let j = 0; j < headers.length; j++) {
-          obj[headers[j]] = currentline[j];
+          obj[headers[j].trim()] = currentline[j].trim();
         }
 
         result.push(obj);
@@ -287,7 +287,7 @@
 
     function handleSearch() {
       const query = searchInput.value.toLowerCase();
-      fetch('videos1.csv')
+      fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/tv_series.csv')
         .then(response => response.text())
         .then(text => {
           const data = parseCSV(text);
