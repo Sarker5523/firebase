@@ -265,7 +265,7 @@
       return result;
     }
 
-    fetch('videos1.csv')
+    fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/tv_series.csv')
       .then(response => response.text())
       .then(text => {
         const data = parseCSV(text);
