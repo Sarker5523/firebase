@@ -90,15 +90,11 @@
       border-radius: 4px;
       margin-right: 10px;
     }
-    .video-list-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 20px;
-    }
     .video-list {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 20px;
+      padding: 20px;
       box-sizing: border-box;
     }
     .video-item {
@@ -170,7 +166,7 @@
       }
     }
 
-    @media (min-width: 1201px) and (max-width: 1920px) {
+    @media (min-width: 1201px) {
       .video-list {
         grid-template-columns: repeat(4, 1fr);
         gap: 10px;
@@ -181,6 +177,22 @@
     }
 
     @media (min-width: 1921px) {
+      .video-list {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 10px;
+      }
+      .video-item {
+        max-width: 180px;
+        padding: 5px;
+      }
+      .video-item img {
+        width: 100%;
+        height: auto;
+        max-height: 120px;
+      }
+    }
+
+    @media (min-width: 1921px) and (orientation: landscape) {
       .video-list {
         grid-template-columns: repeat(5, 1fr);
         gap: 10px;
