@@ -168,8 +168,8 @@ header .home-btn {
 }
 
 .title-container .play-button {
-  width: 24px; /* Increased size */
-  height: 24px; /* Increased size */
+  width: 28px; /* Increased size */
+  height: 228px; /* Increased size */
   background-color: #00ab41;
   mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
   -webkit-mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
@@ -189,8 +189,8 @@ header .home-btn {
     max-width: 100%;
   }
   header .home-btn {
-    font-size: 8px; /* Adjust font size */
-    padding: 5px 10px; /* Adjust padding */
+    font-size: 12px; /* Adjust font size */
+    padding: 8px 13px; /* Adjust padding */
   }
   .search-bar {
     width: 5%;
