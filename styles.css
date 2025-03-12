@@ -191,11 +191,13 @@ header .home-btn {
     flex: none;
     max-width: 100%;
   }
+  
   header .home-btn {
     font-size: 12px; /* Adjust font size */
     padding: 8px 13px; /* Adjust padding */
   }
   .search-bar {
+    padding: 5px 8px; /* Adjust padding to make height smaller */
     width: 70%; /* Adjust width */
     margin-left: 20%; /* Add margin to the left */
   }
