@@ -189,7 +189,7 @@ header .home-btn {
     max-width: 100%;
   }
   .search-bar {
-    width: 100%;
+    width: 50%;
   }
 }
 
@@ -203,8 +203,7 @@ header .home-btn {
 /* PC/TV specific styles */
 @media (min-width: 1201px) {
   .title-container {
-    font-size: 46px;
-    margin-left: 95px; /* Shift to the right */
+    margin-left: 130px; /* Shift to the right */
   }
   .title-container .play-button {
     width: 64px; /* Increased size */
