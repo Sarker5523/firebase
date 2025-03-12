@@ -169,7 +169,7 @@ header .home-btn {
 
 .title-container .play-button {
   width: 28px; /* Increased size */
-  height: 228px; /* Increased size */
+  height: 28px; /* Increased size */
   background-color: #00ab41;
   mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
   -webkit-mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
@@ -185,7 +185,7 @@ header .home-btn {
     gap: 20px;
   }
   .video-item h3 {
-  font-size: 10px;
+  font-size: 12px;
   }
   .video-item {
     flex: none;
