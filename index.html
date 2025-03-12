@@ -89,7 +89,7 @@
       box-sizing: border-box;
     }
     .video-item {
-      background-color: transparent; /* Changed to transparent */
+      background-color: transparent;
       border-radius: 10px;
       padding: 0;
       text-align: center;
@@ -113,7 +113,7 @@
       font-size: 18px;
       margin: 0;
       padding: 10px;
-      color: #fff; /* Changed to white */
+      color: #fff;
       background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent background */
       position: absolute;
       bottom: 0;
@@ -201,6 +201,32 @@
       .video-item {
         flex: 1 1 calc(16.66% - 20px); /* Six items per row */
         max-width: calc(16.66% - 20px);
+      }
+    }
+
+    /* PC/TV specific styles */
+    @media (min-width: 1201px) {
+      header .home-btn,
+      header .title-container h1,
+      header .play-button,
+      header .search-bar {
+        font-size: 24px; /* Increase font size */
+        padding: 12px 18px; /* Increase padding */
+      }
+      .search-bar {
+        position: absolute;
+        right: 10px; /* Shift to the left */
+        transform: translateX(0%);
+      }
+      header .title-container {
+        flex-grow: 1;
+        order: 1;
+      }
+      header .search-bar {
+        order: 2;
+      }
+      header .home-btn {
+        order: 3;
       }
     }
   </style>
