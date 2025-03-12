@@ -10,7 +10,7 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 20px 40px;
+  padding: 15px 25px;
   background-color: #000;
   color: #00ab41;
 }
@@ -208,6 +208,7 @@ header .home-btn {
   }
   .title-container h1 {
     margin-right: 5px; /* Reduce space between MPlix and video icon */
+    margin-top: 10px; 
   }
 }
 
