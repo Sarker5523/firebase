@@ -168,8 +168,8 @@ header .home-btn {
 }
 
 .title-container .play-button {
-  width: 24px; /* Increased size */
-  height: 24px; /* Increased size */
+  width: 32px; /* Increased size */
+  height: 32px; /* Increased size */
   background-color: #00ab41;
   mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
   -webkit-mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
