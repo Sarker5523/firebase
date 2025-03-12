@@ -7,43 +7,34 @@
   <link rel="stylesheet" href="styles.css">
   <style>
     .video-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    width: 100%;
-    box-sizing: border-box;
-    text-align: center; /* Center align video player */
-  }
-    .iframe-container {
-      width: 100%;
-      position: relative;
-      padding-bottom: 56.25%; /* 16:9 aspect ratio */
-      height: 0;
-      overflow: hidden;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
-    }
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center; /* Center align video player */
+}
     .iframe-container iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
-    }
-    .video-details {
-    padding: 20px;
-    background-color: #333;
-    border-radius: 15px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    margin: 20px auto; /* Center align title and episode list */
-    width: 80%;
-    box-sizing: border-box;
-    text-align: center; /* Center align title and episode list */
-  }
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
+}
+.video-details {
+  padding: 20px;
+  background-color: #333;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  margin: 20px auto; /* Center align title and episode list */
+  width: 80%;
+  box-sizing: border-box;
+  text-align: center; /* Center align title and episode list */
+}
     .video-details h2 {
       font-size: 20px;
       margin: 0;
@@ -108,8 +99,10 @@
 
   <header>
     <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
-    <h1>MPlix</h1>
-    <div class="play-button"></div>
+    <div class="mplix-title" style="display: flex; align-items: center;">
+    <h1 style="color: white; margin: 0;">MPlix</h1>
+    <div class="play-button" style="margin-left: 10px;"></div>
+  </div>
     <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="handleSearch()" onkeydown="handleEnter(event)">
     <div id="search-suggestions" class="search-suggestions"></div>
   </header>
