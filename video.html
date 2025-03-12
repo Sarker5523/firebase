@@ -90,18 +90,22 @@
       }
     }
     @media (min-width: 601px) and (max-width: 1200px) {
-      .video-container {
-        max-width: 75%;
-        padding: 20px;
-        height: auto;
-      }
-    }
-    @media (min-width: 1201px) {
-      .video-container {
-        max-width: 60%;
-        padding: 20px;
-        height: auto;
-      }
+  .video-container {
+    max-width: 75%;
+    padding: 20px;
+    height: auto;
+    margin-left: auto; /* Shift the video player to the right */
+  }
+}
+
+@media (min-width: 1201px) {
+  .video-container {
+    max-width: 60%;
+    padding: 20px;
+    height: auto;
+    margin-left: auto; /* Shift the video player to the right */
+  }
+}
     }
   </style>
 </head>
