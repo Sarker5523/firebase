@@ -97,6 +97,11 @@
       padding: 20px;
       box-sizing: border-box;
     }
+    @media (min-width: 1024px) and (max-width: 1920px) {
+      .video-list {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      }
+    }
     .video-item {
       background-color: #333;
       border-radius: 10px;
