@@ -196,7 +196,8 @@ header .home-btn {
     padding: 8px 13px; /* Adjust padding */
   }
   .search-bar {
-    width: 5%;
+    width: 90%; /* Adjust width */
+    margin-left: 5%; /* Add margin to the left */
   }
   .title-container {
     display: flex;
