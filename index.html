@@ -13,20 +13,18 @@
       padding: 0;
     }
     header {
-      text-align: center;
-      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
       background-color: #000;
       color: #00ab41;
-      position: relative;
     }
     header .home-btn {
-      position: absolute;
-      left: 10px;
-      top: 10px;
-      font-size: 16px;
+      font-size: 18px;
       color: #00ab41;
       background-color: #333;
-      padding: 8px 12px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: none;
       cursor: pointer;
@@ -41,14 +39,14 @@
     .search-bar {
       width: 100%;
       max-width: 400px;
-      padding: 8px 10px;
-      margin-top: 10px;
-      margin-bottom: 10px;
+      padding: 10px 16px;
+      margin: 0 20px;
       border-radius: 5px;
       border: none;
-      font-size: 14px;
+      font-size: 16px;
       background-color: #222;
       color: white;
+      flex-grow: 1;
     }
     .search-suggestions {
       position: absolute;
@@ -148,18 +146,17 @@
     .title-container {
       display: flex;
       align-items: center;
-      justify-content: center;
       margin-bottom: 10px;
     }
     .title-container h1 {
       color: white;
-      font-size: 30px;
+      font-size: 36px; /* Increased font size */
       margin: 0;
       margin-right: 10px;
     }
     .title-container .play-button {
-      width: 30px;
-      height: 30px;
+      width: 24px; /* Decreased size */
+      height: 24px; /* Decreased size */
       background-color: #00ab41;
       mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
       -webkit-mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
@@ -201,32 +198,6 @@
       .video-item {
         flex: 1 1 calc(16.66% - 20px); /* Six items per row */
         max-width: calc(16.66% - 20px);
-      }
-    }
-
-    /* PC/TV specific styles */
-    @media (min-width: 1201px) {
-      header .home-btn,
-      header .title-container h1,
-      header .play-button,
-      header .search-bar {
-        font-size: 24px; /* Increase font size */
-        padding: 12px 18px; /* Increase padding */
-      }
-      .search-bar {
-        position: absolute;
-        right: 10px; /* Shift to the left */
-        transform: translateX(0%);
-      }
-      header .title-container {
-        flex-grow: 1;
-        order: 1;
-      }
-      header .search-bar {
-        order: 2;
-      }
-      header .home-btn {
-        order: 3;
       }
     }
   </style>
