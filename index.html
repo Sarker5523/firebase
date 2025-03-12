@@ -149,9 +149,14 @@
 
     /* Media queries for responsive design */
     @media (max-width: 600px) {
+      .video-list {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Two columns for mobile */
+        gap: 20px;
+      }
       .video-item {
-        flex: 1 1 calc(50% - 20px); /* Two items per row */
-        max-width: calc(50% - 20px);
+        flex: none;
+        max-width: 100%;
       }
       .search-bar {
         width: 100%;
