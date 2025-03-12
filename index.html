@@ -97,15 +97,19 @@
       padding: 20px;
       box-sizing: border-box;
     }
-    @media (min-width: 1920px) {
+    @media (min-width: 1920px) and (max-width: 1920px) and (min-height: 1080px) and (max-height: 1080px) {
       .video-list {
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      }
-      .video-item {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
         padding: 10px;
       }
+      
+      .video-item {
+        padding: 5px;
+      }
+
       .video-item img {
-        height: 150px;
+        height: 100px;
       }
     }
     .video-item {
