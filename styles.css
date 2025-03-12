@@ -157,6 +157,7 @@ header .home-btn {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  margin-left: 20px; /* Shift to the right */
 }
 
 .title-container h1 {
@@ -167,8 +168,8 @@ header .home-btn {
 }
 
 .title-container .play-button {
-  width: 24px; /* Decreased size */
-  height: 24px; /* Decreased size */
+  width: 48px; /* Increased size */
+  height: 48px; /* Increased size */
   background-color: #00ab41;
   mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
   -webkit-mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
@@ -202,11 +203,11 @@ header .home-btn {
 /* PC/TV specific styles */
 @media (min-width: 1201px) {
   .title-container {
-    margin-left: -20px; /* Shift to the left */
+    margin-left: 20px; /* Shift to the right */
   }
   .title-container .play-button {
-    width: 32px; /* Increased size */
-    height: 32px; /* Increased size */
+    width: 64px; /* Increased size */
+    height: 64px; /* Increased size */
   }
   .video-item {
     flex: 1 1 calc(16% - 20px); /* Slightly smaller items and more space */
