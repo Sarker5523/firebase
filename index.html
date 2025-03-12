@@ -90,11 +90,15 @@
       border-radius: 4px;
       margin-right: 10px;
     }
+    .video-list-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
     .video-list {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 20px;
-      padding: 20px;
       box-sizing: border-box;
     }
     .video-item {
@@ -146,7 +150,6 @@
       .video-list {
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
         gap: 10px;
-        padding: 10px;
       }
       .search-bar {
         width: 100%;
@@ -156,34 +159,25 @@
       }
     }
 
-    @media (min-width: 601px) and (max-width: 1920px) {
+    @media (min-width: 601px) and (max-width: 1200px) {
+      .video-list {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
+      }
+      .video-item img {
+        max-height: 150px;
+      }
+    }
+
+    @media (min-width: 1201px) {
       .video-list {
         grid-template-columns: repeat(4, 1fr);
-        gap: 10px;
-        padding: 10px;
+        gap: 20px;
       }
       .video-item img {
         max-height: 150px;
       }
     }
-
-    @media (min-width: 1921px) {
-      .video-list {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 10px;
-        padding: 10px;
-      }
-      .video-item {
-        max-width: 100%;
-        padding: 5px;
-      }
-      .video-item img {
-        width: 100%;
-        height: auto;
-        max-height: 150px;
-      }
-    }
-
   </style>
 </head>
 <body>
@@ -199,7 +193,9 @@
 
   <div class="pagination" id="pagination-top"></div>
 
-  <div class="video-list" id="video-list"></div>
+  <div class="video-list-container">
+    <div class="video-list" id="video-list"></div>
+  </div>
 
   <div class="pagination" id="pagination-bottom"></div>
 
