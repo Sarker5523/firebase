@@ -19,7 +19,7 @@ header .home-btn {
   font-size: 18px;
   color: #00ab41;
   background-color: #333;
-  padding: 10px 16px;
+  padding: 8px 12px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
@@ -162,14 +162,14 @@ header .home-btn {
 
 .title-container h1 {
   color: white;
-  font-size: 16px; /* Increased font size */
+  font-size: 20px; /* Increased font size */
   margin: 0;
   margin-right: 10px;
 }
 
 .title-container .play-button {
-  width: 28px; /* Increased size */
-  height: 28px; /* Increased size */
+  width: 30px; /* Increased size */
+  height: 30px; /* Increased size */
   background-color: #00ab41;
   mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
   -webkit-mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
