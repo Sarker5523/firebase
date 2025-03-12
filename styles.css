@@ -157,7 +157,7 @@ header .home-btn {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
-  margin-left: 20px; /* Shift to the right */
+  margin-left: 50px; /* Shift to the right */
 }
 
 .title-container h1 {
