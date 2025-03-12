@@ -93,8 +93,8 @@
       text-align: center;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
       transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-      flex: 1 1 calc(16.66% - 20px); /* Six items per row */
-      max-width: calc(16.66% - 20px);
+      flex: 1 1 calc(16% - 20px); /* Slightly smaller items */
+      max-width: calc(16% - 20px); /* Slightly more space between items */
       position: relative; /* Added to position the title */
     }
     .video-item:hover {
@@ -147,6 +147,7 @@
       display: flex;
       align-items: center;
       margin-bottom: 10px;
+      margin-left: -20px; /* Shift to the left */
     }
     .title-container h1 {
       color: white;
@@ -155,8 +156,8 @@
       margin-right: 10px;
     }
     .title-container .play-button {
-      width: 24px; /* Decreased size */
-      height: 24px; /* Decreased size */
+      width: 32px; /* Increased size */
+      height: 32px; /* Increased size */
       background-color: #00ab41;
       mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
       -webkit-mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
@@ -196,8 +197,8 @@
 
     @media (min-width: 1601px) {
       .video-item {
-        flex: 1 1 calc(16.66% - 20px); /* Six items per row */
-        max-width: calc(16.66% - 20px);
+        flex: 1 1 calc(16% - 20px); /* Slightly smaller items and more space */
+        max-width: calc(16% - 20px); /* Slightly more space between items */
       }
     }
   </style>
