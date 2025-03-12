@@ -98,15 +98,14 @@
 <body>
 
   <header>
-    <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
-    <div class="mplix-title" style="display: flex; align-items: center;">
+  <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
+  <div class="mplix-title" style="display: flex; align-items: center;">
     <h1 style="color: white; margin: 0;">MPlix</h1>
     <div class="play-button" style="margin-left: 10px;"></div>
   </div>
-    <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="handleSearch()" onkeydown="handleEnter(event)">
-    <div id="search-suggestions" class="search-suggestions"></div>
-  </header>
-
+  <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="handleSearch()" onkeydown="handleEnter(event)">
+  <div id="search-suggestions" class="search-suggestions"></div>
+</header>
   <div class="video-container" id="video-container">
     <div class="iframe-container" id="iframe-container" style="display: none;"></div>
   </div>
