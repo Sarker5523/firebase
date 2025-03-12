@@ -157,19 +157,19 @@ header .home-btn {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
-  margin-left: 50px; /* Shift to the right */
+  margin-left: 20px; /* Shift to the right */
 }
 
 .title-container h1 {
   color: white;
-  font-size: 36px; /* Increased font size */
+  font-size: 24px; /* Increased font size */
   margin: 0;
   margin-right: 10px;
 }
 
 .title-container .play-button {
-  width: 48px; /* Increased size */
-  height: 48px; /* Increased size */
+  width: 24px; /* Increased size */
+  height: 24px; /* Increased size */
   background-color: #00ab41;
   mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
   -webkit-mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
@@ -203,7 +203,7 @@ header .home-btn {
 /* PC/TV specific styles */
 @media (min-width: 1201px) {
   .title-container {
-    margin-left: 20px; /* Shift to the right */
+    margin-left: 50px; /* Shift to the right */
   }
   .title-container .play-button {
     width: 64px; /* Increased size */
