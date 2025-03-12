@@ -188,6 +188,9 @@ header .home-btn {
     flex: none;
     max-width: 100%;
   }
+  .home-btn {
+  font-size: 8px;
+  }
   .search-bar {
     width: 20%;
   }
