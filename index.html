@@ -97,6 +97,7 @@
       transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
       flex: 1 1 calc(16.66% - 20px); /* Six items per row */
       max-width: calc(16.66% - 20px);
+      position: relative; /* Added to position the title */
     }
     .video-item:hover {
       transform: translateY(-4px);
@@ -120,6 +121,7 @@
       box-sizing: border-box;
       border-bottom-left-radius: 8px;
       border-bottom-right-radius: 8px;
+      display: block; /* Always display the title */
     }
     .pagination {
       display: flex;
