@@ -1,255 +1,122 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video Details</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>
-    .video-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      width: 100%;
-      box-sizing: border-box;
-      text-align: center; /* Center align video player */
-    }
-    .iframe-container {
-      width: 100%;
-      position: relative;
-      padding-bottom: 56.25%; /* 16:9 aspect ratio */
-      height: 0;
-      overflow: hidden;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
-    }
-    .iframe-container iframe {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      border: 0;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
-    }
-        .video-details {
-      padding: 10px;
-      background-color: #333;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-      margin: 20px auto; /* Center align title and episode list */
-      width: 80%; /* Decrease the width of the box */
-      box-sizing: border-box;
-      text-align: center; /* Center align title and episode list */
-    }
-    
-    .video-details h2 {
-      font-size: 20px; /* Increase the font size of the video title */
-      margin: 0;
-      padding-bottom: 6px;
-      border-bottom: 3px solid #444;
-    }
-    
-    .episode-list {
-      margin: 20px 0;
-      display: flex;
-      justify-content: center; /* Center align episode list */
-      flex-wrap: wrap;
-      font-size: 18px; /* Adjust the font size for episode buttons */
-    }
-    .episode-list button {
-      background-color: #444;
-      color: #00ab41;
-      border: none;
-      padding: 10px 20px;
-      margin: 5px;
-      cursor: pointer;
-      border-radius: 8px;
-      transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
-    }
-    .episode-list button:hover {
-      background-color: #00ab41;
-      color: #000;
-      transform: translateY(-4px);
-    }
-    .episode-list button.active {
-      background-color: #00ab41;
-      color: #000;
-    }
-    @media (max-width: 600px) {
-      .video-container {
-        max-width: 100%;
-        padding: 10px;
-        height: auto;
-      }
-      .iframe-container {
-        width: 100%;
-        height: auto;
-        border-radius: 10px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
-      }
-    }
-    @media (min-width: 601px) and (max-width: 1200px) {
-  .video-container {
-    max-width: 75%;
-    padding: 20px;
-    height: auto;
-    margin-left: 320px; /* Shift the video player to the right */
-  }
-}
+<script>
+  const searchInput = document.getElementById('search-input');
+  const searchResultsContainer = document.getElementById('search-suggestions');
+  const iframeContainer = document.getElementById('iframe-container');
+  const episodeList = document.getElementById('episode-list');
 
-@media (min-width: 1201px) {
-  .video-container {
-    max-width: 60%;
-    padding: 20px;
-    height: auto;
-    margin-left: 320px; /* Shift the video player to the right */
-  }
-}
+  function loadVideo(video) {
+    if (!video) {
+      document.getElementById('video-title').innerText = "Video not found";
+      return;
     }
-  </style>
-</head>
-<body>
 
-  <header>
-    <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
-    <div class="mplix-title" style="display: flex; align-items: center;">
-      <h1 style="color: white; margin: 0;">MPlix</h1>
-      <div class="play-button" style="margin-left: 10px;"></div>
-    </div>
-    <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="handleSearch()" onkeydown="handleEnter(event)">
-    <div id="search-suggestions" class="search-suggestions"></div>
-  </header>
+    document.getElementById('video-title').innerText = `${video.name} - ${video.episode_name}`;
 
-  <div class="video-container" id="video-container">
-    <div class="iframe-container" id="iframe-container" style="display: none;"></div>
-  </div>
+    // Dynamically set the webpage title to the episode's title
+    document.title = `${video.name} - ${video.episode_name}`;
 
-  <div class="video-details">
-    <h2 id="video-title"></h2>
-    <div class="episode-list" id="episode-list"></div>
-  </div>
+    if (video.embed_code) {
+      iframeContainer.innerHTML = video.embed_code;
+      iframeContainer.style.display = 'block';
+    } else {
+      iframeContainer.style.display = 'none';
+    }
 
-  <script>
-    const searchInput = document.getElementById('search-input');
-    const searchResultsContainer = document.getElementById('search-suggestions');
-    const iframeContainer = document.getElementById('iframe-container');
-    const episodeList = document.getElementById('episode-list');
-
-    function loadVideo(video) {
-      if (!video) {
-        document.getElementById('video-title').innerText = "Video not found";
-        return;
-      }
-
-      document.getElementById('video-title').innerText = `${video.name} - ${video.episode_name}`;
-
-      // Dynamically set the webpage title to the episode's title
-      document.title = `${video.name} - ${video.episode_name}`;
-
-      if (video.embed_code) {
-        iframeContainer.innerHTML = video.embed_code;
-        iframeContainer.style.display = 'block';
+    // Highlight the current episode button
+    const buttons = episodeList.getElementsByTagName('button');
+    for (let button of buttons) {
+      if (button.dataset.episodeId === video.episode_id) {
+        button.classList.add('active');
       } else {
-        iframeContainer.style.display = 'none';
-      }
-
-      // Highlight the current episode button
-      const buttons = episodeList.getElementsByTagName('button');
-      for (let button of buttons) {
-        if (button.dataset.episodeId === video.episode_id) {
-          button.classList.add('active');
-        } else {
-          button.classList.remove('active');
-        }
+        button.classList.remove('active');
       }
     }
+  }
 
-    function loadEpisodes(episodes, currentEpisodeId) {
-      episodeList.innerHTML = '';
-      episodes.forEach(episode => {
-        const button = document.createElement('button');
-        button.innerText = episode.episode_name;
-        button.dataset.episodeId = episode.episode_id;
-        button.onclick = () => {
-          loadVideo(episode);
-        };
-        if (episode.episode_id === currentEpisodeId) {
-          button.classList.add('active');
-        }
-        episodeList.appendChild(button);
-      });
-    }
+  function loadEpisodes(episodes, currentEpisodeId) {
+    episodeList.innerHTML = '';
+    episodes.forEach(episode => {
+      const button = document.createElement('button');
+      button.innerText = episode.episode_name;
+      button.dataset.episodeId = episode.episode_id;
+      button.onclick = () => {
+        loadVideo(episode);
+      };
+      if (episode.episode_id === currentEpisodeId) {
+        button.classList.add('active');
+      }
+      episodeList.appendChild(button);
+    });
+  }
 
-    function parseCSV(text) {
-      const lines = text.split('\n').map(line => line.trim()).filter(line => line);
-      const headers = lines.shift().split(',').map(header => header.trim());
-      const result = [];
+  function parseCSV(text) {
+    const lines = text.split('\n').map(line => line.trim()).filter(line => line);
+    const headers = lines.shift().split(',').map(header => header.trim());
+    const result = [];
 
-      lines.forEach(line => {
-        const currentline = line.split(',').map(value => value.trim());
-        if (currentline.length === headers.length) {
-          const obj = {};
-          headers.forEach((header, index) => {
-            obj[header] = currentline[index];
-          });
-          result.push(obj);
-        }
-      });
+    lines.forEach(line => {
+      const currentline = line.split(',').map(value => value.trim());
+      if (currentline.length === headers.length) {
+        const obj = {};
+        headers.forEach((header, index) => {
+          obj[header] = currentline[index];
+        });
+        result.push(obj);
+      }
+    });
 
-      return result;
-    }
+    return result;
+  }
 
+  fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/tv_series.csv')
+    .then(response => response.text())
+    .then(text => {
+      const data = parseCSV(text);
+      const videoId = new URLSearchParams(window.location.search).get('id');
+      const series = data.find(v => v.id === videoId);
+      if (series) {
+        const currentEpisode = series;
+        loadVideo(currentEpisode);
+        const episodes = data.filter(v => v.id === series.id);
+        loadEpisodes(episodes, currentEpisode.episode_id);
+      } else {
+        document.getElementById('video-title').innerText = "Video not found";
+      }
+    })
+    .catch(error => {
+      console.error('Error loading video data:', error);
+      document.getElementById('video-title').innerText = "Error loading video";
+    });
+
+  function handleSearch() {
+    const query = searchInput.value.toLowerCase();
     fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/tv_series.csv')
       .then(response => response.text())
       .then(text => {
         const data = parseCSV(text);
-        const videoId = new URLSearchParams(window.location.search).get('id');
-        const series = data.find(v => v.id === videoId);
-        if (series) {
-          const currentEpisode = series;
-          loadVideo(currentEpisode);
-          const episodes = data.filter(v => v.id === series.id);
-          loadEpisodes(episodes, currentEpisode.episode_id);
-        } else {
-          document.getElementById('video-title').innerText = "Video not found";
-        }
-      })
-      .catch(error => {
-        console.error('Error loading video data:', error);
-        document.getElementById('video-title').innerText = "Error loading video";
-      });
+        const filteredVideos = data.filter(video => video.name.toLowerCase().includes(query));
+        const uniqueVideos = Array.from(new Set(filteredVideos.map(video => video.id)))
+                                  .map(id => filteredVideos.find(video => video.id === id));
 
-    function handleSearch() {
-      const query = searchInput.value.toLowerCase();
-      fetch('https://raw.githubusercontent.com/Sarker5523/My-Playlists/main/tv_series.csv')
-        .then(response => response.text())
-        .then(text => {
-          const data = parseCSV(text);
-          const filteredVideos = data.filter(video => video.name.toLowerCase().includes(query));
-          searchResultsContainer.style.display = 'block';
-          searchResultsContainer.innerHTML = '';
-          filteredVideos.slice(0, 5).forEach(video => {
-            const suggestionItem = document.createElement('div');
-            suggestionItem.innerHTML = `
-              <img src="${video.thumbnail}" alt="${video.name}">
-              ${video.name}
-            `;
-            suggestionItem.onclick = () => {
-              window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
-            };
-            searchResultsContainer.appendChild(suggestionItem);
-          });
+        searchResultsContainer.style.display = 'block';
+        searchResultsContainer.innerHTML = '';
+        uniqueVideos.slice(0, 5).forEach(video => {
+          const suggestionItem = document.createElement('div');
+          suggestionItem.innerHTML = `
+            <img src="${video.thumbnail}" alt="${video.name}">
+            ${video.name}
+          `;
+          suggestionItem.onclick = () => {
+            window.location.href = `search-results.html?q=${encodeURIComponent(query)}`;
+          };
+          searchResultsContainer.appendChild(suggestionItem);
         });
-    }
-    function handleEnter(event) {
-      if (event.key === "Enter") {
-        handleSearch();
-      }
-    }
-  </script>
+      });
+  }
 
-</body>
-</html>
+  function handleEnter(event) {
+    if (event.key === "Enter") {
+      window.location.href = `search-results.html?q=${encodeURIComponent(searchInput.value)}`;
+    }
+  }
+</script>
