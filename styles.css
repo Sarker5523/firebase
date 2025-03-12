@@ -203,8 +203,8 @@ header .home-btn {
 /* PC/TV specific styles */
 @media (min-width: 1201px) {
   .title-container {
-    font-size: 36px;
-    margin-left: 80px; /* Shift to the right */
+    font-size: 46px;
+    margin-left: 95px; /* Shift to the right */
   }
   .title-container .play-button {
     width: 64px; /* Increased size */
