@@ -19,13 +19,7 @@
       color: #00ab41;
       position: relative;
     }
-    header h1 {
-      font-size: 30px;
-      font-weight: bold;
-      color: white;
-      margin: 0;
-    }
-    .home-btn {
+    header .home-btn {
       position: absolute;
       left: 10px;
       top: 10px;
@@ -141,6 +135,28 @@
       transform: translateY(-4px);
     }
 
+    .title-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+    .title-container h1 {
+      color: white;
+      font-size: 30px;
+      margin: 0;
+      margin-right: 10px;
+    }
+    .title-container .play-button {
+      width: 30px;
+      height: 30px;
+      background-color: #00ab41;
+      mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
+      -webkit-mask: url('https://img.icons8.com/ios-filled/50/ffffff/play-button-circled--v1.png') no-repeat center;
+      mask-size: cover;
+      -webkit-mask-size: cover;
+    }
+
     /* Media queries for responsive design */
     @media (max-width: 600px) {
       .video-list {
@@ -183,6 +199,10 @@
 
   <header>
     <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
+    <div class="title-container">
+      <h1>MPlix</h1>
+      <div class="play-button"></div>
+    </div>
     <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="handleSearch()" onkeydown="handleEnter(event)">
     <div id="search-suggestions" class="search-suggestions"></div>
   </header>
