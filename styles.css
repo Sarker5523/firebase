@@ -184,6 +184,9 @@ header .home-btn {
     grid-template-columns: repeat(2, 1fr); /* Two columns for mobile */
     gap: 20px;
   }
+  .video-item h3 {
+  font-size: 10px;
+  }
   .video-item {
     flex: none;
     max-width: 100%;
