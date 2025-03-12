@@ -96,8 +96,8 @@
       padding: 20px;
     }
     .video-list {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
       gap: 20px;
       box-sizing: border-box;
     }
@@ -108,8 +108,6 @@
       text-align: center;
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
       transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-      flex: 1 1 calc(20% - 20px); /* Five items per row */
-      max-width: calc(20% - 20px);
     }
     .video-item:hover {
       transform: translateY(-4px);
@@ -149,9 +147,8 @@
 
     /* Media queries for responsive design */
     @media (max-width: 600px) {
-      .video-item {
-        flex: 1 1 calc(100% - 20px); /* One item per row */
-        max-width: calc(100% - 20px);
+      .video-list {
+        grid-template-columns: repeat(2, 1fr);
       }
       .search-bar {
         width: 100%;
@@ -159,23 +156,27 @@
     }
 
     @media (min-width: 601px) and (max-width: 1200px) {
-      .video-item {
-        flex: 1 1 calc(33.33% - 20px); /* Three items per row */
-        max-width: calc(33.33% - 20px);
+      .video-list {
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 
     @media (min-width: 1201px) and (max-width: 1600px) {
-      .video-item {
-        flex: 1 1 calc(25% - 20px); /* Four items per row */
-        max-width: calc(25% - 20px);
+      .video-list {
+        grid-template-columns: repeat(4, 1fr);
       }
     }
 
     @media (min-width: 1601px) {
+      .video-list {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 10px;
+      }
       .video-item {
-        flex: 1 1 calc(20% - 20px); /* Five items per row */
-        max-width: calc(20% - 20px);
+        padding: 5px;
+      }
+      .video-item img {
+        max-height: 150px;
       }
     }
   </style>
@@ -200,7 +201,7 @@
   <div class="pagination" id="pagination-bottom"></div>
 
   <script>
-    const itemsPerPage = 5;
+    const itemsPerPage = 36;
     let currentPage = 1;
     let allVideos = [];
 
@@ -299,6 +300,7 @@
           button.onclick = () => {
             currentPage = i;
             renderVideos();
+            renderPagination();
           };
           paginationTop.appendChild(button);
           paginationBottom.appendChild(button);
