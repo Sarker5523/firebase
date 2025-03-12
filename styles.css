@@ -188,7 +188,7 @@ header .home-btn {
     flex: none;
     max-width: 100%;
   }
-  .home-btn {
+  header .home-btn {
     font-size: 8px; /* Adjust font size */
     padding: 5px 10px; /* Adjust padding */
   }
