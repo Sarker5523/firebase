@@ -96,6 +96,16 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
       }
     }
+     @media (orientation: landscape) and (max-width: 600px) {
+      .iframe-container {
+        width: 40%; /* Adjust width for landscape mode */
+        height: 40%;
+        margin: 0 auto;
+      }
+      .video-details {
+        top: 10px;
+      }
+    }
     @media (min-width: 601px) and (max-width: 1200px) {
   .video-container {
     max-width: 75%;
