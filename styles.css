@@ -199,9 +199,6 @@ header .home-btn {
     position: relative;
     top: 10px;
   }
-  .video-item h3 {
-    font-size: 12px;
-}
 }
 /* Media queries for responsive design */
 @media (max-width: 600px) {
