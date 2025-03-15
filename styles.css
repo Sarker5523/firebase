@@ -233,6 +233,9 @@ header .home-btn {
     margin-right: 5px; /* Reduce space between MPlix and video icon */
     margin-top: 10px;
   }
+.video-item h3 {
+    font-size: 12px;
+  }
   .title-container .play-button { 
     margin-top: 10px;
     margin-right: 5px;
