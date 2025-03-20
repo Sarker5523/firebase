@@ -177,7 +177,7 @@ header .home-btn {
   -webkit-mask-size: cover;
 }
 @media (orientation: landscape) and (max-width: 900px) {
-   .video-container {
+   .video-container, .trailer-container {
     width: 60vw; /* Make it smaller */
     max-width: 500px; /* Prevent it from being too large */
     margin: 0 auto; /* Center horizontally */
