@@ -138,8 +138,7 @@
   </div>
 
   <!-- New Trailer Section -->
-  <div class="video-details">
-    <h2>Trailer:</h2>
+  <div class="video-container" id="trailer-container" style="display: none;">
     <div class="iframe-container" id="trailer-iframe-container"></div>
   </div>
 
@@ -147,6 +146,7 @@
     const searchInput = document.getElementById('search-input');
     const searchResultsContainer = document.getElementById('search-suggestions');
     const iframeContainer = document.getElementById('iframe-container');
+    const trailerContainer = document.getElementById('trailer-container');
     const trailerIframeContainer = document.getElementById('trailer-iframe-container');
     const episodeList = document.getElementById('episode-list');
 
@@ -230,6 +230,7 @@
           const trailerEmbedCode = series.trailer;
           if (trailerEmbedCode) {
             trailerIframeContainer.innerHTML = trailerEmbedCode;
+            trailerContainer.style.display = 'block';
           }
         } else {
           document.getElementById('video-title').innerText = "Video not found";
