@@ -6,7 +6,7 @@
   <title>Video Details</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-    .video-container {
+    .video-container, .trailer-container {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -14,6 +14,8 @@
       width: 100%;
       box-sizing: border-box;
       text-align: center; /* Center align video player */
+      margin-left: auto;
+      margin-right: auto;
     }
     .iframe-container {
       width: 100%;
@@ -83,11 +85,10 @@
         font-size: 20px;
         font-weight: 500;
       }
-      .video-container {
+      .video-container, .trailer-container {
         max-width: 94%;
         padding: 10px;
         height: auto;
-        margin-left: 10px;
       }
       .iframe-container {
         width: 94%;
@@ -98,20 +99,22 @@
     }
      
     @media (min-width: 601px) and (max-width: 1200px) {
-      .video-container {
+      .video-container, .trailer-container {
         max-width: 75%;
         padding: 20px;
         height: auto;
-        margin-left: 300px; /* Shift the video player to the right */
+        margin-left: auto;
+        margin-right: auto;
       }
     }
 
     @media (min-width: 1201px) {
-      .video-container {
+      .video-container, .trailer-container {
         max-width: 60%;
         padding: 20px;
         height: auto;
-        margin-left: 300px; /* Shift the video player to the right */
+        margin-left: auto;
+        margin-right: auto;
       }
     }
   </style>
@@ -138,7 +141,7 @@
   </div>
 
   <!-- New Trailer Section -->
-  <div class="video-container" id="trailer-container" style="display: none;">
+  <div class="trailer-container" id="trailer-container" style="display: none;">
     <div class="iframe-container" id="trailer-iframe-container"></div>
   </div>
 
