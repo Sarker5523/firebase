@@ -80,9 +80,9 @@
     }
     @media (max-width: 600px) {
       .video-details h2 {
-      font-size: 20px;
-      font-weight: 500;
-    }
+        font-size: 20px;
+        font-weight: 500;
+      }
       .video-container {
         max-width: 94%;
         padding: 10px;
@@ -98,22 +98,21 @@
     }
      
     @media (min-width: 601px) and (max-width: 1200px) {
-  .video-container {
-    max-width: 75%;
-    padding: 20px;
-    height: auto;
-    margin-left: 300px; /* Shift the video player to the right */
-  }
-}
+      .video-container {
+        max-width: 75%;
+        padding: 20px;
+        height: auto;
+        margin-left: 300px; /* Shift the video player to the right */
+      }
+    }
 
-@media (min-width: 1201px) {
-  .video-container {
-    max-width: 60%;
-    padding: 20px;
-    height: auto;
-    margin-left: 300px; /* Shift the video player to the right */
-  }
-}
+    @media (min-width: 1201px) {
+      .video-container {
+        max-width: 60%;
+        padding: 20px;
+        height: auto;
+        margin-left: 300px; /* Shift the video player to the right */
+      }
     }
   </style>
 </head>
@@ -228,9 +227,9 @@
           loadEpisodes(episodes, currentEpisode.episode_id);
 
           // Load and display trailer
-          const trailerUrl = series.trailer;
-          if (trailerUrl) {
-            trailerIframeContainer.innerHTML = `<iframe width="560" height="315" src="${trailerUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+          const trailerEmbedCode = series.trailer;
+          if (trailerEmbedCode) {
+            trailerIframeContainer.innerHTML = trailerEmbedCode;
           }
         } else {
           document.getElementById('video-title').innerText = "Video not found";
