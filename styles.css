@@ -196,9 +196,10 @@ header .home-btn {
     align-items: center;
   }
     .video-details {
-    position: relative;
-    top: 10px;
-  }
+        max-width: 80%;
+        padding: 2px;
+        height: auto;
+      }
 }
 /* Media queries for responsive design */
 @media (max-width: 600px) {
