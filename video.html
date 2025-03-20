@@ -6,7 +6,7 @@
   <title>Video Details</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-    .container, .video-container, .trailer-container {
+    .video-container, .trailer-container {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -16,9 +16,6 @@
       text-align: center; /* Center align video player */
       margin-left: auto;
       margin-right: auto;
-      background-color: #333;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
     }
     .iframe-container {
       width: 100%;
@@ -88,7 +85,7 @@
         font-size: 20px;
         font-weight: 500;
       }
-      .container, .video-container, .trailer-container {
+      .video-container, .trailer-container {
         max-width: 94%;
         padding: 10px;
         height: auto;
@@ -102,7 +99,7 @@
     }
      
     @media (min-width: 601px) and (max-width: 1200px) {
-      .container, .video-container, .trailer-container {
+      .video-container, .trailer-container {
         max-width: 75%;
         padding: 20px;
         height: auto;
@@ -112,7 +109,7 @@
     }
 
     @media (min-width: 1201px) {
-      .container, .video-container, .trailer-container {
+      .video-container, .trailer-container {
         max-width: 60%;
         padding: 20px;
         height: auto;
@@ -129,7 +126,8 @@
     <div class="mplix-title" style="display: flex; align-items: center;">
       <h1 style="color: white; margin: 0;">MPlix</h1>
       <div class="play-button" style="margin-left: 10px;"></div>
-    </ type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="handleSearch()" onkeydown="handleEnter(event)">
+    </div>
+    <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="handleSearch()" onkeydown="handleEnter(event)">
     <div id="search-suggestions" class="search-suggestions"></div>
   </header>
 
@@ -137,7 +135,7 @@
     <div class="iframe-container" id="iframe-container" style="display: none;"></div>
   </div>
 
-  <div class="container video-details">
+  <div class="video-details">
     <h2 id="video-title"></h2>
     <div class="episode-list" id="episode-list"></div>
   </div>
@@ -207,7 +205,7 @@
 
       lines.forEach(line => {
         const currentline = line.split(',').map(value => value.trim());
-        if (currentline length === headers.length) {
+        if (currentline.length === headers.length) {
           const obj = {};
           headers.forEach((header, index) => {
             obj[header] = currentline[index];
@@ -224,7 +222,7 @@
       .then(text => {
         const data = parseCSV(text);
         const videoId = new URLSearchParams(window.location.search).get('id');
-        const series = data find(v => v.id === videoId);
+        const series = data.find(v => v.id === videoId);
         if (series) {
           const currentEpisode = series;
           loadVideo(currentEpisode);
