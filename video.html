@@ -37,15 +37,20 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
     }
     .video-details {
-      padding: 10px;
-      background-color: #333;
-      border-radius: 10px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-      margin: 20px auto; /* Center align title and episode list */
-      width: 60%; /* Decrease the width of the box */
-      box-sizing: border-box;
-      text-align: center; /* Center align title and episode list */
-    }
+    display: flex; /* Match flex behavior */
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    flex-direction: column; /* Stack elements inside */
+    padding: 20px; /* Match padding */
+    background-color: #333;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    width: 100%; /* Match the video container width */
+    box-sizing: border-box;
+    text-align: center; /* Center text inside */
+    margin-left: auto;
+    margin-right: auto;
+}
     
     .video-details h2 {
       font-size: 24px; /* Increase the font size of the video title */
