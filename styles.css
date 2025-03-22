@@ -5,12 +5,6 @@ body {
   margin: 0;
   padding: 0;
 }
-.active-page {
-  background-color: #007bff; /* Blue color */
-  color: white;
-  font-weight: bold;
-  border: 2px solid #0056b3;
-}
 header {
   display: flex;
   align-items: center;
