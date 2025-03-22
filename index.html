@@ -115,25 +115,31 @@
     }
 
     function renderPagination() {
-      const totalPages = Math.ceil(allVideos.length / itemsPerPage);
-      paginationTop.innerHTML = '';
-      paginationBottom.innerHTML = '';
+  const totalPages = Math.ceil(allVideos.length / itemsPerPage);
+  paginationTop.innerHTML = '';
+  paginationBottom.innerHTML = '';
 
-      if (totalPages > 1) {
-        for (let i = 1; i <= totalPages; i++) {
-          const button = document.createElement('button');
-          button.innerText = i;
-          button.onclick = () => {
-            currentPage = i;
-            renderVideos();
-            renderPagination();
-          };
-          paginationTop.appendChild(button);
-          paginationBottom.appendChild(button);
-        }
+  if (totalPages > 1) {
+    for (let i = 1; i <= totalPages; i++) {
+      const button = document.createElement('button');
+      button.innerText = i;
+
+      // Highlight active page
+      if (i === currentPage) {
+        button.classList.add('active-page'); 
       }
-    }
 
+      button.onclick = () => {
+        currentPage = i;
+        renderVideos();
+        renderPagination(); // Re-render to update active page
+      };
+
+      paginationTop.appendChild(button);
+      paginationBottom.appendChild(button);
+    }
+  }
+}
     function handleSearch() {
       const query = searchInput.value.toLowerCase();
       fetch('https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv')
