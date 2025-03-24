@@ -1,185 +1,357 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mplix-Home</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPlix - Home</title>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script defer src="script.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: #222; 
+            color: white; 
+        }
+        .navbar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.5)); 
+            padding: 15px 30px; 
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
+            transition: top 0.3s ease-in-out;
+            position: relative; 
+            z-index: 1000;
+        }
+        .navbar.fixed { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+        }
+        .logo { 
+            display: flex; 
+            align-items: center; 
+            cursor: pointer; 
+            font-size: 1.5em; 
+            font-weight: bold; 
+            color: white; 
+        }
+        .nav-links { 
+            display: flex; 
+            align-items: center; 
+        }
+        .nav-links a, .dropdown { 
+            margin-left: 20px; 
+            color: white; 
+            text-decoration: none; 
+            cursor: pointer; 
+            font-size: 1.1em; 
+        }
+        .dropdown-content { 
+            display: none; 
+            position: absolute; 
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)); 
+            color: white; 
+            top: 50px; 
+            left: auto; 
+            min-width: 150px; 
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
+            border-radius: 5px; 
+            overflow: hidden; 
+        }
+        .dropdown-content a { 
+            display: block; 
+            padding: 10px; 
+            text-decoration: none; 
+            color: white; 
+            transition: background 0.3s; 
+        }
+        .dropdown-content a:hover { 
+            background-color: #ddd; 
+        }
+        .search-container { 
+            position: relative; 
+            margin-left: 20px; 
+        }
+        .search-box { 
+            padding: 8px; 
+            border-radius: 5px; 
+            border: 1px solid white; 
+            font-size: 1em; 
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)); 
+            color: white; 
+            width: 150px;
+        }
+        .search-results { 
+            display: none; 
+            position: absolute; 
+            top: 100%; 
+            left: 0; 
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)); 
+            color: white; 
+            width: 180px; 
+            font-size: 0.95em; 
+            max-height: 250px; 
+            overflow-y: auto; 
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
+            border-radius: 5px; 
+        }
+        .search-results div { 
+            display: flex; 
+            align-items: center; 
+            padding: 10px; 
+            cursor: pointer; 
+            transition: background 0.3s; 
+        }
+        .search-results div:hover { 
+            background: #ddd; 
+        }
+        .search-results img { 
+            width: 50px; 
+            margin-right: 10px; 
+            border-radius: 5px; 
+        }
+        .category-section {
+            margin: 20px 20px 20px 20px; 
+        }
+        .category-section h2 {
+            font-size: 1.5em; 
+            color: white;
+            display: inline-block;
+        }
+        .view-all-button {
+            display: inline-block;
+            margin-left: 20px;
+            padding: 8px 16px;
+            font-size: 1em;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .view-all-button:hover {
+            background: rgba(0, 0, 0, 0.9);
+        }
+        .video-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: flex-start;
+        }
+        .video-item {
+            position: relative;
+            width: 220px;
+            background-color: transparent;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+        .video-item:hover {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        .video-item img {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .video-item span {
+            position: absolute;
+            top: 0; 
+            left: 0;
+            right: 0; 
+            padding: 10px;
+            font-size: 1em; 
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px 5px 0 0; 
+            z-index: 1;
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+        @media (max-width: 767px) {
+            .nav-links a:first-child { 
+                display: none; 
+            }
+            .search-box { 
+                width: 150px; 
+                font-size: 0.9em; 
+            }
+            .video-grid {
+                display: flex;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                gap: 10px;
+                padding: 10px 0;
+            }
+            .video-item {
+                width: 140px;
+                flex-shrink: 0;
+            }
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const dropdown = document.querySelector(".dropdown");
+            const dropdownContent = document.querySelector(".dropdown-content");
+            const searchBox = document.getElementById("search-box");
+            const searchResults = document.getElementById("search-results");
+            const navbar = document.querySelector(".navbar");
+
+            // Function to handle scroll and fix navbar
+            let lastScrollTop = 0;
+            window.addEventListener("scroll", function() {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                if (scrollTop > lastScrollTop) {
+                    navbar.classList.add("fixed");
+                } else {
+                    navbar.classList.remove("fixed");
+                }
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // Prevent negative scroll
+            });
+
+            dropdown.addEventListener("click", function(event) {
+                event.stopPropagation();
+                dropdownContent.style.display = (dropdownContent.style.display === "block") ? "none" : "block";
+            });
+
+            document.addEventListener("click", function(event) {
+                if (!dropdown.contains(event.target)) {
+                    dropdownContent.style.display = "none";
+                }
+            });
+
+            fetch("https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv")
+                .then(response => response.text())
+                .then(csvText => {
+                    Papa.parse(csvText, {
+                        header: true,
+                        complete: function(results) {
+                            const data = results.data;
+
+                            // Populate Newly Added Section
+                            const newlyAddedSection = document.getElementById("newly-added");
+                            const newlyAddedVideos = data.slice(-7).reverse(); // Get the last 8 items
+                            const videoGrid = document.createElement("div");
+                            videoGrid.classList.add("video-grid");
+                            newlyAddedVideos.forEach(item => {
+                                const videoItem = document.createElement("div");
+                                videoItem.classList.add("video-item");
+                                videoItem.innerHTML = `
+                                    <a href="video.html?id=${item.id}">
+                                        <img src="${item.thumbnail}" alt="${item.name}">
+                                        <span>${item.name}</span>
+                                    </a>
+                                `;
+                                videoGrid.appendChild(videoItem);
+                            });
+                            newlyAddedSection.appendChild(videoGrid);
+
+                            // Populate categories
+                            const categories = [...new Set(data.map(row => row.category).filter(Boolean))];
+                            const categoryList = document.getElementById("category-list");
+                            categories.forEach(category => {
+                                const categoryItem = document.createElement("a");
+                                categoryItem.textContent = category;
+                                categoryItem.href = `category.html?category=${category}`;
+                                categoryList.appendChild(categoryItem);
+                            });
+
+                            // Populate the content by categories
+                            const contentSection = document.getElementById("content");
+                            categories.forEach(category => {
+                                const categorySection = document.createElement("div");
+                                categorySection.classList.add("category-section");
+                                categorySection.innerHTML = `<h2>${category}:</h2>`;
+                                
+                                // Create the "View All" button
+                                const viewAllButton = document.createElement("button");
+                                viewAllButton.classList.add("view-all-button");
+                                viewAllButton.textContent = "View All";
+                                viewAllButton.onclick = () => window.location.href = `category.html?category=${category}`;
+                                categorySection.appendChild(viewAllButton);
+
+                                const videoGrid = document.createElement("div");
+                                videoGrid.classList.add("video-grid");
+
+                                // Show only the last 8 items, but in reverse order (last video first)
+                                const categoryVideos = data.filter(item => item.category === category);
+                                const lastVideos = categoryVideos.slice(-7).reverse();
+
+                                lastVideos.forEach(item => {
+                                    const videoItem = document.createElement("div");
+                                    videoItem.classList.add("video-item");
+                                    videoItem.innerHTML = `
+                                        <a href="video.html?id=${item.id}">
+                                            <img src="${item.thumbnail}" alt="${item.name}">
+                                            <span>${item.name}</span>
+                                        </a>
+                                    `;
+                                    videoGrid.appendChild(videoItem);
+                                });
+
+                                categorySection.appendChild(videoGrid);
+                                contentSection.appendChild(categorySection);
+                            });
+
+                            // Search Suggestions
+                            searchBox.addEventListener('input', function() {
+                                const query = searchBox.value.toLowerCase();
+                                if (query.length === 0) {
+                                    searchResults.style.display = 'none';
+                                    return;
+                                }
+
+                                const filteredData = data.filter(item => {
+                                    return item.name.toLowerCase().includes(query) && item.thumbnail.trim() !== "";
+                                });
+
+                                searchResults.innerHTML = '';
+                                filteredData.forEach(item => {
+                                    const div = document.createElement('div');
+                                    div.innerHTML = `
+                                        <img src="${item.thumbnail}" alt="${item.name}">
+                                        <span>${item.name}</span>
+                                    `;
+                                    div.addEventListener('click', () => {
+                                        window.location.href = `search-results.html?query=${item.name}`;
+                                    });
+                                    searchResults.appendChild(div);
+                                });
+
+                                searchResults.style.display = filteredData.length > 0 ? 'block' : 'none';
+                            });
+                        }
+                    });
+                });
+        });
+    </script>
 </head>
 <body>
-
-  <header>
-    <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
-    <div class="title-container">
-      <h1>MPlix</h1>
-      <div class="play-button"></div>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo" onclick="window.location.href = 'index.html'">MPlix</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <div class="dropdown">
+                Categories
+                <div class="dropdown-content" id="category-list"></div>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-box" class="search-box" placeholder="Search...">
+                <div id="search-results" class="search-results"></div>
+            </div>
+        </div>
     </div>
-    <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="handleSearch()" onkeydown="handleEnter(event)">
-    <div id="search-suggestions" class="search-suggestions"></div>
-  </header>
 
-  <div class="pagination" id="pagination-top"></div>
+    <!-- Newly Added Section -->
+    <div id="newly-added" class="category-section">
+        <h2>Newly Added:</h2>
+    </div>
 
-  <div class="video-list-container">
-    <div class="video-list" id="video-list"></div>
-  </div>
-
-  <div class="pagination" id="pagination-bottom"></div>
-
-  <script>
-    const itemsPerPage = 30; // 6x5 grid
-    let currentPage = 1;
-    let allVideos = [];
-
-    const searchInput = document.getElementById('search-input');
-    const searchResultsContainer = document.getElementById('search-suggestions');
-    const videoListContainer = document.getElementById('video-list');
-    const paginationTop = document.getElementById('pagination-top');
-    const paginationBottom = document.getElementById('pagination-bottom');
-
-    function parseCSV(text) {
-      const lines = text.split('\n').filter(line => line.trim());
-      const headers = lines[0].split(',').map(header => header.trim());
-      const result = [];
-
-      for (let i = 1; i < lines.length; i++) {
-        const currentline = lines[i].split(',').map(value => value.trim());
-        if (currentline.length === headers.length) {
-          const obj = {};
-          for (let j = 0; j < headers.length; j++) {
-            obj[headers[j]] = currentline[j];
-          }
-          result.push(obj);
-        }
-      }
-
-      return result;
-    }
-
-    fetch('https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv')
-      .then(response => response.text())
-      .then(text => {
-        allVideos = parseCSV(text).reduce((acc, video) => {
-          const existing = acc.find(v => v.id === video.id);
-          if (existing) {
-            existing.episodes.push({
-              episode_id: video.episode_id,
-              name: video.episode_name,
-              embed_code: video.embed_code
-            });
-          } else {
-            acc.push({
-              id: video.id,
-              name: video.name,
-              thumbnail: video.thumbnail,
-              episodes: [{
-                episode_id: video.episode_id,
-                name: video.episode_name,
-                embed_code: video.embed_code
-              }]
-            });
-          }
-          return acc;
-        }, []);
-
-        // Sort videos by id in descending order
-        allVideos.sort((a, b) => b.id - a.id);
-
-        renderVideos();
-        renderPagination();
-      })
-      .catch(error => {
-        console.error('Error loading video data:', error);
-      });
-
-    function renderVideos() {
-      videoListContainer.innerHTML = '';
-      const startIndex = (currentPage - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      const videosToShow = allVideos.slice(startIndex, endIndex);
-
-      if (videosToShow.length > 0) {
-        videosToShow.forEach(video => {
-          const videoItem = document.createElement('div');
-          videoItem.classList.add('video-item');
-          videoItem.innerHTML = `
-            <a href="video.html?id=${video.id}">
-              <img src="${video.thumbnail}" alt="${video.name}">
-              <h3>${video.name}</h3>
-            </a>`;
-          videoListContainer.appendChild(videoItem);
-        });
-      } else {
-        videoListContainer.innerHTML = '<p>No videos found.</p>';
-      }
-    }
-
-    function renderPagination() {
-      const totalPages = Math.ceil(allVideos.length / itemsPerPage);
-      paginationTop.innerHTML = '';
-      paginationBottom.innerHTML = '';
-
-      if (totalPages > 1) {
-        for (let i = 1; i <= totalPages; i++) {
-          const button = document.createElement('button');
-          button.innerText = i;
-          button.onclick = () => {
-            currentPage = i;
-            renderVideos();
-            renderPagination();
-          };
-          paginationTop.appendChild(button);
-          paginationBottom.appendChild(button);
-        }
-      }
-    }
-
-    function handleSearch() {
-      const query = searchInput.value.toLowerCase();
-      fetch('https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv')
-        .then(response => response.text())
-        .then(text => {
-          const data = parseCSV(text);
-          const filteredVideos = data.reduce((acc, video) => {
-            if (video.name.toLowerCase().includes(query)) {
-              const existing = acc.find(v => v.id === video.id);
-              if (existing) {
-                existing.episodes.push({
-                  episode_id: video.episode_id,
-                  name: video.episode_name,
-                  embed_code: video.embed_code
-                });
-              } else {
-                acc.push({
-                  id: video.id,
-                  name: video.name,
-                  thumbnail: video.thumbnail,
-                  episodes: [{
-                    episode_id: video.episode_id,
-                    name: video.episode_name,
-                    embed_code: video.embed_code
-                  }]
-                });
-              }
-            }
-            return acc;
-          }, []);
-
-          // Sort filtered videos by id in descending order
-          allVideos = filteredVideos.sort((a, b) => b.id - a.id);
-
-          currentPage = 1;
-          renderVideos();
-          renderPagination();
-        });
-    }
-
-    function handleEnter(event) {
-      if (event.key === "Enter") {
-        handleSearch();
-      }
-    }
-  </script>
-
+    <!-- Content -->
+    <div id="content"></div>
 </body>
 </html>
