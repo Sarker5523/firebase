@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category - MPlix</title>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: #222; 
+            color: white; 
+        }
+        .navbar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.5)); 
+            padding: 15px 30px; 
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
+            transition: top 0.3s ease-in-out;
+            position: relative; 
+            width: relative;
+            z-index: 1000;
+        }
+        .navbar.fixed { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            right: 0; 
+        }
+        .logo { 
+            display: flex; 
+            align-items: center; 
+            cursor: pointer; 
+            font-size: 1.5em; 
+            font-weight: bold; 
+            color: white; 
+        }
+        .nav-links { 
+            display: flex; 
+            align-items: center; 
+        }
+        .nav-links a, .dropdown { 
+            margin-left: 20px; 
+            color: white; 
+            text-decoration: none; 
+            cursor: pointer; 
+            font-size: 1.1em; 
+        }
+        .dropdown-content { 
+            display: none; 
+            position: absolute; 
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)); 
+            color: white; 
+            top: 50px; 
+            left: auto; 
+            min-width: 150px; 
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
+            border-radius: 5px; 
+            overflow: hidden; 
+        }
+        .dropdown-content a { 
+            display: block; 
+            padding: 10px; 
+            text-decoration: none; 
+            color: white; 
+            transition: background 0.3s; 
+        }
+        .dropdown-content a:hover { 
+            background-color: #ddd; 
+        }
+        .search-container { 
+            position: relative; 
+            margin-left: 20px; 
+        }
+        .search-box { 
+            padding: 8px; 
+            border-radius: 5px; 
+            border: 1px solid white; 
+            font-size: 1em; 
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)); 
+            color: white; 
+            width: 150px;
+        }
+        .search-results { 
+            display: none; 
+            position: absolute; 
+            top: 100%; 
+            left: 0; 
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)); 
+            color: white; 
+            width: 180px; 
+            font-size: 0.95em; 
+            max-height: 250px; 
+            overflow-y: auto; 
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
+            border-radius: 5px; 
+        }
+        .search-results div { 
+            display: flex; 
+            align-items: center; 
+            padding: 10px; 
+            cursor: pointer; 
+            transition: background 0.3s; 
+        }
+        .search-results div:hover { 
+            background: #ddd; 
+        }
+        .search-results img { 
+            width: 50px; 
+            margin-right: 10px; 
+            border-radius: 5px; 
+        }
+        .category-section {
+            margin: 20px 20px 20px 20px; 
+        }
+        .category-section h2 {
+            font-size: 1.5em; 
+            color: white;
+            display: inline-block;
+        }
+        .video-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: flex-start;
+        }
+        .video-item {
+            position: relative;
+            width: 220px;
+            background-color: transparent;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+        .video-item:hover {
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+        .video-item img {
+            width: 100%;
+            border-radius: 8px;
+        }
+        .video-item span {
+            position: absolute;
+            top: 0; 
+            left: 0;
+            right: 0; 
+            padding: 10px;
+            font-size: 1em; 
+            color: white;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 5px 5px 0 0; 
+            z-index: 1;
+            width: 100%;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        /* Mobile Specific */
+        @media (max-width: 767px) {
+            .nav-links a:first-child { 
+                display: none; 
+            }
+            .search-box { 
+                width: 150px; 
+                font-size: 0.9em; 
+            }
+            .video-grid {
+                display: flex;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                gap: 10px;
+                padding: 10px 0;
+            }
+            .video-item {
+                width: 140px;
+                flex-shrink: 0;
+            }
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const dropdown = document.querySelector(".dropdown");
+            const dropdownContent = document.querySelector(".dropdown-content");
+            const searchBox = document.getElementById("search-box");
+            const searchResults = document.getElementById("search-results");
+            const navbar = document.querySelector(".navbar");
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category');
+
+            // Fetch videos from Google Sheets CSV
+            fetch("https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv")
+                .then(response => response.text())
+                .then(csvText => {
+                    Papa.parse(csvText, {
+                        header: true,
+                        complete: function(results) {
+                            const data = results.data;
+
+                            // Populate categories in dropdown
+                            const categories = [...new Set(data.map(row => row.category).filter(Boolean))];
+                            categories.forEach(category => {
+                                const categoryItem = document.createElement("a");
+                                categoryItem.textContent = category;
+                                categoryItem.href = `category.html?category=${category}`;
+                                dropdownContent.appendChild(categoryItem);
+                            });
+
+                            // Populate videos based on category
+                            const categorySection = document.createElement("div");
+                            categorySection.classList.add("category-section");
+                            categorySection.innerHTML = `<h2>${category}:</h2>`; 
+
+                            const videoGrid = document.createElement("div");
+                            videoGrid.classList.add("video-grid");
+
+                            const categoryVideos = data.filter(item => item.category === category);
+                            categoryVideos.forEach(item => {
+                                const videoItem = document.createElement("div");
+                                videoItem.classList.add("video-item");
+                                videoItem.innerHTML = `
+                                    <img src="${item.thumbnail}" alt="${item.name}">
+                                    <span>${item.name}</span>
+                                `;
+                                videoGrid.appendChild(videoItem);
+                            });
+
+                            categorySection.appendChild(videoGrid);
+                            document.body.appendChild(categorySection);
+                        }
+                    });
+                });
+
+            // Handle navbar scroll and fixed position
+            let lastScrollTop = 0;
+            window.addEventListener("scroll", function() {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                if (scrollTop > lastScrollTop) {
+                    navbar.classList.add("fixed");
+                } else {
+                    navbar.classList.remove("fixed");
+                }
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            });
+
+            dropdown.addEventListener("click", function(event) {
+                event.stopPropagation();
+                dropdownContent.style.display = (dropdownContent.style.display === "block") ? "none" : "block";
+            });
+
+            document.addEventListener("click", function(event) {
+                if (!dropdown.contains(event.target)) {
+                    dropdownContent.style.display = "none";
+                }
+            });
+
+            // Handle search input
+            searchBox.addEventListener('input', function() {
+                const query = searchBox.value.toLowerCase();
+                if (query.length === 0) {
+                    searchResults.style.display = 'none';
+                    return;
+                }
+
+                // Fetch search results based on query
+                fetch("https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv")
+                    .then(response => response.text())
+                    .then(csvText => {
+                        Papa.parse(csvText, {
+                            header: true,
+                            complete: function(results) {
+                                const data = results.data;
+                                const filteredData = data.filter(item => {
+                                    return item.name.toLowerCase().includes(query) && item.thumbnail.trim() !== "";
+                                });
+
+                                searchResults.innerHTML = '';
+                                filteredData.forEach(item => {
+                                    const div = document.createElement('div');
+                                    div.innerHTML = `
+                                        <img src="${item.thumbnail}" alt="${item.name}">
+                                        <span>${item.name}</span>
+                                    `;
+                                    div.addEventListener('click', () => {
+                                        window.location.href = `search-results.html?query=${item.name}`;
+                                    });
+                                    searchResults.appendChild(div);
+                                });
+
+                                searchResults.style.display = filteredData.length > 0 ? 'block' : 'none';
+                            }
+                        });
+                    });
+            });
+        });
+    </script>
+</head>
+<body>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo" onclick="window.location.href = 'index.html'">MPlix</div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <div class="dropdown">
+                Categories
+                <div class="dropdown-content" id="category-list"></div>
+            </div>
+            <div class="search-container">
+                <input type="text" id="search-box" class="search-box" placeholder="Search...">
+                <div id="search-results" class="search-results"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
