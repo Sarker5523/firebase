@@ -37,20 +37,20 @@
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.8);
     }
     .video-details {
-    display: flex; /* Match flex behavior */
-    justify-content: center; /* Center content horizontally */
-    align-items: center; /* Center content vertically */
-    flex-direction: column; /* Stack elements inside */
-    padding: 10px; /* Match padding */
-    background-color: #333;
-    border-radius: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-    width: 100%; /* Match the video container width */
-    box-sizing: border-box;
-    text-align: center; /* Center text inside */
-    margin-left: auto;
-    margin-right: auto;
-}
+      display: flex; /* Match flex behavior */
+      justify-content: center; /* Center content horizontally */
+      align-items: center; /* Center content vertically */
+      flex-direction: column; /* Stack elements inside */
+      padding: 10px; /* Match padding */
+      background-color: #333;
+      border-radius: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+      width: 100%; /* Match the video container width */
+      box-sizing: border-box;
+      text-align: center; /* Center text inside */
+      margin-left: auto;
+      margin-right: auto;
+    }
     
     .video-details h2 {
       font-size: 24px; /* Increase the font size of the video title */
@@ -134,19 +134,209 @@
         margin-right: auto;
       }
     }
+    
+    body { 
+      font-family: Arial, sans-serif; 
+      margin: 0; 
+      padding: 0; 
+      background: #222; 
+      color: white; 
+    }
+    .navbar { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.5)); 
+      padding: 15px 30px; 
+      box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
+      transition: top 0.3s ease-in-out;
+      position: relative; 
+      z-index: 1000;
+    }
+    .navbar.fixed { 
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      right: 0; 
+    }
+    .logo { 
+      display: flex; 
+      align-items: center; 
+      cursor: pointer; 
+      font-size: 1.5em; 
+      font-weight: bold; 
+      color: white; 
+    }
+    .nav-links { 
+      display: flex; 
+      align-items: center; 
+    }
+    .nav-links a, .dropdown { 
+      margin-left: 20px; 
+      color: white; 
+      text-decoration: none; 
+      cursor: pointer; 
+      font-size: 1.1em; 
+    }
+    .dropdown-content { 
+      display: none; 
+      position: absolute; 
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)); 
+      color: white; 
+      top: 50px; 
+      left: auto; 
+      min-width: 150px; 
+      box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
+      border-radius: 5px; 
+      overflow: hidden; 
+    }
+    .dropdown-content a { 
+      display: block; 
+      padding: 10px; 
+      text-decoration: none; 
+      color: white; 
+      transition: background 0.3s; 
+    }
+    .dropdown-content a:hover { 
+      background-color: #ddd; 
+    }
+    .search-container { 
+      position: relative; 
+      margin-left: 20px; 
+    }
+    .search-box { 
+      padding: 8px; 
+      border-radius: 5px; 
+      border: 1px solid white; 
+      font-size: 1em; 
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)); 
+      color: white; 
+      width: 150px;
+    }
+    .search-results { 
+      display: none; 
+      position: absolute; 
+      top: 100%; 
+      left: 0; 
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)); 
+      color: white; 
+      width: 180px; 
+      font-size: 0.95em; 
+      max-height: 250px; 
+      overflow-y: auto; 
+      box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
+      border-radius: 5px; 
+    }
+    .search-results div { 
+      display: flex; 
+      align-items: center; 
+      padding: 10px; 
+      cursor: pointer; 
+      transition: background 0.3s; 
+    }
+    .search-results div:hover { 
+      background: #ddd; 
+    }
+    .search-results img { 
+      width: 50px; 
+      margin-right: 10px; 
+      border-radius: 5px; 
+    }
+    .category-section {
+      margin: 20px 20px 20px 20px; 
+    }
+    .category-section h2 {
+      font-size: 1.5em; 
+      color: white;
+      display: inline-block;
+    }
+    .view-all-button {
+      display: inline-block;
+      margin-left: 20px;
+      padding: 8px 16px;
+      font-size: 1em;
+      color: white;
+      background: rgba(0, 0, 0, 0.7);
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .view-all-button:hover {
+      background: rgba(0, 0, 0, 0.9);
+    }
+    .video-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: flex-start;
+    }
+    .video-item {
+      position: relative;
+      width: 220px;
+      background-color: transparent;
+      text-align: center;
+      transition: background-color 0.3s;
+    }
+    .video-item:hover {
+      background-color: rgba(0, 0, 0, 0.3);
+    }
+    .video-item img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    .video-item span {
+      position: absolute;
+      top: 0; 
+      left: 0;
+      right: 0; 
+      padding: 10px;
+      font-size: 1em; 
+      color: white;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 5px 5px 0 0; 
+      z-index: 1;
+      width: 100%;
+      text-align: center;
+      box-sizing: border-box;
+    }
+    @media (max-width: 767px) {
+      .nav-links a:first-child { 
+        display: none; 
+      }
+      .search-box { 
+        width: 150px; 
+        font-size: 0.9em; 
+      }
+      .video-grid {
+        display: flex;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        gap: 10px;
+        padding: 10px 0;
+      }
+      .video-item {
+        width: 140px;
+        flex-shrink: 0;
+      }
+    }
   </style>
 </head>
 <body>
-
-  <header>
-    <div class="home-btn" onclick="window.location.href='index.html'">Home</div>
-    <div class="mplix-title" style="display: flex; align-items: center;">
-      <h1 style="color: white; margin: 0;">MPlix</h1>
-      <div class="play-button" style="margin-left: 10px;"></div>
+  <!-- Navbar -->
+  <div class="navbar">
+    <div class="logo" onclick="window.location.href = 'index.html'">MPlix</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <div class="dropdown">
+        Categories
+        <div class="dropdown-content" id="category-list"></div>
+      </div>
+      <div class="search-container">
+        <input type="text" id="search-box" class="search-box" placeholder="Search...">
+        <div id="search-results" class="search-results"></div>
+      </div>
     </div>
-    <input type="text" id="search-input" class="search-bar" placeholder="Search..." oninput="handleSearch()" onkeydown="handleEnter(event)">
-    <div id="search-suggestions" class="search-suggestions"></div>
-  </header>
+  </div>
 
   <div class="video-container" id="video-container">
     <div class="iframe-container" id="iframe-container" style="display: none;"></div>
@@ -163,12 +353,13 @@
   </div>
 
   <script>
-    const searchInput = document.getElementById('search-input');
-    const searchResultsContainer = document.getElementById('search-suggestions');
+    const searchInput = document.getElementById('search-box');
+    const searchResultsContainer = document.getElementById('search-results');
     const iframeContainer = document.getElementById('iframe-container');
     const trailerContainer = document.getElementById('trailer-container');
     const trailerIframeContainer = document.getElementById('trailer-iframe-container');
     const episodeList = document.getElementById('episode-list');
+    const categoryList = document.getElementById('category-list');
 
     function loadVideo(video) {
       if (!video) {
@@ -255,6 +446,15 @@
         } else {
           document.getElementById('video-title').innerText = "Video not found";
         }
+
+        // Populate categories
+        const categories = [...new Set(data.map(row => row.category).filter(Boolean))];
+        categories.forEach(category => {
+          const categoryItem = document.createElement('a');
+          categoryItem.textContent = category;
+          categoryItem.href = `category.html?category=${category}`;
+          categoryList.appendChild(categoryItem);
+        });
       })
       .catch(error => {
         console.error('Error loading video data:', error);
@@ -267,7 +467,7 @@
         .then(response => response.text())
         .then(text => {
           const data = parseCSV(text);
-          const filteredVideos = data.filter(video => video.name.toLowerCase().includes(query));
+          const filteredVideos = data.filter(video => video.name.toLowerCase().includes(query) && video.thumbnail.trim() !== "");
           searchResultsContainer.style.display = 'block';
           searchResultsContainer.innerHTML = '';
           filteredVideos.slice(0, 5).forEach(video => {
@@ -288,7 +488,38 @@
         handleSearch();
       }
     }
-  </script>
 
+    searchInput.addEventListener('input', handleSearch);
+    searchInput.addEventListener('keydown', handleEnter);
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const dropdown = document.querySelector(".dropdown");
+      const dropdownContent = document.querySelector(".dropdown-content");
+      const navbar = document.querySelector(".navbar");
+
+      // Function to handle scroll and fix navbar
+      let lastScrollTop = 0;
+      window.addEventListener("scroll", function() {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        if (scrollTop > lastScrollTop) {
+          navbar.classList.add("fixed");
+        } else {
+          navbar.classList.remove("fixed");
+        }
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // Prevent negative scroll
+      });
+
+      dropdown.addEventListener("click", function(event) {
+        event.stopPropagation();
+        dropdownContent.style.display = (dropdownContent.style.display === "block") ? "none" : "block";
+      });
+
+      document.addEventListener("click", function(event) {
+        if (!dropdown.contains(event.target)) {
+          dropdownContent.style.display = "none";
+        }
+      });
+    });
+  </script>
 </body>
 </html>
