@@ -220,8 +220,10 @@
                                 const videoItem = document.createElement("div");
                                 videoItem.classList.add("video-item");
                                 videoItem.innerHTML = `
-                                    <img src="${item.thumbnail}" alt="${item.name}">
-                                    <span>${item.name}</span>
+                                    <a href="video.html?name=${encodeURIComponent(item.name)}">
+                                        <img src="${item.thumbnail}" alt="${item.name}">
+                                        <span>${item.name}</span>
+                                    </a>
                                 `;
                                 videoGrid.appendChild(videoItem);
                             });
