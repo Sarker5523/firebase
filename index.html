@@ -233,7 +233,10 @@
 
                             // Populate Newly Added Section
                             const newlyAddedSection = document.getElementById("newly-added");
-                            const newlyAddedVideos = data.slice(-7).reverse(); // Get the last 8 items
+                            const newlyAddedVideos = data
+    .filter(item => item.thumbnail && item.thumbnail.trim() !== "") // Filter out items without thumbnails
+    .slice(-7)
+    .reverse(); // Get the last 7 items
                             const videoGrid = document.createElement("div");
                             videoGrid.classList.add("video-grid");
                             newlyAddedVideos.forEach(item => {
