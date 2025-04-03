@@ -17,6 +17,16 @@
       margin-left: auto;
       margin-right: auto;
     }
+    .season-dropdown {
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5));   /* Change background */
+      color: white;             /* Change text color */
+      border: 1px solid white;  /* Add border */
+      padding: 5px;             /* Add padding */
+      border-radius: 5px;       /* Rounded corners */
+    }
+    .season-dropdown option:hover {
+      background-color: #444;
+    }
     .iframe-container {
       width: 100%;
       position: relative;
@@ -344,6 +354,10 @@
 
   <div class="video-details">
     <h2 id="video-title"></h2>
+    <div class="season-selection">
+  <label id="season-label" for="season-dropdown">Select Season:</label>
+  <select id="season-dropdown" class="season-dropdown"></select>
+</div>
     <div class="episode-list" id="episode-list"></div>
   </div>
 
@@ -446,7 +460,88 @@
         } else {
           document.getElementById('video-title').innerText = "Video not found";
         }
+const seasonDropdown = document.getElementById('season-dropdown');
 
+// Function to load seasons dynamically
+function loadSeasons(seasons, currentSeasonId) {
+  seasonDropdown.innerHTML = ''; // Clear previous options
+  seasons.forEach(season => {
+    const option = document.createElement('option');
+    option.value = season.season_id;
+    option.innerText = season.season_name;
+    if (season.season_id === currentSeasonId) {
+      option.selected = true;
+    }
+    seasonDropdown.appendChild(option);
+  });
+
+  seasonDropdown.style.display = seasons.length > 1 ? 'block' : 'none'; // Hide if only one season
+}
+
+// Function to handle season selection
+seasonDropdown.addEventListener('change', function () {
+  const selectedSeasonId = this.value;
+  const filteredEpisodes = allEpisodes.filter(ep => ep.season_id === selectedSeasonId);
+  if (filteredEpisodes.length > 0) {
+    loadVideo(filteredEpisodes[0]); // Load first episode by default
+    loadEpisodes(filteredEpisodes, filteredEpisodes[0].episode_id);
+  }
+});
+
+let allEpisodes = []; // Store all episodes of the series
+
+fetch('https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv')
+  .then(response => response.text())
+  .then(text => {
+    const data = parseCSV(text);
+    const videoId = new URLSearchParams(window.location.search).get('id');
+    const series = data.find(v => v.id === videoId);
+
+    if (series) {
+      allEpisodes = data.filter(v => v.id === series.id);
+      const uniqueSeasons = [...new Map(allEpisodes.map(ep => [ep.season_id, ep])).values()];
+
+      // Load the first season by default
+      const defaultSeason = uniqueSeasons[0];
+      loadSeasons(uniqueSeasons, defaultSeason.season_id);
+      
+      // Load episodes for the default season
+      const initialEpisodes = allEpisodes.filter(ep => ep.season_id === defaultSeason.season_id);
+      loadVideo(initialEpisodes[0]); // Load first episode
+      loadEpisodes(initialEpisodes, initialEpisodes[0].episode_id);
+      
+      // Load and display trailer
+      if (series.trailer) {
+        trailerIframeContainer.innerHTML = series.trailer;
+        trailerContainer.style.display = 'block';
+      }
+    } else {
+      document.getElementById('video-title').innerText = "Video not found";
+    }
+  })
+  .catch(error => {
+    console.error('Error loading video data:', error);
+    document.getElementById('video-title').innerText = "Error loading video";
+  });
+    const seasonLabel = document.getElementById('season-label');
+
+function loadSeasons(seasons, currentSeasonId) {
+  seasonDropdown.innerHTML = ''; // Clear previous options
+  
+  seasons.forEach(season => {
+    const option = document.createElement('option');
+    option.value = season.season_id;
+    option.innerText = season.season_name;
+    if (season.season_id === currentSeasonId) {
+      option.selected = true;
+    }
+    seasonDropdown.appendChild(option);
+  });
+
+  // Hide the label if there's only one or no seasons
+  seasonLabel.style.display = seasons.length > 1 ? 'inline' : 'none';
+  seasonDropdown.style.display = seasons.length > 1 ? 'inline' : 'none';
+}
         // Populate categories
         const categories = [...new Set(data.map(row => row.category).filter(Boolean))];
         categories.forEach(category => {
