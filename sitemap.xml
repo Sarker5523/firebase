@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://mplix.netlify.app/</loc>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://mplix.netlify.app/category.html</loc>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Category pages -->
+  <url>
+    <loc>https://mplix.netlify.app/category.html?category=Hollywood%20Movie</loc>
+  </url>
+  <url>
+    <loc>https://mplix.netlify.app/category.html?category=Kdrama</loc>
+  </url>
+  <url>
+    <loc>https://mplix.netlify.app/category.html?category=Bangla%20Movie</loc>
+  </url>
+  <url>
+    <loc>https://mplix.netlify.app/category.html?category=Korean%20Movie</loc>
+  </url>
+  <url>
+   <loc>https://mplix.netlify.app/category.html?category=TV-Series</loc>
+  </url>
+  <url> <loc>https://mplix.netlify.app/category.html?category=Bollywood%20Movie</loc>
+  </url>
+</urlset>
