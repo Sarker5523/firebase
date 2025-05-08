@@ -570,20 +570,22 @@ function loadSeasons(seasons, currentSeasonId) {
             suggestionItem.innerHTML = `
               <img src="${video.thumbnail}" alt="${video.name}">
               ${video.name}
-            `;
-            suggestionItem.onclick = () => {
-            window.location.href = `video.html?id=${item.id}`;
-    
+            `; 
+            div.onclick = function() {
+              window.location.href = `video.html?id=${result.id}`;
             };
             searchResultsContainer.appendChild(suggestionItem);
           });
         });
     }
-    function handleEnter(event) {
-      if (event.key === "Enter") {
-        handleSearch();
-      }
+    searchBox.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        const query = searchBox.value.trim();
+        if (query) {
+            window.location.href = `search-result.html?query=${encodeURIComponent(query)}`;
+        }
     }
+});
 
     searchInput.addEventListener('input', handleSearch);
     searchInput.addEventListener('keydown', handleEnter);
