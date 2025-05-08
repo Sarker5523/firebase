@@ -215,7 +215,7 @@
                             const videoGrid = document.createElement("div");
                             videoGrid.classList.add("video-grid");
 
-                            const categoryVideos = data.filter(item => item.category === category);
+                            const categoryVideos = data.filter(item => item.category === category).reverse();
                             categoryVideos.forEach(item => {
                                 const videoItem = document.createElement("div");
                                 videoItem.classList.add("video-item");
