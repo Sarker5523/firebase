@@ -1,234 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Results - MPlix</title>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #222;
-            color: white;
-        }
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.5));
-            padding: 15px 30px;
-            box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-        .logo {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            font-size: 1.5em;
-            font-weight: bold;
-            color: white;
-        }
-        .nav-links {
-            display: flex;
-            align-items: center;
-        }
-        .nav-links a, .dropdown {
-            margin-left: 20px;
-            color: white;
-            text-decoration: none;
-            cursor: pointer;
-            font-size: 1.1em;
-        }
-        .dropdown-content {
-            display: none;
-            position: absolute;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            top: 50px;
-            min-width: 150px;
-            box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
-            border-radius: 5px;
-        }
-        .dropdown-content a {
-            display: block;
-            padding: 10px;
-            color: white;
-            text-decoration: none;
-        }
-        .dropdown-content a:hover {
-            background-color: #ddd;
-            color: black;
-        }
-        .search-container {
-            position: relative;
-            margin-left: 20px;
-        }
-        .search-box {
-            padding: 8px;
-            border-radius: 5px;
-            border: 1px solid white;
-            font-size: 1em;
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            width: 150px;
-        }
-        .search-results {
-            position: absolute;
-            display: none;
-            top: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            width: 180px;
-            max-height: 250px;
-            overflow-y: auto;
-            border-radius: 5px;
-        }
-        .search-results div {
-            padding: 10px;
-            cursor: pointer;
-        }
-        .search-results div:hover {
-            background: #ddd;
-            color: black;
-        }
-        .video-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: flex-start;
-            padding: 20px;
-        }
-        .video-item {
-            width: 220px;
-            text-align: center;
-        }
-        .video-item img {
-            width: 100%;
-            border-radius: 8px;
-        }
-        .video-item span {
-            display: block;
-            margin-top: 8px;
-            font-size: 1em;
-        }
-        .no-results {
-            text-align: center;
-            margin-top: 50px;
-            font-size: 1.2em;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Search Results - MPlix</title>
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #222;
+      color: white;
+    }
+    .navbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.5));
+      padding: 15px 30px;
+      box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
+      z-index: 1000;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 1.5em;
+      font-weight: bold;
+      color: white;
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+    }
+    .nav-links a, .dropdown {
+      margin-left: 20px;
+      color: white;
+      text-decoration: none;
+      cursor: pointer;
+      font-size: 1.1em;
+    }
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      top: 50px;
+      min-width: 150px;
+      box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
+      border-radius: 5px;
+      z-index: 999;
+    }
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+    .dropdown-content a {
+      display: block;
+      padding: 10px;
+      color: white;
+      text-decoration: none;
+    }
+    .dropdown-content a:hover {
+      background-color: #ddd;
+      color: black;
+    }
+    .search-container {
+      position: relative;
+      margin-left: 20px;
+    }
+    .search-box {
+      padding: 8px;
+      border-radius: 5px;
+      border: 1px solid white;
+      font-size: 1em;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      width: 150px;
+    }
+    .search-results {
+      position: absolute;
+      display: none;
+      top: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      width: 220px;
+      max-height: 250px;
+      overflow-y: auto;
+      border-radius: 5px;
+      z-index: 999;
+    }
+    .search-results div {
+      padding: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+    .search-results div img {
+      width: 30px;
+      height: auto;
+      margin-right: 10px;
+      border-radius: 4px;
+    }
+    .search-results div:hover {
+      background: #ddd;
+      color: black;
+    }
+    .video-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      justify-content: flex-start;
+      padding: 20px;
+    }
+    .video-item {
+      width: 220px;
+      text-align: center;
+    }
+    .video-item img {
+      width: 100%;
+      border-radius: 8px;
+    }
+    .video-item span {
+      display: block;
+      margin-top: 8px;
+      font-size: 1em;
+    }
+    .no-results {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 1.2em;
+    }
+  </style>
 </head>
 <body>
-    <div class="navbar">
-        <div class="logo" onclick="window.location.href = 'index.html'">MPlix</div>
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-            <div class="dropdown">
-                Categories
-                <div class="dropdown-content" id="category-list"></div>
-            </div>
-            <div class="search-container">
-                <input type="text" id="search-box" class="search-box" placeholder="Search...">
-                <div id="search-results" class="search-results"></div>
-            </div>
-        </div>
+  <div class="navbar">
+    <div class="logo" onclick="window.location.href = 'index.html'">MPlix</div>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <div class="dropdown">
+        Categories
+        <div class="dropdown-content" id="category-list"></div>
+      </div>
+      <div class="search-container">
+        <input type="text" id="search-box" class="search-box" placeholder="Search..." />
+        <div id="search-results" class="search-results"></div>
+      </div>
     </div>
+  </div>
 
-    <div id="results-container">
-        <h2 style="padding: 20px;">Search Results:</h2>
-        <div id="search-results-grid" class="video-grid"></div>
-        <div id="no-results" class="no-results" style="display: none;">No results found.</div>
-    </div>
+  <div id="results-container">
+    <h2 style="padding: 20px;">Search Results:</h2>
+    <div id="search-results-grid" class="video-grid"></div>
+    <div id="no-results" class="no-results" style="display: none;">No results found.</div>
+  </div>
 
-    <script>
-        function getQueryParam(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
+  <script>
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    const searchBox = document.getElementById("search-box");
+    const searchResults = document.getElementById("search-results");
+
+    searchBox.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        const query = searchBox.value.trim();
+        if (query) {
+          window.location.href = `search-result.html?query=${encodeURIComponent(query)}`;
         }
+      }
+    });
 
-        const searchBox = document.getElementById("search-box");
-        const searchResults = document.getElementById("search-results");
+    fetch("https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv")
+      .then(res => res.text())
+      .then(csvText => {
+        Papa.parse(csvText, {
+          header: true,
+          complete: function(results) {
+            const data = results.data;
+            const query = (getQueryParam("query") || "").toLowerCase();
+            const matches = data.filter(item =>
+              item.name && item.name.toLowerCase().includes(query) &&
+              item.thumbnail && item.thumbnail.trim() !== ""
+            );
 
-        searchBox.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const query = searchBox.value.trim();
-                if (query) {
-                    window.location.href = `search-result.html?query=${encodeURIComponent(query)}`;
-                }
+            const grid = document.getElementById("search-results-grid");
+            const noResults = document.getElementById("no-results");
+
+            if (matches.length === 0) {
+              noResults.style.display = "block";
+            } else {
+              matches.forEach(item => {
+                const videoItem = document.createElement("div");
+                videoItem.classList.add("video-item");
+                videoItem.innerHTML = `
+                  <a href="video.html?id=${item.id}">
+                    <img src="${item.thumbnail}" alt="${item.name}">
+                    <span>${item.name}</span>
+                  </a>
+                `;
+                grid.appendChild(videoItem);
+              });
             }
-        });
 
-        fetch("https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv")
-            .then(res => res.text())
-            .then(csvText => {
-                Papa.parse(csvText, {
-                    header: true,
-                    complete: function(results) {
-                        const data = results.data;
-                        const query = (getQueryParam("query") || "").toLowerCase();
-                        const matches = data.filter(item => 
-                            item.name && item.name.toLowerCase().includes(query) && item.thumbnail && item.thumbnail.trim() !== ""
-                        );
-
-                        const grid = document.getElementById("search-results-grid");
-                        const noResults = document.getElementById("no-results");
-
-                        if (matches.length === 0) {
-                            noResults.style.display = "block";
-                        } else {
-                            matches.forEach(item => {
-                                const videoItem = document.createElement("div");
-                                videoItem.classList.add("video-item");
-                                videoItem.innerHTML = `
-                                    <a href="video.html?id=${item.id}">
-                                        <img src="${item.thumbnail}" alt="${item.name}">
-                                        <span>${item.name}</span>
-                                    </a>
-                                `;
-                                grid.appendChild(videoItem);
-                            });
-                        }
-
-                        // Populate categories dropdown
-                        const categories = [...new Set(data.map(row => row.category).filter(Boolean))];
-                        const categoryList = document.getElementById("category-list");
-                        categories.forEach(category => {
-                            const categoryItem = document.createElement("a");
-                            categoryItem.textContent = category;
-                            categoryItem.href = `category.html?category=${category}`;
-                            categoryList.appendChild(categoryItem);
-                        });
-
-                        // Optional: Live search suggestions on this page
-                        searchBox.addEventListener('input', function () {
-                            const liveQuery = searchBox.value.toLowerCase();
-                            if (liveQuery.length === 0) {
-                                searchResults.style.display = 'none';
-                                return;
-                            }
-
-                            const filtered = data.filter(item =>
-                                item.name && item.name.toLowerCase().includes(liveQuery) &&
-                                item.thumbnail && item.thumbnail.trim() !== ""
-                            );
-
-                            searchResults.innerHTML = '';
-                            filtered.forEach(item => {
-                                const div = document.createElement('div');
-                                div.textContent = item.name;
-                                div.addEventListener('click', () => {
-                                    window.location.href = `video.html?id=${item.id}`;
-                                });
-                                searchResults.appendChild(div);
-                            });
-
-                            searchResults.style.display = filtered.length > 0 ? 'block' : 'none';
-                        });
-                    }
-                });
+            const categories = [...new Set(data.map(row => row.category).filter(Boolean))];
+            const categoryList = document.getElementById("category-list");
+            categories.forEach(category => {
+              const categoryItem = document.createElement("a");
+              categoryItem.textContent = category;
+              categoryItem.href = `category.html?category=${encodeURIComponent(category)}`;
+              categoryList.appendChild(categoryItem);
             });
-    </script>
+
+            searchBox.addEventListener('input', function () {
+              const liveQuery = searchBox.value.toLowerCase();
+              if (liveQuery.length === 0) {
+                searchResults.style.display = 'none';
+                return;
+              }
+
+              const filtered = data.filter(item =>
+                item.name && item.name.toLowerCase().includes(liveQuery) &&
+                item.thumbnail && item.thumbnail.trim() !== ""
+              );
+
+              searchResults.innerHTML = '';
+              filtered.forEach(item => {
+                const div = document.createElement('div');
+                div.innerHTML = `<img src="${item.thumbnail}" alt="${item.name}"> ${item.name}`;
+                div.addEventListener('click', () => {
+                  window.location.href = `video.html?id=${item.id}`;
+                });
+                searchResults.appendChild(div);
+              });
+
+              searchResults.style.display = filtered.length > 0 ? 'block' : 'none';
+            });
+          }
+        });
+      });
+  </script>
 </body>
 </html>
