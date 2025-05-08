@@ -293,6 +293,15 @@
                                 searchResults.style.display = filteredData.length > 0 ? 'block' : 'none';
                             }
                         });
+                        searchBox.addEventListener('keydown', function(e) {
+                            if (e.key === 'Enter') {
+                                const query = searchBox.value.trim();
+                                if (query) {
+                                    window.location.href = `search-result.html?query=${encodeURIComponent(query)}`;
+                                }
+                            }
+});
+
                     });
             });
         });
