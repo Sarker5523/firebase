@@ -571,7 +571,6 @@ function loadSeasons(seasons, currentSeasonId) {
           <img src="${video.thumbnail}" alt="${video.name}">
           ${video.name}
         `;
-        // ✅ Corrected reference to suggestionItem and video
         suggestionItem.addEventListener('click', () => {
           window.location.href = `video.html?id=${video.id}`;
         });
