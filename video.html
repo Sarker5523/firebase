@@ -557,25 +557,38 @@ function loadSeasons(seasons, currentSeasonId) {
       });
 
     function handleSearch() {
-      const query = searchInput.value.toLowerCase();
-      fetch('https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv')
-        .then(response => response.text())
-        .then(text => {
-          const data = parseCSV(text);
-          const filteredVideos = data.filter(video => video.name.toLowerCase().includes(query) && video.thumbnail.trim() !== "");
-          searchResultsContainer.style.display = 'block';
-          searchResultsContainer.innerHTML = '';
-          filteredVideos.slice(0, 5).forEach(video => {
-            const suggestionItem = document.createElement('div');
-            suggestionItem.innerHTML = `
-              <img src="${video.thumbnail}" alt="${video.name}">
-              ${video.name}
-            `;
-      
-            searchResultsContainer.appendChild(suggestionItem);
-          });
+  const query = searchInput.value.toLowerCase();
+  fetch('https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv')
+    .then(response => response.text())
+    .then(text => {
+      const data = parseCSV(text);
+      const filteredVideos = data.filter(video => video.name.toLowerCase().includes(query) && video.thumbnail.trim() !== "");
+      searchResultsContainer.style.display = 'block';
+      searchResultsContainer.innerHTML = '';
+      filteredVideos.slice(0, 5).forEach(video => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.innerHTML = `
+          <img src="${video.thumbnail}" alt="${video.name}">
+          ${video.name}
+        `;
+        // ✅ Corrected reference to suggestionItem and video
+        suggestionItem.addEventListener('click', () => {
+          window.location.href = `video.html?id=${video.id}`;
         });
+        searchResultsContainer.appendChild(suggestionItem);
+      });
+    });
+}
+
+    function handleEnter(event) {
+  if (event.key === 'Enter') {
+    const query = searchInput.value.trim();
+    if (query) {
+      window.location.href = `search-result.html?query=${encodeURIComponent(query)}`;
     }
+  }
+}
+
     searchInput.addEventListener('input', handleSearch);
     searchInput.addEventListener('keydown', handleEnter);
 
