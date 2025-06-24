@@ -381,10 +381,10 @@
         return;
       }
 
-      document.getElementById('video-title').innerText = `${video.name} - ${video.episode_name}`;
+      document.getElementById('video-title').innerText = `${video.name} - ${video.season_name} - ${video.episode_name}`;
 
       // Dynamically set the webpage title to the episode's title
-      document.title = `${video.name} - ${video.episode_name}`;
+      document.title = `${video.name} - ${video.season_name} - ${video.episode_name}`;
 
       if (video.embed_code) {
         iframeContainer.innerHTML = video.embed_code;
