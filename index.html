@@ -173,6 +173,10 @@
             text-align: center;
             box-sizing: border-box;
         }
+        .video-grid.animated-scroll {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+}
         @media (max-width: 767px) {
             .nav-links a:first-child { 
                 display: none; 
@@ -237,7 +241,7 @@
                             const newlyAddedSection = document.getElementById("newly-added");
                             const newlyAddedVideos = data
     .filter(item => item.thumbnail && item.thumbnail.trim() !== "") // Filter out items without thumbnails
-    .slice(-7)
+    .slice(-12)
     .reverse(); // Get the last 7 items
                             const videoGrid = document.createElement("div");
                             videoGrid.classList.add("video-grid", "animated-scroll");
@@ -281,9 +285,9 @@
                                 const videoGrid = document.createElement("div");
                                 videoGrid.classList.add("video-grid", "animated-scroll");
 
-                                // Show only the last 8 items, but in reverse order (last video first)
+                                // Show only the last 12 items, but in reverse order (last video first)
                                 const categoryVideos = data.filter(item => item.category === category);
-                                const lastVideos = categoryVideos.slice(-7).reverse();
+                                const lastVideos = categoryVideos.slice(-12).reverse();
 
                                 lastVideos.forEach(item => {
                                     const videoItem = document.createElement("div");
