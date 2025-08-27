@@ -173,20 +173,6 @@
             text-align: center;
             box-sizing: border-box;
         }
-        .video-grid.animated-scroll {
-    overflow: hidden;
-    white-space: nowrap;
-    position: relative;
-}
-.video-grid.animated-scroll .video-item {
-    display: inline-block;
-    vertical-align: top;
-    animation: scroll-bounce 3s linear infinite alternate;
-}
-@keyframes scroll-bounce {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-100%); }
-}
         @media (max-width: 767px) {
             .nav-links a:first-child { 
                 display: none; 
@@ -355,6 +341,28 @@
                     });
                 });
         });
+        document.addEventListener("DOMContentLoaded", function() {
+    // Carousel scroll for animated-scroll grids
+    function setupCarouselScroll(gridSelector, interval = 2000) {
+        document.querySelectorAll(gridSelector).forEach(grid => {
+            let item = grid.querySelector('.video-item');
+            if (!item) return;
+            let itemWidth = item.offsetWidth + parseInt(getComputedStyle(grid).gap || 0, 10);
+
+        setInterval(() => {
+            let maxScroll = grid.scrollWidth - grid.offsetWidth;
+            let nextScroll = grid.scrollLeft + itemWidth;
+            if (nextScroll > maxScroll) {
+                grid.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                grid.scrollTo({ left: nextScroll, behavior: 'smooth' });
+            }
+        }, interval);
+    });
+}
+
+setTimeout(() => setupCarouselScroll('.video-grid.animated-scroll'), 1000);
+});
     </script>
 </head>
 <body>
