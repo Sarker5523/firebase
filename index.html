@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -174,36 +173,35 @@
             box-sizing: border-box;
         }
         .video-grid.animated-scroll {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    
-}
-.video-grid.animated-scroll .video-item {
-    width: 200px;
-    min-width: 200px;
-    flex-shrink: 0;
-}
+            overflow-x: auto;
+            flex-wrap: nowrap;
+        }
+        .video-grid.animated-scroll .video-item {
+            width: 200px;
+            min-width: 200px;
+            flex-shrink: 0;
+        }
         @media (max-width: 767px) {
-    .nav-links a:first-child { 
-        display: none; 
-    }
-    .video-grid.animated-scroll {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        gap: 10px;
-        padding: 10px 0;
-    }
-    .video-grid.animated-scroll .video-item {
-        width: 140px;
-        min-width: 140px;
-        flex-shrink: 0;
-    }
-    .search-box { 
-        width: 150px; 
-        font-size: 0.9em; 
-    }
-}
+            .nav-links a:first-child { 
+                display: none; 
+            }
+            .video-grid.animated-scroll {
+                display: flex;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                gap: 10px;
+                padding: 10px 0;
+            }
+            .video-grid.animated-scroll .video-item {
+                width: 140px;
+                min-width: 140px;
+                flex-shrink: 0;
+            }
+            .search-box { 
+                width: 150px; 
+                font-size: 0.9em; 
+            }
+        }
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -236,6 +234,25 @@
                 }
             });
 
+            // Carousel scroll for animated-scroll grids
+            function setupCarouselScroll(gridSelector, interval = 2000) {
+                document.querySelectorAll(gridSelector).forEach(grid => {
+                    let item = grid.querySelector('.video-item');
+                    if (!item) return;
+                    let itemWidth = item.offsetWidth + parseInt(getComputedStyle(grid).gap || 0, 10);
+
+                    setInterval(() => {
+                        let maxScroll = grid.scrollWidth - grid.offsetWidth;
+                        let nextScroll = grid.scrollLeft + itemWidth;
+                        if (nextScroll > maxScroll) {
+                            grid.scrollTo({ left: 0, behavior: 'smooth' });
+                        } else {
+                            grid.scrollTo({ left: nextScroll, behavior: 'smooth' });
+                        }
+                    }, interval);
+                });
+            }
+
             fetch("https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv")
                 .then(response => response.text())
                 .then(csvText => {
@@ -247,9 +264,9 @@
                             // Populate Newly Added Section
                             const newlyAddedSection = document.getElementById("newly-added");
                             const newlyAddedVideos = data
-    .filter(item => item.thumbnail && item.thumbnail.trim() !== "") // Filter out items without thumbnails
-    .slice(-12)
-    .reverse(); // Get the last 7 items
+                                .filter(item => item.thumbnail && item.thumbnail.trim() !== "")
+                                .slice(-12)
+                                .reverse();
                             const videoGrid = document.createElement("div");
                             videoGrid.classList.add("video-grid", "animated-scroll");
                             newlyAddedVideos.forEach(item => {
@@ -312,6 +329,9 @@
                                 contentSection.appendChild(categorySection);
                             });
 
+                            // Call the carousel scroll after all grids are rendered
+                            setupCarouselScroll('.video-grid.animated-scroll', 2000);
+
                             // Search Suggestions
                             searchBox.addEventListener('input', function() {
                                 const query = searchBox.value.toLowerCase();
@@ -340,43 +360,20 @@
                                 searchResults.style.display = filteredData.length > 0 ? 'block' : 'none';
                             });
                             searchBox.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') {
-        const query = searchBox.value.trim();
-        if (query) {
-            window.location.href = `search-result.html?query=${encodeURIComponent(query)}`;
-        }
-    }
-});
+                                if (e.key === 'Enter') {
+                                    const query = searchBox.value.trim();
+                                    if (query) {
+                                        window.location.href = `search-result.html?query=${encodeURIComponent(query)}`;
+                                    }
+                                }
+                            });
 
                         }
                     });
                 });
         });
-        document.addEventListener("DOMContentLoaded", function() {
-    // Carousel scroll for animated-scroll grids
-    function setupCarouselScroll(gridSelector, interval = 2000) {
-        document.querySelectorAll(gridSelector).forEach(grid => {
-            let item = grid.querySelector('.video-item');
-            if (!item) return;
-            let itemWidth = item.offsetWidth + parseInt(getComputedStyle(grid).gap || 0, 10);
-
-        setInterval(() => {
-            let maxScroll = grid.scrollWidth - grid.offsetWidth;
-            let nextScroll = grid.scrollLeft + itemWidth;
-            if (nextScroll > maxScroll) {
-                grid.scrollTo({ left: 0, behavior: 'smooth' });
-            } else {
-                grid.scrollTo({ left: nextScroll, behavior: 'smooth' });
-            }
-        }, interval);
-    });
-}
-
-setTimeout(() => setupCarouselScroll('.video-grid.animated-scroll'), 1000);
-});
     </script>
-</head>
-<body>
+</head><body>
     <!-- Navbar -->
     <div class="navbar">
         <div class="logo" onclick="window.location.href = 'index.html'">MPlix</div>
