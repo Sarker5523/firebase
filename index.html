@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -172,6 +173,20 @@
             text-align: center;
             box-sizing: border-box;
         }
+        .video-grid.animated-scroll {
+    overflow: hidden;
+    white-space: nowrap;
+    position: relative;
+}
+.video-grid.animated-scroll .video-item {
+    display: inline-block;
+    vertical-align: top;
+    animation: scroll-bounce 3s linear infinite alternate;
+}
+@keyframes scroll-bounce {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+}
         @media (max-width: 767px) {
             .nav-links a:first-child { 
                 display: none; 
@@ -239,7 +254,7 @@
     .slice(-7)
     .reverse(); // Get the last 7 items
                             const videoGrid = document.createElement("div");
-                            videoGrid.classList.add("video-grid");
+                            videoGrid.classList.add("video-grid", "animated-scroll");
                             newlyAddedVideos.forEach(item => {
                                 const videoItem = document.createElement("div");
                                 videoItem.classList.add("video-item");
@@ -278,7 +293,7 @@
                                 categorySection.appendChild(viewAllButton);
 
                                 const videoGrid = document.createElement("div");
-                                videoGrid.classList.add("video-grid");
+                                videoGrid.classList.add("video-grid", "animated-scroll");
 
                                 // Show only the last 8 items, but in reverse order (last video first)
                                 const categoryVideos = data.filter(item => item.category === category);
