@@ -179,12 +179,18 @@
     
 }
 .video-grid.animated-scroll .video-item {
+    width: 200px;
+    min-width: 200px;
     flex-shrink: 0;
 }
         @media (max-width: 767px) {
             .nav-links a:first-child { 
                 display: none; 
             }
+            .video-grid.animated-scroll .video-item {
+        width: 140px;
+        min-width: 140px;
+    }
             .search-box { 
                 width: 150px; 
                 font-size: 0.9em; 
