@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta name="google-site-verification" content="f3ScO5zMiA6y3ahA2om-ruxICi1fHCQMoAj-92Vqok0" />
@@ -241,23 +241,60 @@
             });
 
             // Carousel scroll for animated-scroll grids
-            function setupCarouselScroll(gridSelector, interval = 2000) {
-                document.querySelectorAll(gridSelector).forEach(grid => {
-                    let item = grid.querySelector('.video-item');
-                    if (!item) return;
-                    let itemWidth = item.offsetWidth + parseInt(getComputedStyle(grid).gap || 0, 10);
+            function setupCarouselScroll(gridSelector, interval = 4000) {
+    const grids = document.querySelectorAll(gridSelector);
 
-                    setInterval(() => {
-                        let maxScroll = grid.scrollWidth - grid.offsetWidth;
-                        let nextScroll = grid.scrollLeft + itemWidth;
-                        if (nextScroll > maxScroll) {
-                            grid.scrollTo({ left: 0, behavior: 'smooth' });
-                        } else {
-                            grid.scrollTo({ left: nextScroll, behavior: 'smooth' });
-                        }
-                    }, interval);
-                });
+    function smoothScrollTo(grid, target, duration = 4000) { // default longer duration
+        const start = grid.scrollLeft;
+        const distance = target - start;
+        const startTime = performance.now();
+
+        function step(currentTime) {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            grid.scrollLeft = start + distance * progress;
+
+            if (progress < 1) {
+                requestAnimationFrame(step);
             }
+        }
+
+        requestAnimationFrame(step);
+    }
+
+    grids.forEach((grid, index) => {
+        const item = grid.querySelector('.video-item');
+        if (!item) return;
+
+        const direction = index % 2 === 0 ? 'ltr' : 'rtl';
+        const gap = parseInt(getComputedStyle(grid).gap || 0, 10);
+        const itemWidth = item.offsetWidth + gap;
+        const maxScroll = grid.scrollWidth - grid.offsetWidth;
+
+        setInterval(() => {
+            let nextScroll;
+
+            if (direction === 'ltr') {
+                nextScroll = grid.scrollLeft + itemWidth;
+
+                if (nextScroll > maxScroll) {
+                    smoothScrollTo(grid, 0, 1500); // slower reset scroll
+                } else {
+                    smoothScrollTo(grid, nextScroll, 1000); // slower smooth scroll step
+                }
+            } else {
+                nextScroll = grid.scrollLeft - itemWidth;
+
+                if (nextScroll < 0) {
+                    smoothScrollTo(grid, maxScroll, 1500);
+                } else {
+                    smoothScrollTo(grid, nextScroll, 1000);
+                }
+            }
+        }, interval);
+    });
+}
+
 
             fetch("https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv")
                 .then(response => response.text())
@@ -336,7 +373,7 @@
                             });
 
                             // Call the carousel scroll after all grids are rendered
-                            setupCarouselScroll('.video-grid.animated-scroll', 2000);
+                            setupCarouselScroll('.video-grid.animated-scroll', 3500);
 
                             // Search Suggestions
                             searchBox.addEventListener('input', function() {
