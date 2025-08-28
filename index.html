@@ -1,128 +1,147 @@
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta name="google-site-verification" content="f3ScO5zMiA6y3ahA2om-ruxICi1fHCQMoAj-92Vqok0" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>StreamOn - Stream Movies and Series</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <script src="script.js" defer></script>
+
+    <!-- Swiper CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            background: #222; 
-            color: white; 
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #222;
+            color: white;
         }
-        .navbar { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.5)); 
-            padding: 15px 30px; 
-            box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.5));
+            padding: 15px 30px;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
             transition: top 0.3s ease-in-out;
-            position: relative; 
+            position: relative;
             z-index: 1000;
         }
-        .navbar.fixed { 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            right: 0; 
+
+        .navbar.fixed {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
         }
-        .logo { 
-            display: flex; 
-            align-items: center; 
-            cursor: pointer; 
-            font-size: 1.5em; 
-            font-weight: bold; 
-            color: white; 
+
+        .logo {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
         }
-        .nav-links { 
-            display: flex; 
-            align-items: center; 
+
+        .nav-links {
+            display: flex;
+            align-items: center;
         }
-        .nav-links a, .dropdown { 
-            margin-left: 20px; 
-            color: white; 
-            text-decoration: none; 
-            cursor: pointer; 
-            font-size: 1.1em; 
+
+        .nav-links a, .dropdown {
+            margin-left: 20px;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 1.1em;
         }
-        .dropdown-content { 
-            display: none; 
-            position: absolute; 
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)); 
-            color: white; 
-            top: 50px; 
-            left: auto; 
-            min-width: 150px; 
-            box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
-            border-radius: 5px; 
-            overflow: hidden; 
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5));
+            color: white;
+            top: 50px;
+            left: auto;
+            min-width: 150px;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            overflow: hidden;
         }
-        .dropdown-content a { 
-            display: block; 
-            padding: 10px; 
-            text-decoration: none; 
-            color: white; 
-            transition: background 0.3s; 
+
+        .dropdown-content a {
+            display: block;
+            padding: 10px;
+            text-decoration: none;
+            color: white;
+            transition: background 0.3s;
         }
-        .dropdown-content a:hover { 
-            background-color: #ddd; 
+
+        .dropdown-content a:hover {
+            background-color: #ddd;
         }
-        .search-container { 
-            position: relative; 
-            margin-left: 20px; 
+
+        .search-container {
+            position: relative;
+            margin-left: 20px;
         }
-        .search-box { 
-            padding: 8px; 
-            border-radius: 5px; 
-            border: 1px solid white; 
-            font-size: 1em; 
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0)); 
-            color: white; 
+
+        .search-box {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid white;
+            font-size: 1em;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0));
+            color: white;
             width: 150px;
         }
-        .search-results { 
-            display: none; 
-            position: absolute; 
-            top: 100%; 
-            left: 0; 
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5)); 
-            color: white; 
-            width: 180px; 
-            font-size: 0.95em; 
-            max-height: 250px; 
-            overflow-y: auto; 
-            box-shadow: 0px 4px 6px rgba(0,0,0,0.2); 
-            border-radius: 5px; 
+
+        .search-results {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.5));
+            color: white;
+            width: 180px;
+            font-size: 0.95em;
+            max-height: 250px;
+            overflow-y: auto;
+            box-shadow: 0px 4px 6px rgba(0,0,0,0.2);
+            border-radius: 5px;
         }
-        .search-results div { 
-            display: flex; 
-            align-items: center; 
-            padding: 10px; 
-            cursor: pointer; 
-            transition: background 0.3s; 
+
+        .search-results div {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            cursor: pointer;
+            transition: background 0.3s;
         }
-        .search-results div:hover { 
-            background: #ddd; 
+
+        .search-results div:hover {
+            background: #ddd;
         }
-        .search-results img { 
-            width: 50px; 
-            margin-right: 10px; 
-            border-radius: 5px; 
+
+        .search-results img {
+            width: 50px;
+            margin-right: 10px;
+            border-radius: 5px;
         }
+
         .category-section {
-            margin: 20px 20px 20px 20px; 
+            margin: 20px;
         }
+
         .category-section h2 {
-            font-size: 1.5em; 
+            font-size: 1.5em;
             color: white;
             display: inline-block;
         }
+
         .view-all-button {
             display: inline-block;
             margin-left: 20px;
@@ -134,289 +153,99 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         .view-all-button:hover {
             background: rgba(0, 0, 0, 0.9);
         }
-        .video-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: flex-start;
+
+        .swiper {
+            overflow: hidden;
         }
+
+        .swiper-wrapper {
+            display: flex;
+            transition-timing-function: linear !important;
+        }
+
+        .swiper-slide {
+            width: 200px;
+            flex-shrink: 0;
+            margin-right: 15px;
+        }
+
         .video-item {
             position: relative;
-            width: 200px;
             background-color: transparent;
             text-align: center;
-            transition: background-color 0.3s;
         }
-        .video-item:hover {
-            background-color: rgba(0, 0, 0, 0.3);
-        }
+
         .video-item img {
             width: 100%;
             border-radius: 8px;
         }
+
         .video-item span {
             position: absolute;
-            top: 0; 
+            top: 0;
             left: 0;
-            right: 0; 
+            right: 0;
             padding: 10px;
-            font-size: 1em; 
+            font-size: 1em;
             color: white;
             background: rgba(0, 0, 0, 0.5);
-            border-radius: 5px 5px 0 0; 
-            z-index: 1;
+            border-radius: 5px 5px 0 0;
             width: 100%;
             text-align: center;
             box-sizing: border-box;
         }
-        .video-grid.animated-scroll {
-            overflow-x: auto;
-            flex-wrap: nowrap;
+        .swiper-button-next::after,.swiper-button-prev::after {
+            font-size: 25px;
+            color: white;
+            font-weight: bold; /* 🔺 Reduce arrow size only (default is 20px) */
         }
-        .video-grid.animated-scroll .video-item {
-            width: 200px;
-            min-width: 200px;
-            flex-shrink: 0;
+        .swiper-button-next,.swiper-button-prev {
+            width: 36px;
+            height: 36px;
+            background: rgba(252, 252, 252, 0.4);
+            border-radius: 50%; /* 👈 Ensures it's a perfect circle */
+            padding: 0;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.788);
+            display: flex;       /* 👈 Ensures icon is centered */
+            align-items: center; /* 👈 Vertically center the arrow */
+            justify-content: center; /* 👈 Horizontally center the arrow */
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 10;
+            transition: background 0.3s ease;
+            box-sizing: border-box; /* 👈 Prevents padding/size issues */
         }
-        .category-section .video-grid 
-        {
-            overflow-x: hidden;
+
+        .swiper-button-next:hover,.swiper-button-prev:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
+
+.swiper-pagination-bullet {
+    background: white;
+}
+
         @media (max-width: 767px) {
-            .nav-links a:first-child { 
-                display: none; 
+            .nav-links a:first-child {
+                display: none;
             }
-            .video-grid.animated-scroll {
-                display: flex;
-                flex-wrap: nowrap;
-                overflow-x: auto;
-                gap: 10px;
-                padding: 10px 0;
-            }
-            .video-grid.animated-scroll .video-item {
+
+            .swiper-slide {
                 width: 140px;
-                min-width: 140px;
-                flex-shrink: 0;
             }
-            .search-box { 
-                width: 150px; 
-                font-size: 0.9em; 
+
+            .search-box {
+                width: 150px;
+                font-size: 0.9em;
             }
         }
     </style>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <script defer src="script.js"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const dropdown = document.querySelector(".dropdown");
-            const dropdownContent = document.querySelector(".dropdown-content");
-            const searchBox = document.getElementById("search-box");
-            const searchResults = document.getElementById("search-results");
-            const navbar = document.querySelector(".navbar");
-
-            // Function to handle scroll and fix navbar
-            let lastScrollTop = 0;
-            window.addEventListener("scroll", function() {
-                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                if (scrollTop > lastScrollTop) {
-                    navbar.classList.add("fixed");
-                } else {
-                    navbar.classList.remove("fixed");
-                }
-                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // Prevent negative scroll
-            });
-
-            dropdown.addEventListener("click", function(event) {
-                event.stopPropagation();
-                dropdownContent.style.display = (dropdownContent.style.display === "block") ? "none" : "block";
-            });
-
-            document.addEventListener("click", function(event) {
-                if (!dropdown.contains(event.target)) {
-                    dropdownContent.style.display = "none";
-                }
-            });
-
-            // Carousel scroll for animated-scroll grids
-            function setupCarouselScroll(gridSelector, interval = 4000) {
-    const grids = document.querySelectorAll(gridSelector);
-
-    function smoothScrollTo(grid, target, duration = 4000) { // default longer duration
-        const start = grid.scrollLeft;
-        const distance = target - start;
-        const startTime = performance.now();
-
-        function step(currentTime) {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            grid.scrollLeft = start + distance * progress;
-
-            if (progress < 1) {
-                requestAnimationFrame(step);
-            }
-        }
-
-        requestAnimationFrame(step);
-    }
-
-    grids.forEach((grid, index) => {
-        const item = grid.querySelector('.video-item');
-        if (!item) return;
-
-        const direction = index % 2 === 0 ? 'ltr' : 'rtl';
-        const gap = parseInt(getComputedStyle(grid).gap || 0, 10);
-        const itemWidth = item.offsetWidth + gap;
-        const maxScroll = grid.scrollWidth - grid.offsetWidth;
-
-        setInterval(() => {
-            let nextScroll;
-
-            if (direction === 'ltr') {
-                nextScroll = grid.scrollLeft + itemWidth;
-
-                if (nextScroll > maxScroll) {
-                    smoothScrollTo(grid, 0, 1500); // slower reset scroll
-                } else {
-                    smoothScrollTo(grid, nextScroll, 1000); // slower smooth scroll step
-                }
-            } else {
-                nextScroll = grid.scrollLeft - itemWidth;
-
-                if (nextScroll < 0) {
-                    smoothScrollTo(grid, maxScroll, 1500);
-                } else {
-                    smoothScrollTo(grid, nextScroll, 1000);
-                }
-            }
-        }, interval);
-    });
-}
-
-
-            fetch("https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv")
-                .then(response => response.text())
-                .then(csvText => {
-                    Papa.parse(csvText, {
-                        header: true,
-                        complete: function(results) {
-                            const data = results.data;
-
-                            // Populate Newly Added Section
-                            const newlyAddedSection = document.getElementById("newly-added");
-                            const newlyAddedVideos = data
-                                .filter(item => item.thumbnail && item.thumbnail.trim() !== "")
-                                .slice(-12)
-                                .reverse();
-                            const videoGrid = document.createElement("div");
-                            videoGrid.classList.add("video-grid", "animated-scroll");
-                            newlyAddedVideos.forEach(item => {
-                                const videoItem = document.createElement("div");
-                                videoItem.classList.add("video-item");
-                                videoItem.innerHTML = `
-                                    <a href="video.html?id=${item.id}">
-                                        <img src="${item.thumbnail}" alt="${item.name}">
-                                        <span>${item.name}</span>
-                                    </a>
-                                `;
-                                videoGrid.appendChild(videoItem);
-                            });
-                            newlyAddedSection.appendChild(videoGrid);
-
-                            // Populate categories
-                            const categories = [...new Set(data.map(row => row.category).filter(Boolean))];
-                            const categoryList = document.getElementById("category-list");
-                            categories.forEach(category => {
-                                const categoryItem = document.createElement("a");
-                                categoryItem.textContent = category;
-                                categoryItem.href = `category.html?category=${category}`;
-                                categoryList.appendChild(categoryItem);
-                            });
-
-                            // Populate the content by categories
-                            const contentSection = document.getElementById("content");
-                            categories.forEach(category => {
-                                const categorySection = document.createElement("div");
-                                categorySection.classList.add("category-section");
-                                categorySection.innerHTML = `<h2>${category}:</h2>`;
-                                
-                                // Create the "View All" button
-                                const viewAllButton = document.createElement("button");
-                                viewAllButton.classList.add("view-all-button");
-                                viewAllButton.textContent = "View All";
-                                viewAllButton.onclick = () => window.location.href = `category.html?category=${category}`;
-                                categorySection.appendChild(viewAllButton);
-
-                                const videoGrid = document.createElement("div");
-                                videoGrid.classList.add("video-grid", "animated-scroll");
-
-                                // Show only the last 12 items, but in reverse order (last video first)
-                                const categoryVideos = data.filter(item => item.category === category);
-                                const lastVideos = categoryVideos.slice(-12).reverse();
-
-                                lastVideos.forEach(item => {
-                                    const videoItem = document.createElement("div");
-                                    videoItem.classList.add("video-item");
-                                    videoItem.innerHTML = `
-                                        <a href="video.html?id=${item.id}">
-                                            <img src="${item.thumbnail}" alt="${item.name}">
-                                            <span>${item.name}</span>
-                                        </a>
-                                    `;
-                                    videoGrid.appendChild(videoItem);
-                                });
-
-                                categorySection.appendChild(videoGrid);
-                                contentSection.appendChild(categorySection);
-                            });
-
-                            // Call the carousel scroll after all grids are rendered
-                            setupCarouselScroll('.video-grid.animated-scroll', 3700);
-
-                            // Search Suggestions
-                            searchBox.addEventListener('input', function() {
-                                const query = searchBox.value.toLowerCase();
-                                if (query.length === 0) {
-                                    searchResults.style.display = 'none';
-                                    return;
-                                }
-
-                                const filteredData = data.filter(item => {
-                                    return item.name.toLowerCase().includes(query) && item.thumbnail.trim() !== "";
-                                });
-
-                                searchResults.innerHTML = '';
-                                filteredData.forEach(item => {
-                                    const div = document.createElement('div');
-                                    div.innerHTML = `
-                                        <img src="${item.thumbnail}" alt="${item.name}">
-                                        <span>${item.name}</span>
-                                    `;
-                                    div.addEventListener('click', () => {
-                                        window.location.href = `video.html?id=${item.id}`;
-                                    });
-                                    searchResults.appendChild(div);
-                                });
-
-                                searchResults.style.display = filteredData.length > 0 ? 'block' : 'none';
-                            });
-                            searchBox.addEventListener('keydown', function(e) {
-                                if (e.key === 'Enter') {
-                                    const query = searchBox.value.trim();
-                                    if (query) {
-                                        window.location.href = `search-result.html?query=${encodeURIComponent(query)}`;
-                                    }
-                                }
-                            });
-
-                        }
-                    });
-                });
-        });
-    </script>
-</head><body>
+</head>
+<body>
     <!-- Navbar -->
     <div class="navbar">
         <div class="logo" onclick="window.location.href = 'index.html'">MPlix</div>
@@ -440,5 +269,168 @@
 
     <!-- Content -->
     <div id="content"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const dropdown = document.querySelector(".dropdown");
+            const dropdownContent = document.querySelector(".dropdown-content");
+            const searchBox = document.getElementById("search-box");
+            const searchResults = document.getElementById("search-results");
+            const navbar = document.querySelector(".navbar");
+
+            let lastScrollTop = 0;
+            window.addEventListener("scroll", function () {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                navbar.classList.toggle("fixed", scrollTop > lastScrollTop);
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            });
+
+            dropdown.addEventListener("click", function (event) {
+                event.stopPropagation();
+                dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
+            });
+
+            document.addEventListener("click", function (event) {
+                if (!dropdown.contains(event.target)) {
+                    dropdownContent.style.display = "none";
+                }
+            });
+
+            fetch("https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv")
+                .then(response => response.text())
+                .then(csvText => {
+                    Papa.parse(csvText, {
+                        header: true,
+                        complete: function (results) {
+                            const data = results.data;
+
+                            // Newly added
+                            const newlyAddedSection = document.getElementById("newly-added");
+                            const newlyAddedVideos = data.filter(item => item.thumbnail && item.thumbnail.trim()).slice(-12).reverse();
+                            const swiperContainer = createSwiperContainer(newlyAddedVideos, -1);
+                            newlyAddedSection.appendChild(swiperContainer);
+
+                            // Category List
+                            const categories = [...new Set(data.map(row => row.category).filter(Boolean))];
+                            const categoryList = document.getElementById("category-list");
+                            categories.forEach(category => {
+                                const link = document.createElement("a");
+                                link.href = `category.html?category=${category}`;
+                                link.textContent = category;
+                                categoryList.appendChild(link);
+                            });
+
+                            // Category Sections
+                            const contentSection = document.getElementById("content");
+                            categories.forEach((category, index) => {
+                                const section = document.createElement("div");
+                                section.className = "category-section";
+                                section.innerHTML = `<h2>${category}:</h2>`;
+
+                                const viewAll = document.createElement("button");
+                                viewAll.className = "view-all-button";
+                                viewAll.textContent = "View All";
+                                viewAll.onclick = () => window.location.href = `category.html?category=${category}`;
+                                section.appendChild(viewAll);
+
+                                const categoryVideos = data.filter(item => item.category === category && item.thumbnail);
+                                const swiperEl = createSwiperContainer(categoryVideos.slice(-12).reverse(), index);
+                                section.appendChild(swiperEl);
+                                contentSection.appendChild(section);
+                            });
+
+                            // Init Swipers
+                            const swipers = document.querySelectorAll(".swiper");
+swipers.forEach((el, index) => {
+    new Swiper(`.swiper-container-${index - 1}`, {
+        loop: true, 
+        loopedSlides: 12,
+        speed: 1500,
+        slidesPerView: 'auto',
+        spaceBetween: 15,
+        freeMode: true,
+        autoplay: {
+            delay: 3700,
+            disableOnInteraction: false,
+            reverseDirection: index % 2 !== 0
+        },
+        navigation: {
+            nextEl: `.swiper-button-next-${index - 1}`,
+            prevEl: `.swiper-button-prev-${index - 1}`,
+        },
+        pagination: {
+            el: `.swiper-pagination-${index - 1}`,
+            clickable: true,
+        }
+    });
+});
+
+
+                            // Search
+                            searchBox.addEventListener("input", function () {
+                                const query = searchBox.value.toLowerCase();
+                                if (!query) return searchResults.style.display = "none";
+                                const matches = data.filter(item => 
+                                item.name.toLowerCase().includes(query) && item.thumbnail && item.thumbnail.trim());
+                                searchResults.innerHTML = "";
+                                matches.forEach(item => {
+                                    const div = document.createElement("div");
+                                    div.innerHTML = `<img src="${item.thumbnail}" alt="${item.name}"><span>${item.name}</span>`;
+                                    div.onclick = () => window.location.href = `video.html?id=${item.id}`;
+                                    searchResults.appendChild(div);
+                                });
+                                searchResults.style.display = matches.length ? "block" : "none";
+                            });
+
+                            searchBox.addEventListener("keydown", function (e) {
+                                if (e.key === "Enter") {
+                                    const query = searchBox.value.trim();
+                                    if (query) window.location.href = `search-result.html?query=${encodeURIComponent(query)}`;
+                                }
+                            });
+                        }
+                    });
+                });
+
+            function createSwiperContainer(videos, index = 0) {
+    const swiper = document.createElement("div");
+    swiper.className = `swiper video-grid swiper-container-${index}`;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "swiper-wrapper";
+
+    videos.forEach(item => {
+        const slide = document.createElement("div");
+        slide.className = "swiper-slide video-item";
+        slide.innerHTML = `
+            <a href="video.html?id=${item.id}">
+                <img src="${item.thumbnail}" alt="${item.name}">
+                <span>${item.name}</span>
+            </a>`;
+        wrapper.appendChild(slide);
+    });
+
+    const nextBtn = document.createElement("div");
+    nextBtn.className = `swiper-button-next swiper-button-next-${index}`;
+
+    const prevBtn = document.createElement("div");
+    prevBtn.className = `swiper-button-prev swiper-button-prev-${index}`;
+
+    const pagination = document.createElement("div");
+    pagination.className = `swiper-pagination swiper-pagination-${index}`;
+
+    swiper.appendChild(wrapper);
+    swiper.appendChild(prevBtn);
+    swiper.appendChild(nextBtn);
+    swiper.appendChild(pagination);
+
+    return swiper;
+}
+
+        });
+    </script>
 </body>
 </html>
