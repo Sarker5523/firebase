@@ -11,12 +11,15 @@
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: #222;
-            color: white;
-        }
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #222 url('stardust.png') repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    color: white;
+}
+
 
         .navbar {
             display: flex;
@@ -172,32 +175,51 @@
             flex-shrink: 0;
             margin-right: 15px;
         }
+:root {
+    --card-radius: 8px; /* 👈 Change this value to control all corners */
+}
 
         .video-item {
-            position: relative;
-            background-color: transparent;
-            text-align: center;
-        }
+    position: relative;
+    background: rgba(255, 255, 255, 0.08); /* light translucent background */
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
 
-        .video-item img {
-            width: 100%;
-            border-radius: 8px;
-        }
+.video-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
+}
 
-        .video-item span {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            padding: 10px;
-            font-size: 1em;
-            color: white;
-            background: rgba(0, 0, 0, 0.5);
-            border-radius: 5px 5px 0 0;
-            width: 100%;
-            text-align: center;
-            box-sizing: border-box;
-        }
+.video-item img {
+    width: 100%;
+    height: 100%;
+    display: block; /* 👈 Prevents bottom gap that can show background */
+    border-radius: var(--card-radius);
+    object-fit: cover; /* 👈 Ensures the image fully covers the box */
+}
+
+.video-item span {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    font-size: 1em;
+    color: white;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-radius: var(--card-radius) var(--card-radius) 0 0;
+    text-align: center;
+    box-sizing: border-box;
+}
+
         .swiper-button-next::after,.swiper-button-prev::after {
             font-size: 25px;
             color: white;
