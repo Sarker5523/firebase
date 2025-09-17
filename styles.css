@@ -214,6 +214,7 @@
     }
     .search-results div:hover {
       background: #ddd;
+      color: #000;
     }
     .search-results img {
       width: 50px;
