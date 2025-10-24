@@ -1,270 +1,544 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Video Gallery - UPN Share</title>
-  <style>
-    /* === YOUR ORIGINAL CSS (unchanged) === */
-    * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
-    body { background:#f4f6f9; color:#333; line-height:1.6; }
-    header { background:linear-gradient(135deg,#667eea,#764ba2); color:white; padding:1.5rem 0; text-align:center; box-shadow:0 4px 12px rgba(0,0,0,0.1); }
-    header h1 { font-size:2.2rem; margin-bottom:0.5rem; }
-    .search-container { max-width:900px; margin:2rem auto; padding:0 1rem; text-align:center; }
-    #searchInput { width:100%; max-width:500px; padding:12px 20px; font-size:1rem; border:2px solid #ddd; border-radius:50px; outline:none; transition:all .3s; }
-    #searchInput:focus { border-color:#667eea; box-shadow:0 0 0 3px rgba(102,126,234,0.2); }
-    .container { max-width:1200px; margin:0 auto; padding:0 1rem; }
-    .video-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1.5rem; margin-top:2rem; }
-    .video-card { background:white; border-radius:12px; overflow:hidden; box-shadow:0 4px 15px rgba(0,0,0,0.08); transition:transform .3s,box-shadow .3s; cursor:pointer; }
-    .video-card:hover { transform:translateY(-8px); box-shadow:0 12px 25px rgba(0,0,0,0.15); }
-    .video-thumbnail { position:relative; width:100%; height:180px; overflow:hidden; background:#000; }
-    .video-thumbnail img { width:100%; height:100%; object-fit:cover; transition:transform .4s; }
-    .video-card:hover .video-thumbnail img { transform:scale(1.08); }
-    .play-icon { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:60px; height:60px; background:rgba(0,0,0,0.6); border-radius:50%; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity .3s; }
-    .video-card:hover .play-icon { opacity:1; }
-    .play-icon::after { content:''; width:0; height:0; border-left:18px solid white; border-top:12px solid transparent; border-bottom:12px solid transparent; jaunty-left:4px; }
-    .video-info { padding:1rem; }
-    .video-title { font-weight:600; font-size:1.1rem; margin-bottom:0.5rem; color:#2c3e50; display:-webkit-box; overflow:hidden; -webkit-line-clamp:2; -webkit-box-orient:vertical; }
-    .video-meta { font-size:0.85rem; color:#7f8c8d; display:flex; justify-content:space-between; flex-wrap:wrap; }
-    .loading { text-align:center; padding:3rem; font-size:1.2rem; color:#666; }
-    .no-results { text-align:center; padding:3rem; color:#888; font-size:1.1rem; display:none; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Gallery - UPN Share</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
 
-    /* === NEW: ERROR MESSAGE BOX === */
-    #errorMessage {
-      display: none;
-      background: #ffebee;
-      color: #c62828;
-      padding: 1rem 1.5rem;
-      margin: 1.5rem auto;
-      max-width: 800px;
-      border-radius: 12px;
-      border-left: 5px solid #e53935;
-      font-size: 1rem;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-    #errorMessage.show { display: block; }
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.6;
+        }
 
-    .pagination { display:flex; justify-content:center; align-items:center; margin:3rem 0; gap:0.5rem; display:none; }
-    .page-btn { padding:10px 16px; background:white; border:1px solid #ddd; border-radius:8px; cursor:pointer; transition:all .3s; font-weight:500; }
-    .page-btn:hover:not(:disabled) { background:#667eea; color:white; border-color:#667eea; }
-    .page-btn.active { background:#667eea; color:white; border-color:#667eea; }
-    .page-btn:disabled { opacity:0.5; cursor:not-allowed; }
-    .modal { display:none; position:fixed; z-index:1000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter:blur(5px); }
-    .modal-content { position:relative; margin:auto; padding:0; width:90%; max-width:1000px; height:90vh; top:5vh; border-radius:12px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.3); }
-    .close { position:absolute; top:15px; right:25px; color:white; font-size:2.5rem; font-weight:bold; cursor:pointer; z-index:1001; text-shadow:0 0 10px rgba(0,0,0,0.7); transition:all .3s; }
-    .close:hover { transform:scale(1.1); color:#ff6b6b; }
-    .player-container { width:100%; height:100%; }
-    .player-container iframe { width:100%; height:100%; border:none; }
-    footer { text-align:center; padding:2rem 1rem; color:#95a5a6; font-size:0.9rem; margin-top:3rem; border-top:1px solid #eee; }
-    @media (max-width:768px) { .video-grid { grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1rem; } header h1 { font-size:1.8rem; } }
-    @media (max-width:480px) { .video-grid { grid-template-columns:1fr; } .close { top:10px; right:15px; font-size:2rem; } }
-  </style>
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .search-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            text-align: center;
+        }
+
+        #searchInput {
+            width: 100%;
+            max-width: 500px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .video-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .video-card:hover .video-thumbnail img {
+            transform: scale(1.08);
+        }
+
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-card:hover .play-icon {
+            opacity: 1;
+        }
+
+        .play-icon::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 18px solid white;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            margin-left: 4px;
+        }
+
+        .video-info {
+            padding: 1rem;
+        }
+
+        .video-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            display: -webkit-box;
+            overflow: hidden;
+        }
+
+        .video-meta {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #888;
+            font-size: 1.1rem;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 3rem 0;
+            gap: 0.5rem;
+        }
+
+        .page-btn {
+            padding: 10px 16px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .page-btn:hover:not(:disabled) {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .page-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            margin: auto;
+            padding: 0;
+            width: 90%;
+            max-width: 1000px;
+            height: 90vh;
+            top: 5vh;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .close {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            text-shadow: 0 0 10px rgba(0,0,0,0.7);
+            transition: all 0.3s ease;
+        }
+
+        .close:hover {
+            transform: scale(1.1);
+            color: #ff6b6b;
+        }
+
+        .player-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .player-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #95a5a6;
+            font-size: 0.9rem;
+            margin-top: 3rem;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 1rem;
+            }
+
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                height: 80vh;
+                top: 10vh;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .close {
+                top: 10px;
+                right: 15px;
+                font-size: 2rem;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <header>
-    <h1>UPN Video Gallery</h1>
-    <p>Browse and watch your videos</p>
-  </header>
+    <header>
+        <h1>UPN Video Gallery</h1>
+        <p>Browse and watch your videos</p>
+    </header>
 
-  <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Search videos by name..." autocomplete="off">
-  </div>
-
-  <div class="container">
-    <!-- NEW: ERROR MESSAGE -->
-    <div id="errorMessage">
-      <strong>Connection Error:</strong> 
-      <span id="errorText">Failed to load videos. Please check your connection or try again later.</span>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search videos by name..." autocomplete="off">
     </div>
 
-    <div id="loading" class="loading">Loading videos...</div>
-    <div id="videoGrid" class="video-grid"></div>
-    <div id="noResults" class="no-results">No videos found matching your search.</div>
+    <div class="container">
+        <div id="loading" class="loading">Loading videos...</div>
+        <div id="videoGrid" class="video-grid"></div>
+        <div id="noResults" class="no-results" style="display: none;">No videos found matching your search.</div>
 
-    <div class="pagination" id="pagination">
-      <button class="page-btn" id="prevBtn">Previous</button>
-      <span id="pageInfo"></span>
-      <button class="page-btn" id="nextBtn">Next</button>
+        <div class="pagination" id="pagination" style="display: none;">
+            <button class="page-btn" id="prevBtn">Previous</button>
+            <span id="pageInfo"></span>
+            <button class="page-btn" id="nextBtn">Next</button>
+        </div>
     </div>
-  </div>
 
-  <div id="videoModal" class="modal">
-    <div class="modal-content">
-      <span class="close">×</span>
-      <div class="player-container">
-        <iframe id="videoPlayer" src="" allowfullscreen></iframe>
-      </div>
+    <!-- Video Player Modal -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="player-container">
+                <iframe id="videoPlayer" src="" allowfullscreen></iframe>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <footer>
-    © 2025 UPN Share Video Gallery. Powered by <strong>upnshare.com</strong>
-  </footer>
+    <footer>
+        &copy; 2025 UPN Share Video Gallery. Powered by <strong>upnshare.com</strong>
+    </footer>
 
-  <script>
-    // === CONFIG ===
-    const FOLDER_ID = 'k6xc';
-    const API_URL = `/api/videos`;
+    <script>
+        // Configuration - Updated to use Fly.io proxy
+        // Replace 'your-app-name.fly.dev' with your actual Fly.io app domain after deployment
+        const PROXY_URL = 'https://upn-proxy-123.fly.dev';
+        const FOLDER_ID = 'k6xc';
+        const API_TOKEN = 'eba55fb4d594fd8c7edc5a7f';
+        const API_PATH = `/api/v1/video/folder/${FOLDER_ID}`;
 
-    // === DOM ===
-    const videoGrid = document.getElementById('videoGrid');
-    const searchInput = document.getElementById('searchInput');
-    const loading = document.getElementById('loading');
-    const noResults = document.getElementById('noResults');
-    const pagination = document.getElementById('pagination');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const pageInfo = document.getElementById('pageInfo');
-    const modal = document.getElementById('videoModal');
-    const videoPlayer = document.getElementById('videoPlayer');
-    const errorMessage = document.getElementById('errorMessage');
-    const errorText = document.getElementById('errorText');
+        // DOM Elements
+        const videoGrid = document.getElementById('videoGrid');
+        const searchInput = document.getElementById('searchInput');
+        const loading = document.getElementById('loading');
+        const noResults = document.getElementById('noResults');
+        const pagination = document.getElementById('pagination');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageInfo = document.getElementById('pageInfo');
+        const modal = document.getElementById('videoModal');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const closeModal = document.querySelector('.close');
 
-    // === STATE ===
-    let currentPage = 1;
-    let totalPages = 1;
-    let allVideos = [];
-    let filteredVideos = [];
+        // State
+        let currentPage = 1;
+        let totalPages = 1;
+        let allVideos = [];
+        let filteredVideos = [];
 
-    // === FETCH VIDEOS WITH ERROR DISPLAY ===
-    async function fetchVideos(page = 1) {
-      try {
-        loading.style.display = 'block';
-        errorMessage.classList.remove('show');  // Hide error
-        videoGrid.innerHTML = '';
-        noResults.style.display = 'none';
-        pagination.style.display = 'none';
+        // Fetch videos from proxy
+        async function fetchVideos(page = 1) {
+            try {
+                loading.style.display = 'block';
+                videoGrid.innerHTML = '';
+                noResults.style.display = 'none';
+                pagination.style.display = 'none';
 
-        const response = await fetch(`${API_URL}?page=${page}`);
-        
-        if (!response.ok) {
-          const err = await response.json().catch(() => ({}));
-          throw new Error(err.error || `HTTP ${response.status}`);
+                const response = await fetch(`${PROXY_URL}${API_PATH}?page=${page}`, {
+                    headers: {
+                        'api-token': API_TOKEN
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                if (!result.data || !Array.isArray(result.data)) {
+                    throw new Error('Invalid API response format');
+                }
+
+                allVideos = result.data;
+                filteredVideos = [...allVideos];
+
+                const metadata = result.metadata || {};
+                currentPage = metadata.currentPage || 1;
+                totalPages = metadata.maxPage || 1;
+
+                renderVideos();
+                updatePagination();
+
+            } catch (error) {
+                console.error('Error fetching videos:', error);
+                loading.innerHTML = `<p style="color: #e74c3c;">Failed to load videos. Please try again later.</p>`;
+            } finally {
+                loading.style.display = 'none';
+            }
         }
 
-        const result = await response.json();
-        if (!result.data || !Array.isArray(result.data)) {
-          throw new Error('Invalid response from server');
+        // Render video cards
+        function renderVideos() {
+            videoGrid.innerHTML = '';
+
+            if (filteredVideos.length === 0) {
+                noResults.style.display = 'block';
+                return;
+            }
+
+            filteredVideos.forEach(video => {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.onclick = () => openVideo(video.id, video.name);
+
+                const posterUrl = video.poster && video.poster.trim() !== '' 
+                    ? video.poster 
+                    : 'https://via.placeholder.com/300x180/2c3e50/ffffff?text=No+Preview';
+
+                const sizeMB = video.size > 0 ? (video.size / (1024*1024)).toFixed(1) + ' MB' : '—';
+                const resolution = video.width && video.height ? `${video.width}x${video.height}` : '—';
+                const created = new Date(video.createdAt).toLocaleDateString();
+
+                card.innerHTML = `
+                    <div class="video-thumbnail">
+                        <img src="${posterUrl}" alt="${escapeHtml(video.name)}" onerror="this.src='https://via.placeholder.com/300x180/34495e/ffffff?text=No+Image'">
+                        <div class="play-icon"></div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">${escapeHtml(video.name)}</div>
+                        <div class="video-meta">
+                            <span>${video.type || '—'}</span>
+                            <span>${sizeMB}</span>
+                        </div>
+                        <div class="video-meta" style="margin-top: 4px; font-size: 0.78rem;">
+                            <span>${resolution}</span>
+                            <span>${created}</span>
+                        </div>
+                    </div>
+                `;
+
+                videoGrid.appendChild(card);
+            });
         }
 
-        allVideos = result.data;
-        filteredVideos = [...allVideos];
+        // Open video in modal
+        function openVideo(videoId, videoName) {
+            const embedUrl = `https://purn.upn.one/#${videoId}`;
+            videoPlayer.src = embedUrl;
+            document.title = `${videoName} - UPN Player`;
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
 
-        const metadata = result.metadata || {};
-        currentPage = metadata.currentPage || 1;
-        totalPages = metadata.maxPage || 1;
+        // Close modal
+        function closeVideo() {
+            modal.style.display = 'none';
+            videoPlayer.src = '';
+            document.body.style.overflow = 'auto';
+            document.title = 'Video Gallery - UPN Share';
+        }
 
-        renderVideos();
-        updatePagination();
+        // Update pagination controls
+        function updatePagination() {
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
 
-      } catch (error) {
-        console.error('API Error:', error);
-        showError(error.message);
-      } finally {
-        loading.style.display = 'none';
-      }
-    }
+            pagination.style.display = 'flex';
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
 
-    // === SHOW ERROR ON SCREEN ===
-    function showError(message) {
-      errorText.textContent = message;
-      errorMessage.classList.add('show');
-    }
+        // Search functionality
+        function filterVideos() {
+            const query = searchInput.value.trim().toLowerCase();
+            
+            if (query === '') {
+                filteredVideos = [...allVideos];
+            } else {
+                filteredVideos = allVideos.filter(video => 
+                    video.name && video.name.toLowerCase().includes(query)
+                );
+            }
 
-    // === RENDER VIDEOS ===
-    function renderVideos() {
-      videoGrid.innerHTML = '';
-      if (filteredVideos.length === 0) {
-        noResults.style.display = 'block';
-        return;
-      }
+            renderVideos();
+        }
 
-      filteredVideos.forEach(video => {
-        const card = document.createElement('div');
-        card.className = 'video-card';
-        card.onclick = () => openVideo(video.id, video.name);
+        // Utility: Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
-        const posterUrl = video.poster?.trim() ? video.poster : 'https://via.placeholder.com/300x180/2c3e50/ffffff?text=No+Preview';
-        const sizeMB = video.size > 0 ? (video.size / (1024*1024)).toFixed(1) + ' MB' : '—';
-        const resolution = video.width && video.height ? `${video.width}x${video.height}` : '—';
-        const created = new Date(video.createdAt).toLocaleDateString();
+        // Event Listeners
+        searchInput.addEventListener('input', filterVideos);
 
-        card.innerHTML = `
-          <div class="video-thumbnail">
-            <img src="${posterUrl}" alt="${escapeHtml(video.name)}" onerror="this.src='https://via.placeholder.com/300x180/34495e/ffffff?text=No+Image'">
-            <div class="play-icon"></div>
-          </div>
-          <div class="video-info">
-            <div class="video-title">${escapeHtml(video.name)}</div>
-            <div class="video-meta">
-              <span>${video.type || '—'}</span>
-              <span>${sizeMB}</span>
-            </div>
-            <div class="video-meta" style="margin-top:4px;font-size:0.78rem;">
-              <span>${resolution}</span>
-              <span>${created}</span>
-            </div>
-          </div>
-        `;
-        videoGrid.appendChild(card);
-      });
-    }
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                fetchVideos(currentPage - 1);
+            }
+        });
 
-    // === MODAL & OTHER FUNCTIONS (unchanged) ===
-    function openVideo(id, name) {
-      videoPlayer.src = `https://purn.upn.one/#${id}`;
-      document.title = `${name} - UPN Player`;
-      modal.style.display = 'block';
-      document.body.style.overflow = 'hidden';
-    }
+        nextBtn.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                fetchVideos(currentPage + 1);
+            }
+        });
 
-    function closeVideo() {
-      modal.style.display = 'none';
-      videoPlayer.src = '';
-      document.body.style.overflow = 'auto';
-      document.title = 'Video Gallery - UPN Share';
-    }
+        closeModal.addEventListener('click', closeVideo);
 
-    function updatePagination() {
-      if (totalPages <= 1) {
-        pagination.style.display = 'none';
-        return;
-      }
-      pagination.style.display = 'flex';
-      pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-      prevBtn.disabled = currentPage === 1;
-      nextBtn.disabled = currentPage === totalPages;
-    }
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeVideo();
+            }
+        });
 
-    function filterVideos() {
-      const query = searchInput.value.trim().toLowerCase();
-      filteredVideos = query === '' ? [...allVideos] : allVideos.filter(v => v.name?.toLowerCase().includes(query));
-      renderVideos();
-    }
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.style.display === 'block') {
+                closeVideo();
+            }
+        });
 
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
+        // Initialize
+        window.addEventListener('load', () => {
+            fetchVideos(1);
+        });
 
-    // === EVENT LISTENERS ===
-    searchInput.addEventListener('input', filterVideos);
-    prevBtn.onclick = () => { if (currentPage > 1) fetchVideos(currentPage - 1); };
-    nextBtn.onclick = () => { if (currentPage < totalPages) fetchVideos(currentPage + 1); };
-    document.querySelector('.close').onclick = closeVideo;
-    modal.onclick = e => { if (e.target === modal) closeVideo(); };
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal.style.display === 'block') closeVideo(); });
-
-    // === INIT ===
-    window.onload = () => fetchVideos(1);
-  </script>
-
-  <!-- === NETLIFY FUNCTION (Base64) === -->
-  <script type="application/json" data-netlify-function="get-videos">
-    eyJpbnB1dCI6Im5ldGxpZnkvZnVuY3Rpb25zL2dldC12aWRlb3MuanMiLCJjb250ZW50IjoiLy8gbmV0bGlmeS9mdW5jdGlvbnMvZ2V0LXZpZGVvcy5qc1xuaW1wb3J0IGZldGNoIGZyb20gJ25vZGUtZmV0Y2gnO1xuXG5leHBvcnQgY29uc3QgaGFuZGxlciA9IGFzeW5jIChldmVudCkgPT4ge1xuICBjb25zdCBwYWdlID0gZXZlbnQucXVlcnlTdHJpbmdQYXJhbWV0ZXJzLnBhZ2UgfHwgJzEnO1xuICBjb25zd0EgQVBJX1RPS0VOID0gJ2ViYTU1ZmI0ZDU5NGZkOGM3ZWRjNWE3Zic7XG4gIGNvbnN0IEFQSV9VUkwgPSBgJGh0dHBzOi8vdXBuc2hhcmUuY29tL2FwaS92MS92aWRlby9mb2xkZXIvJHtGT0xERVJfSUR9P3BhZ2U9JHtwYWdlfWA7XG5cbiAgdHJ5IHtcbiAgICBjb25zdCByZXNwb25zZSA9IGF3YWl0IGZldGNoKEFQSV9VUkwsIHtcbiAgICAgIGhlYWRlcnM6IHtcbiAgICAgICAgJ2FwaS10b2tlbic6IEFQSV9UT0tFTlxuICAgICAgfVxufSk7XG5cbiAgICBpZiAoIXJlc3BvbnNlLm9rKSB7XG4gICAgICByZXR1cm4ge1xuICAgICAgICBzdGF0dXNDb2RlOiByZXNwb25zZS5zdGF0dXMsXG4gICAgICAgIGJvZHk6IEpTT04uc3RyaW5naWZ5KHsgZXJyb3I6IGBgQVBJIGVycm9yOiAke3Jlc3BvbnNlLnN0YXR1c1RleHR9YGAgfSlcbiAgICAgIH07XG4gICAgfVxuXG4gICAgY29uc3QgZGF0YSA9IGF3YWl0IHJlc3BvbnNlLmpzb24oKTtcblxuICAgIHJldHVybiB7XG4gICAgICBzdGF0dXNDb. . .
-  </script>
+        // Responsive handling
+        window.addEventListener('resize', () => {
+            if (modal.style.display === 'block') {
+                // Force reflow
+                videoPlayer.style.height = '1px';
+                setTimeout(() => {
+                    videoPlayer.style.height = '100%';
+                }, 10);
+            }
+        });
+    </script>
 </body>
 </html>
