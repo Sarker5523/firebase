@@ -1,3 +1,4 @@
+
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -330,11 +331,10 @@
     </footer>
 
     <script>
-        // Configuration - Updated to use Fly.io proxy
-        // Replace 'your-app-name.fly.dev' with your actual Fly.io app domain after deployment
-        const PROXY_URL = 'https://upn-proxy-123.fly.dev';
+        // Configuration - Update PROXY_URL after Glitch deployment
+        const PROXY_URL = 'https://your-project.glitch.me';  // Replace with your Glitch URL
         const FOLDER_ID = 'k6xc';
-        const API_TOKEN = 'eba55fb4d594fd8c7edc5a7f';
+        const API_TOKEN = 'eba55fb4d594fd8c7edc5a7f';  // Token sent server-side via proxy
         const API_PATH = `/api/v1/video/folder/${FOLDER_ID}`;
 
         // DOM Elements
@@ -364,11 +364,7 @@
                 noResults.style.display = 'none';
                 pagination.style.display = 'none';
 
-                const response = await fetch(`${PROXY_URL}${API_PATH}?page=${page}`, {
-                    headers: {
-                        'api-token': API_TOKEN
-                    }
-                });
+                const response = await fetch(`${PROXY_URL}${API_PATH}?page=${page}`);
 
                 if (!response.ok) {
                     throw new Error(`HTTP ${response.status}: ${response.statusText}`);
