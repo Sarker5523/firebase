@@ -1,342 +1,541 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta name="google-site-verification" content="f3ScO5zMiA6y3ahA2om-ruxICi1fHCQMoAj-92Vqok0" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StreamOn - Stream Movies and Series</title>
-
-    <!-- Swiper CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-<link rel="stylesheet" href="styles.css">
+    <title>Video Gallery - UPN Share</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background: #222 url('stardust.png') repeat;
-    background-attachment: fixed;
-    background-size: cover;
-    color: white;
-}
-        .category-section {
-            margin: 20px;
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.6;
         }
 
-        .category-section h2 {
-            font-size: 1.5em;
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            display: inline-block;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        .view-all-button {
-    border: 1px solid #00ab41;
-    box-shadow: 0 2px 10px rgba(0, 171, 65, 0.2);
-    background: linear-gradient(to bottom, rgba(43, 43, 43, 0.8), rgba(0, 0, 0, 0.5));
-    color: #ffffff;
-    border: none;
-    padding: 10px 20px;
-    margin: 5px;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
         }
 
-        .view-all-button:hover {
-        border-color: #00ff9c;
-        background: linear-gradient(to right, #1a1a1a, #333);
+        .search-container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            text-align: center;
         }
-        .swiper {
+
+        #searchInput {
+            width: 100%;
+            max-width: 500px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto (auto);
+            padding: 0 1rem;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .video-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .video-card:hover .video-thumbnail img {
+            transform: scale(1.08);
+        }
+
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-card:hover .play-icon {
+            opacity: 1;
+        }
+
+        .play-icon::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 18px solid white;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            margin-left: 4px;
+        }
+
+        .video-info {
+            padding: 1rem;
+        }
+
+        .video-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            display: -webkit-box;
             overflow: hidden;
         }
 
-        .swiper-wrapper {
+        .video-meta {
+            font-size: 0.85rem;
+            color: #7f8c8d;
             display: flex;
-            transition-timing-function: linear !important;
+            justify-content: space-between;
+            flex-wrap: wrap;
         }
 
-        .swiper-slide {
-            width: 200px;
-            flex-shrink: 0;
-            margin-right: 15px;
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #666;
         }
-:root {
-    --card-radius: 8px; /* 👈 Change this value to control all corners */
-}
 
-        .video-item {
-    position: relative;
-    background: rgba(255, 255, 255, 0.08); /* light translucent background */
-    border-radius: var(--card-radius);
-    overflow: hidden;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-    text-align: center;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
+        .no-results {
+            text-align: center;
+            padding: 3rem;
+            color: #888;
+            font-size: 1.1rem;
+        }
 
-.video-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.5);
-}
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 3rem 0;
+            gap: 0.5rem;
+        }
 
-.video-item img {
-    width: 100%;
-    height: 100%;
-    display: block; /* 👈 Prevents bottom gap that can show background */
-    border-radius: var(--card-radius);
-    object-fit: cover; /* 👈 Ensures the image fully covers the box */
-}
+        .page-btn {
+            padding: 10px 16px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
 
-.video-item span {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    padding: 10px;
-    font-size: 1em;
-    color: white;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    border-radius: var(--card-radius) var(--card-radius) 0 0;
-    text-align: center;
-    box-sizing: border-box;
-}
-
-        .swiper-button-next::after,.swiper-button-prev::after {
-            font-size: 25px;
+        .page-btn:hover:not(:disabled) {
+            background: #667eea;
             color: white;
-            font-weight: bold; /* 🔺 Reduce arrow size only (default is 20px) */
+            border-color: #667eea;
         }
-        .swiper-button-next,.swiper-button-prev {
-            width: 36px;
-            height: 36px;
-            background: rgba(252, 252, 252, 0.4);
-            border-radius: 50%; /* 👈 Ensures it's a perfect circle */
+
+        .page-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: relative;
+            margin: auto;
             padding: 0;
-            box-shadow: 0 0 8px rgba(0, 0, 0, 0.788);
-            display: flex;       /* 👈 Ensures icon is centered */
-            align-items: center; /* 👈 Vertically center the arrow */
-            justify-content: center; /* 👈 Horizontally center the arrow */
+            width: 90%;
+            max-width: 1000px;
+            height: 90vh;
+            top: 5vh;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .close {
             position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 10;
-            transition: background 0.3s ease;
-            box-sizing: border-box; /* 👈 Prevents padding/size issues */
+            top: 15px;
+            right: 25px;
+            color: white;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1001;
+            text-shadow: 0 0 10px rgba(0,0,0,0.7);
+            transition: all 0.3s ease;
         }
 
-        .swiper-button-next:hover,.swiper-button-prev:hover {
-            background: rgba(255, 255, 255, 0.2);
+        .close:hover {
+            transform: scale(1.1);
+            color: #ff6b6b;
         }
 
-.swiper-pagination-bullet {
-    background: white;
-}
+        .player-container {
+            width: 100%;
+            height: 100%;
+        }
 
-        @media (max-width: 767px) {
-            .nav-links a:first-child {
-                display: none;
+        .player-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            color: #95a5a6;
+            font-size: 0.9rem;
+            margin-top: 3rem;
+            border-top: 1px solid #eee;
+        }
+
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+                gap: 1rem;
             }
 
-            .swiper-slide {
-                width: 140px;
+            header h1 {
+                font-size: 1.8rem;
             }
 
-            .search-box {
-                width: 150px;
-                font-size: 0.9em;
+            .modal-content {
+                width: 95%;
+                height: 80vh;
+                top: 10vh;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .close {
+                top: 10px;
+                right: 15px;
+                font-size: 2rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <div class="navbar">
-        <div class="logo" onclick="window.location.href = 'index.html'">StreamOn</div>
-        <div class="nav-links">
-            <a href="index.html">Home</a>
-            <div class="dropdown">
-                Categories
-                <div class="dropdown-content" id="category-list"></div>
-            </div>
-            <div class="search-container">
-                <input type="text" id="search-box" class="search-box" placeholder="Search...">
-                <div id="search-results" class="search-results"></div>
+
+    <header>
+        <h1>UPN Video Gallery</h1>
+        <p>Browse and watch your videos</p>
+    </header>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Search videos by name..." autocomplete="off">
+    </div>
+
+    <div class="container">
+        <div id="loading" class="loading">Loading videos...</div>
+        <div id="videoGrid" class="video-grid"></div>
+        <div id="noResults" class="no-results" style="display: none;">No videos found matching your search.</div>
+
+        <div class="pagination" id="pagination" style="display: none;">
+            <button class="page-btn" id="prevBtn">Previous</button>
+            <span id="pageInfo"></span>
+            <button class="page-btn" id="nextBtn">Next</button>
+        </div>
+    </div>
+
+    <!-- Video Player Modal -->
+    <div id="videoModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div class="player-container">
+                <iframe id="videoPlayer" src="" allowfullscreen></iframe>
             </div>
         </div>
     </div>
 
-    <!-- Newly Added Section -->
-    <div id="newly-added" class="category-section">
-        <h2>Newly Added:</h2>
-    </div>
+    <footer>
+        &copy; 2025 UPN Share Video Gallery. Powered by <strong>upnshare.com</strong>
+    </footer>
 
-    <!-- Content -->
-    <div id="content"></div>
-
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const dropdown = document.querySelector(".dropdown");
-            const dropdownContent = document.querySelector(".dropdown-content");
-            const searchBox = document.getElementById("search-box");
-            const searchResults = document.getElementById("search-results");
-            const navbar = document.querySelector(".navbar");
+        // Configuration
+        const FOLDER_ID = 'k6xc';
+        const API_TOKEN = 'eba55fb4d594fd8c7edc5a7f';
+        const API_URL = `/api/videos`;  // Now goes through Netlify Edge Function
 
-            let lastScrollTop = 0;
-            window.addEventListener("scroll", function () {
-                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-                navbar.classList.toggle("fixed", scrollTop > lastScrollTop);
-                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+        // DOM Elements
+        const videoGrid = document.getElementById('videoGrid');
+        const searchInput = document.getElementById('searchInput');
+        const loading = document.getElementById('loading');
+        const noResults = document.getElementById('noResults');
+        const pagination = document.getElementById('pagination');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const pageInfo = document.getElementById('pageInfo');
+        const modal = document.getElementById('videoModal');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const closeModal = document.querySelector('.close');
+
+        // State
+        let currentPage = 1;
+        let totalPages = 1;
+        let allVideos = [];
+        let filteredVideos = [];
+
+        // Fetch videos from API
+        async function fetchVideos(page = 1) {
+            try {
+                loading.style.display = 'block';
+                videoGrid.innerHTML = '';
+                noResults.style.display = 'none';
+                pagination.style.display = 'none';
+
+                const proxyUrl = `https://api.allorigins.win/raw?url=`;
+                    const response = await fetch(`${proxyUrl}${encodeURIComponent(`${API_URL}?page=${page}`)}`, {
+                    headers: { 'api-token': API_TOKEN }  // Proxy forwards this
             });
 
-            dropdown.addEventListener("click", function (event) {
-                event.stopPropagation();
-                dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
-            });
-
-            document.addEventListener("click", function (event) {
-                if (!dropdown.contains(event.target)) {
-                    dropdownContent.style.display = "none";
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
-            });
 
-            fetch("https://docs.google.com/spreadsheets/d/1xsz1l9reLyakcG1cQBZjytMJ6KZF0zX8Zac4a_YE4C0/export?format=csv")
-                .then(response => response.text())
-                .then(csvText => {
-                    Papa.parse(csvText, {
-                        header: true,
-                        complete: function (results) {
-                            const data = results.data;
+                const result = await response.json();
 
-                            // Newly added
-                            const newlyAddedSection = document.getElementById("newly-added");
-                            const newlyAddedVideos = data.filter(item => item.thumbnail && item.thumbnail.trim()).slice(-12).reverse();
-                            const swiperContainer = createSwiperContainer(newlyAddedVideos, -1);
-                            newlyAddedSection.appendChild(swiperContainer);
+                if (!result.data || !Array.isArray(result.data)) {
+                    throw new Error('Invalid API response format');
+                }
 
-                            // Category List
-                            const categories = [...new Set(data.map(row => row.category).filter(Boolean))];
-                            const categoryList = document.getElementById("category-list");
-                            categories.forEach(category => {
-                                const link = document.createElement("a");
-                                link.href = `category.html?category=${category}`;
-                                link.textContent = category;
-                                categoryList.appendChild(link);
-                            });
+                allVideos = result.data;
+                filteredVideos = [...allVideos];
 
-                            // Category Sections
-                            const contentSection = document.getElementById("content");
-                            categories.forEach((category, index) => {
-                                const section = document.createElement("div");
-                                section.className = "category-section";
-                                section.innerHTML = `<h2>${category}:</h2>`;
+                const metadata = result.metadata || {};
+                currentPage = metadata.currentPage || 1;
+                totalPages = metadata.maxPage || 1;
 
-                                const viewAll = document.createElement("button");
-                                viewAll.className = "view-all-button";
-                                viewAll.textContent = "View All";
-                                viewAll.onclick = () => window.location.href = `category.html?category=${category}`;
-                                section.appendChild(viewAll);
+                renderVideos();
+                updatePagination();
 
-                                const categoryVideos = data.filter(item => item.category === category && item.thumbnail);
-                                const swiperEl = createSwiperContainer(categoryVideos.slice(-12).reverse(), index);
-                                section.appendChild(swiperEl);
-                                contentSection.appendChild(section);
-                            });
-
-                            // Init Swipers
-                            const swipers = document.querySelectorAll(".swiper");
-swipers.forEach((el, index) => {
-    new Swiper(`.swiper-container-${index - 1}`, {
-        loop: true, 
-        loopedSlides: 12,
-        speed: 1500,
-        slidesPerView: 'auto',
-        spaceBetween: 15,
-        freeMode: true,
-        autoplay: {
-            delay: 3700,
-            disableOnInteraction: false,
-            reverseDirection: index % 2 !== 0
-        },
-        navigation: {
-            nextEl: `.swiper-button-next-${index - 1}`,
-            prevEl: `.swiper-button-prev-${index - 1}`,
-        },
-        pagination: {
-            el: `.swiper-pagination-${index - 1}`,
-            clickable: true,
+            } catch (error) {
+                console.error('Error fetching videos:', error);
+                loading.innerHTML = `<p style="color: #e74c3c;">Failed to load videos. Please try again later.</p>`;
+            } finally {
+                loading.style.display = 'none';
+            }
         }
-    });
-});
 
+        // Render video cards
+        function renderVideos() {
+            videoGrid.innerHTML = '';
 
-                            // Search
-                            searchBox.addEventListener("input", function () {
-                                const query = searchBox.value.toLowerCase();
-                                if (!query) return searchResults.style.display = "none";
-                                const matches = data.filter(item => 
-                                item.name.toLowerCase().includes(query) && item.thumbnail && item.thumbnail.trim());
-                                searchResults.innerHTML = "";
-                                matches.forEach(item => {
-                                    const div = document.createElement("div");
-                                    div.innerHTML = `<img src="${item.thumbnail}" alt="${item.name}"><span>${item.name}</span>`;
-                                    div.onclick = () => window.location.href = `video.html?id=${item.id}`;
-                                    searchResults.appendChild(div);
-                                });
-                                searchResults.style.display = matches.length ? "block" : "none";
-                            });
+            if (filteredVideos.length === 0) {
+                noResults.style.display = 'block';
+                return;
+            }
 
-                            searchBox.addEventListener("keydown", function (e) {
-                                if (e.key === "Enter") {
-                                    const query = searchBox.value.trim();
-                                    if (query) window.location.href = `search-result.html?query=${encodeURIComponent(query)}`;
-                                }
-                            });
-                        }
-                    });
-                });
+            filteredVideos.forEach(video => {
+                const card = document.createElement('div');
+                card.className = 'video-card';
+                card.onclick = () => openVideo(video.id, video.name);
 
-            function createSwiperContainer(videos, index = 0) {
-    const swiper = document.createElement("div");
-    swiper.className = `swiper video-grid swiper-container-${index}`;
+                const posterUrl = video.poster && video.poster.trim() !== '' 
+                    ? video.poster 
+                    : 'https://via.placeholder.com/300x180/2c3e50/ffffff?text=No+Preview';
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "swiper-wrapper";
+                const sizeMB = video.size > 0 ? (video.size / (1024*1024)).toFixed(1) + ' MB' : '—';
+                const resolution = video.width && video.height ? `${video.width}x${video.height}` : '—';
+                const created = new Date(video.createdAt).toLocaleDateString();
 
-    videos.forEach(item => {
-        const slide = document.createElement("div");
-        slide.className = "swiper-slide video-item";
-        slide.innerHTML = `
-            <a href="video.html?id=${item.id}">
-                <img src="${item.thumbnail}" alt="${item.name}">
-                <span>${item.name}</span>
-            </a>`;
-        wrapper.appendChild(slide);
-    });
+                card.innerHTML = `
+                    <div class="video-thumbnail">
+                        <img src="${posterUrl}" alt="${escapeHtml(video.name)}" onerror="this.src='https://via.placeholder.com/300x180/34495e/ffffff?text=No+Image'">
+                        <div class="play-icon"></div>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">${escapeHtml(video.name)}</div>
+                        <div class="video-meta">
+                            <span>${video.type || '—'}</span>
+                            <span>${sizeMB}</span>
+                        </div>
+                        <div class="video-meta" style="margin-top: 4px; font-size: 0.78rem;">
+                            <span>${resolution}</span>
+                            <span>${created}</span>
+                        </div>
+                    </div>
+                `;
 
-    const nextBtn = document.createElement("div");
-    nextBtn.className = `swiper-button-next swiper-button-next-${index}`;
+                videoGrid.appendChild(card);
+            });
+        }
 
-    const prevBtn = document.createElement("div");
-    prevBtn.className = `swiper-button-prev swiper-button-prev-${index}`;
+        // Open video in modal
+        function openVideo(videoId, videoName) {
+            const embedUrl = `https://purn.upn.one/#${videoId}`;
+            videoPlayer.src = embedUrl;
+            document.title = `${videoName} - UPN Player`;
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
 
-    const pagination = document.createElement("div");
-    pagination.className = `swiper-pagination swiper-pagination-${index}`;
+        // Close modal
+        function closeVideo() {
+            modal.style.display = 'none';
+            videoPlayer.src = '';
+            document.body.style.overflow = 'auto';
+            document.title = 'Video Gallery - UPN Share';
+        }
 
-    swiper.appendChild(wrapper);
-    swiper.appendChild(prevBtn);
-    swiper.appendChild(nextBtn);
-    swiper.appendChild(pagination);
+        // Update pagination controls
+        function updatePagination() {
+            if (totalPages <= 1) {
+                pagination.style.display = 'none';
+                return;
+            }
 
-    return swiper;
-}
+            pagination.style.display = 'flex';
+            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages;
+        }
 
+        // Search functionality
+        function filterVideos() {
+            const query = searchInput.value.trim().toLowerCase();
+            
+            if (query === '') {
+                filteredVideos = [...allVideos];
+            } else {
+                filteredVideos = allVideos.filter(video => 
+                    video.name && video.name.toLowerCase().includes(query)
+                );
+            }
+
+            renderVideos();
+        }
+
+        // Utility: Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Event Listeners
+        searchInput.addEventListener('input', filterVideos);
+
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                fetchVideos(currentPage - 1);
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                fetchVideos(currentPage + 1);
+            }
+        });
+
+        closeModal.addEventListener('click', closeVideo);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeVideo();
+            }
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.style.display === 'block') {
+                closeVideo();
+            }
+        });
+
+        // Initialize
+        window.addEventListener('load', () => {
+            fetchVideos(1);
+        });
+
+        // Responsive handling
+        window.addEventListener('resize', () => {
+            if (modal.style.display === 'block') {
+                // Force reflow
+                videoPlayer.style.height = '1px';
+                setTimeout(() => {
+                    videoPlayer.style.height = '100%';
+                }, 10);
+            }
         });
     </script>
 </body>
