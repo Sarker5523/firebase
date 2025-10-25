@@ -1,9 +1,11 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Gallery - UPN Share</title>
     <style>
+        /* Unchanged styles */
         * {
             margin: 0;
             padding: 0;
@@ -330,11 +332,12 @@
     </footer>
 
     <script>
-        // Configuration - Update PROXY_URL after Glitch deployment
-        const PROXY_URL = 'https://your-project.glitch.me';  // Replace with your Glitch URL
-        const FOLDER_ID = 'k6xc';
-        const API_TOKEN = 'eba55fb4d594fd8c7edc5a7f';  // Token sent server-side via proxy
-        const API_PATH = `/api/v1/video/folder/${FOLDER_ID}`;
+        // Configuration for Hoppscotch Proxy and UPN Share API
+        const HOPPSCOTCH_PROXY_URL = 'https://proxy.hoppscotch.io/request'; // Hoppscotch proxy endpoint for server-side API calls
+        const API_BASE_URL = 'https://upnshare.com'; // Base URL for UPN Share API
+        const FOLDER_ID = 'k6xc'; // Folder ID for the video gallery
+        const API_TOKEN = 'eba55fb4d594fd8c7edc5a7f'; // Bearer token for UPN Share API authentication
+        const API_PATH = `/api/v1/video/folder/${FOLDER_ID}`; // API endpoint path
 
         // DOM Elements
         const videoGrid = document.getElementById('videoGrid');
@@ -355,7 +358,7 @@
         let allVideos = [];
         let filteredVideos = [];
 
-        // Fetch videos from proxy
+        // Fetch videos using Hoppscotch proxy
         async function fetchVideos(page = 1) {
             try {
                 loading.style.display = 'block';
@@ -363,18 +366,37 @@
                 noResults.style.display = 'none';
                 pagination.style.display = 'none';
 
-                const response = await fetch(`${PROXY_URL}${API_PATH}?page=${page}`);
+                // Prepare the API request payload for Hoppscotch proxy
+                const requestPayload = {
+                    url: `${API_BASE_URL}${API_PATH}?page=${page}`, // Full API URL with pagination
+                    method: 'GET', // HTTP method
+                    headers: {
+                        'Authorization': `Bearer ${API_TOKEN}`, // Authentication header
+                        'Content-Type': 'application/json' // Required for JSON response
+                    },
+                    body: null // No body for GET requests
+                };
 
+                // Send request to Hoppscotch proxy (server-side, bypasses CORS)
+                const response = await fetch(HOPPSCOTCH_PROXY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestPayload)
+                });
+
+                // Check for proxy errors
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    throw new Error(`Hoppscotch Proxy error: HTTP ${response.status} - ${response.statusText}`);
                 }
 
                 const result = await response.json();
 
+                // Validate response format (expected: { data: [], metadata: {} })
                 if (!result.data || !Array.isArray(result.data)) {
-                    throw new Error('Invalid API response format');
+                    throw new Error('Invalid API response format from UPN Share');
                 }
 
+                // Update state with API response
                 allVideos = result.data;
                 filteredVideos = [...allVideos];
 
@@ -382,12 +404,13 @@
                 currentPage = metadata.currentPage || 1;
                 totalPages = metadata.maxPage || 1;
 
+                // Render videos and update pagination
                 renderVideos();
                 updatePagination();
 
             } catch (error) {
-                console.error('Error fetching videos:', error);
-                loading.innerHTML = `<p style="color: #e74c3c;">Failed to load videos. Please try again later.</p>`;
+                console.error('Error fetching videos via Hoppscotch proxy:', error);
+                loading.innerHTML = `<p style="color: #e74c3c;">Failed to load videos. Please try again later. (Error: ${error.message})</p>`;
             } finally {
                 loading.style.display = 'none';
             }
