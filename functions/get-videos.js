@@ -14,22 +14,28 @@ exports.handler = async (event) => {
     try {
         const client = await pool.connect();
 
-        // Fetch folders (simplified; adjust query based on your full schema)
-        const foldersResult = await client.query(
-            'SELECT id, name, parentId, videoCount, created_at AS "createdAt" FROM folders ORDER BY created_at DESC'
-        );
-
-        // Fetch videos with optional folderId filter
-        let videosQuery = 'SELECT id, name, poster, size, width, height, type, created_at AS "createdAt", folderId FROM videos';
-        const queryParams = [limit, offset];
-        if (folderId) {
-            videosQuery += ' WHERE folderId = $3';
-            queryParams.unshift(folderId);
+        // Fetch only root folders (parentId is null) unless a folderId is specified
+        let foldersQuery = 'SELECT id, name, parentId, videoCount, created_at AS "createdAt" FROM folders';
+        const queryParams = [];
+        if (!folderId) {
+            foldersQuery += ' WHERE parentId IS NULL ORDER BY created_at DESC';
+        } else {
+            foldersQuery += ' WHERE id = $1 OR parentId = $1 ORDER BY created_at DESC';
+            queryParams.push(folderId);
         }
-        videosQuery += ' ORDER BY created_at DESC LIMIT $1 OFFSET $2';
 
-        const videosResult = await client.query(videosQuery, queryParams);
+        const foldersResult = await client.query(foldersQuery, queryParams);
 
+        // Fetch videos only if folderId is provided (for subfolders)
+        let videosResult;
+        if (folderId) {
+            videosResult = await client.query(
+                'SELECT id, name, poster, size, width, height, type, created_at AS "createdAt", folderId FROM videos WHERE folderId = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
+                [folderId, limit, offset]
+            );
+        }
+
+        // Count videos for the specific folderId if provided, otherwise total videos
         const countResult = await client.query(
             'SELECT COUNT(*) FROM videos' + (folderId ? ' WHERE folderId = $1' : ''),
             folderId ? [folderId] : []
@@ -45,7 +51,7 @@ exports.handler = async (event) => {
             body: JSON.stringify({
                 data: {
                     folders: foldersResult.rows,
-                    videos: videosResult.rows
+                    videos: videosResult ? videosResult.rows : []
                 },
                 metadata: {
                     currentPage: page,
@@ -63,5 +69,5 @@ exports.handler = async (event) => {
         };
     } finally {
         await pool.end();
-      }
-  };
+    }
+};
