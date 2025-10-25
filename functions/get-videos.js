@@ -14,7 +14,7 @@ exports.handler = async (event) => {
     try {
         const client = await pool.connect();
 
-        // Fetch folders (simplified)
+        // Fetch all folders, but filter client-side if needed
         const foldersResult = await client.query(
             'SELECT id, name, parentId, videoCount, created_at AS "createdAt" FROM folders ORDER BY created_at DESC'
         );
@@ -30,6 +30,7 @@ exports.handler = async (event) => {
 
         const videosResult = await client.query(videosQuery, queryParams);
 
+        // Count videos for the specific folderId if provided, otherwise total
         const countResult = await client.query(
             'SELECT COUNT(*) FROM videos' + (folderId ? ' WHERE folderId = $1' : ''),
             folderId ? [folderId] : []
