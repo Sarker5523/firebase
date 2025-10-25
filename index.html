@@ -39,7 +39,7 @@
 
         .search-container {
             max-width: 900px;
-            margin: 6rem auto 1rem; /* Adjusted for fixed header */
+            margin: 6rem auto 1rem;
             padding: 0 1rem;
             text-align: center;
         }
@@ -63,7 +63,7 @@
         .container {
             flex: 1;
             padding: 1rem;
-            margin-top: 6rem; /* Offset for fixed header */
+            margin-top: 6rem;
         }
 
         .sidebar {
@@ -77,14 +77,46 @@
             top: 6rem;
         }
 
-        .folder, .video-item {
-            padding: 0.5rem;
-            cursor: pointer;
-            border-bottom: 1px solid #eee;
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
         }
 
-        .folder:hover, .video-item:hover {
-            background: #eef2f7;
+        .folder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+            cursor: pointer;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .folder:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .folder-icon {
+            width: 64px;
+            height: 64px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .folder-name {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            text-align: center;
+            color: #2c3e50;
         }
 
         .subfolders {
@@ -93,7 +125,7 @@
         }
 
         .open .subfolders {
-            display: block;
+            display: grid;
         }
 
         .video-list {
@@ -219,6 +251,9 @@
             .video-list {
                 grid-template-columns: 1fr;
             }
+            .folder-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
         }
     </style>
 </head>
@@ -261,7 +296,8 @@
                 folders = result.data.folders || [];
                 videos = result.data.videos || [];
                 renderDirectory();
-                renderVideos();
+                if (folderId) renderVideos(); // Only render videos if a subfolder is selected
+                else videoList.innerHTML = ''; // Clear videos for root folders
             } catch (error) {
                 console.error('Error fetching data:', error);
                 loading.textContent = 'Failed to load data.';
@@ -273,26 +309,35 @@
         function renderDirectory() {
             directory.innerHTML = '';
             const rootFolders = folders.filter(f => !f.parentId || f.parentId === null);
+            const folderGrid = document.createElement('div');
+            folderGrid.className = 'folder-grid';
             rootFolders.forEach(folder => {
                 const folderDiv = document.createElement('div');
                 folderDiv.className = 'folder';
-                folderDiv.textContent = `${folder.name} (${folder.videoCount || 0})`;
+                folderDiv.innerHTML = `
+                    <div class="folder-icon">📁</div>
+                    <div class="folder-name">${folder.name} (${folder.videoCount || 0})</div>
+                `;
                 folderDiv.onclick = () => toggleFolder(folder.id);
                 const subfolders = folders.filter(f => f.parentId === folder.id);
                 if (subfolders.length > 0) {
                     const subDiv = document.createElement('div');
-                    subDiv.className = 'subfolders';
+                    subDiv.className = 'subfolders folder-grid';
                     subfolders.forEach(sub => {
                         const subFolderDiv = document.createElement('div');
                         subFolderDiv.className = 'folder';
-                        subFolderDiv.textContent = `${sub.name} (${sub.videoCount || 0})`;
+                        subFolderDiv.innerHTML = `
+                            <div class="folder-icon">📁</div>
+                            <div class="folder-name">${sub.name} (${sub.videoCount || 0})</div>
+                        `;
                         subFolderDiv.onclick = () => fetchData(sub.id);
                         subDiv.appendChild(subFolderDiv);
                     });
                     folderDiv.appendChild(subDiv);
                 }
-                directory.appendChild(folderDiv);
+                folderGrid.appendChild(folderDiv);
             });
+            directory.appendChild(folderGrid);
         }
 
         function renderVideos() {
