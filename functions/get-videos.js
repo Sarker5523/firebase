@@ -14,21 +14,32 @@ exports.handler = async (event) => {
     try {
         const client = await pool.connect();
 
-        // Fetch all folders, but filter client-side if needed
-        const foldersResult = await client.query(
-            'SELECT id, name, parentId, videoCount, created_at AS "createdAt" FROM folders ORDER BY created_at DESC'
-        );
+        // Fetch folders: root folders if no folderId, or specific folder and subfolders if folderId
+        let foldersQuery = `
+            SELECT f.id, f.parentId, f.created_at AS "createdAt",
+                   (SELECT COUNT(*) FROM videos v WHERE v.folderId = f.id) AS videoCount
+            FROM folders f
+        `;
+        const queryParams = [];
+        if (!folderId) {
+            foldersQuery += ' WHERE f.parentId IS NULL ORDER BY f.created_at DESC';
+        } else {
+            foldersQuery += ' WHERE f.id = $1 OR f.parentId = $1 ORDER BY f.created_at DESC';
+            queryParams.push(folderId);
+        }
+
+        const foldersResult = await client.query(foldersQuery, queryParams);
 
         // Fetch videos with optional folderId filter
         let videosQuery = 'SELECT id, name, poster, size, width, height, type, created_at AS "createdAt", folderId FROM videos';
-        const queryParams = [limit, offset];
+        const videoParams = [limit, offset];
         if (folderId) {
             videosQuery += ' WHERE folderId = $3';
-            queryParams.unshift(folderId);
+            videoParams.unshift(folderId);
         }
         videosQuery += ' ORDER BY created_at DESC LIMIT $1 OFFSET $2';
 
-        const videosResult = await client.query(videosQuery, queryParams);
+        const videosResult = await client.query(videosQuery, videoParams);
 
         // Count videos for the specific folderId if provided, otherwise total
         const countResult = await client.query(
