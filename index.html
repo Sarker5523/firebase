@@ -3,169 +3,210 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Directory - UPN Share</title>
+    <title>UPN Video Vault</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Roboto', sans-serif;
         }
 
         body {
-            background-color: #f4f6f9;
-            color: #333;
-            line-height: 1.6;
+            background: #050d1a;
+            color: #d1e0ff;
             display: flex;
             min-height: 100vh;
+            overflow: hidden;
         }
 
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1.5rem 0;
+            background: linear-gradient(90deg, #1e3a8a, #2a5298);
+            padding: 0.75rem;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            width: 100%;
-            position: fixed;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+            position: sticky;
             top: 0;
             z-index: 1000;
+            height: 50px;
         }
 
         header h1 {
-            font-size: 2.2rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+            font-weight: 500;
+            line-height: 50px;
         }
 
-        .search-container {
-            max-width: 900px;
-            margin: 6rem auto 1rem;
-            padding: 0 1rem;
-            text-align: center;
+        .toggle-btn {
+            display: none;
+            position: fixed;
+            top: 0.75rem;
+            left: 0.75rem;
+            background: #2a5298;
+            border: none;
+            color: #d1e0ff;
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            z-index: 1001;
+            transition: transform 0.3s ease;
         }
 
-        #searchInput {
-            width: 100%;
-            max-width: 500px;
-            padding: 12px 20px;
-            font-size: 1rem;
-            border: 2px solid #ddd;
-            border-radius: 50px;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-
-        #searchInput:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-        }
-
-        .container {
-            flex: 1;
-            padding: 1rem;
-            margin-top: 6rem;
+        .toggle-btn:hover {
+            transform: scale(1.1);
         }
 
         .sidebar {
-            width: 300px;
-            background: white;
-            padding: 1rem;
+            width: 250px;
+            background: #0a1a2a;
+            padding: 1rem 0.5rem;
             overflow-y: auto;
-            border-right: 1px solid #ddd;
-            position: fixed;
-            height: calc(100vh - 6rem);
-            top: 6rem;
+            height: 100vh;
+            transition: transform 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .sidebar.collapsed {
+            transform: translateX(-100%);
+        }
+
+        .sidebar.open {
+            transform: translateX(0);
         }
 
         .folder-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-            gap: 1rem;
+            gap: 0.75rem;
         }
 
-        .folder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 0.5rem;
+        .folder-card {
+            background: #1e3a8a;
+            border-radius: 15px;
+            padding: 0.75rem;
+            text-align: center;
             cursor: pointer;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            background: #fff;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .folder:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .folder-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(26, 82, 152, 0.5);
         }
 
         .folder-icon {
-            width: 64px;
-            height: 64px;
-            background: #667eea;
+            width: 50px;
+            height: 50px;
+            background: #2a5298;
             border-radius: 50%;
+            margin: 0 auto 0.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
-            font-size: 1.5rem;
+            font-size: 1.2rem;
+            transition: background 0.3s ease;
+        }
+
+        .folder-card:hover .folder-icon {
+            background: #3b6dc4;
         }
 
         .folder-name {
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-            text-align: center;
-            color: #2c3e50;
+            font-size: 0.85rem;
+            color: #b3c9e6;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .subfolders {
-            margin-left: 1rem;
+            margin-left: 0;
             display: none;
+            margin-top: 0.75rem;
         }
 
         .open .subfolders {
             display: grid;
         }
 
-        .video-list {
+        .main-content {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            height: 100vh;
+            background: #050d1a;
+        }
+
+        .search-container {
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        #searchInput {
+            width: 100%;
+            max-width: 350px;
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            border: 1px solid #2a5298;
+            border-radius: 25px;
+            background: #0a1a2a;
+            color: #d1e0ff;
+            outline: none;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        #searchInput:focus {
+            border-color: #3b6dc4;
+            box-shadow: 0 0 8px rgba(59, 109, 196, 0.3);
+        }
+
+        .player {
+            width: 100%;
+            height: 250px;
+            background: #000;
+            border: none;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+        }
+
+        .video-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 1.2rem;
         }
 
         .video-card {
-            background: white;
-            border-radius: 12px;
+            background: #0a1a2a;
+            border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
             cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .video-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(26, 82, 152, 0.5);
         }
 
         .video-thumbnail {
             position: relative;
             width: 100%;
-            height: 180px;
+            height: 130px;
             overflow: hidden;
-            background: #000;
+            border-radius: 15px 15px 0 0;
         }
 
         .video-thumbnail img {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            transition: transform 0.4s ease;
+            transition: transform 0.3s ease;
         }
 
         .video-card:hover .video-thumbnail img {
-            transform: scale(1.08);
+            transform: scale(1.05);
         }
 
         .play-icon {
@@ -173,9 +214,9 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background: rgba(0,0,0,0.6);
+            width: 35px;
+            height: 35px;
+            background: rgba(0, 0, 0, 0.7);
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -192,87 +233,77 @@
             content: '';
             width: 0;
             height: 0;
-            border-left: 18px solid white;
-            border-top: 12px solid transparent;
-            border-bottom: 12px solid transparent;
-            margin-left: 4px;
+            border-left: 10px solid #d1e0ff;
+            border-top: 7px solid transparent;
+            border-bottom: 7px solid transparent;
+            margin-left: 2px;
         }
 
         .video-info {
-            padding: 1rem;
+            padding: 0.6rem;
         }
 
         .video-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: #2c3e50;
-            display: -webkit-box;
+            font-size: 0.95rem;
+            color: #d1e0ff;
+            margin-bottom: 0.2rem;
             overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .video-meta {
-            font-size: 0.85rem;
-            color: #7f8c8d;
+            font-size: 0.75rem;
+            color: #b3c9e6;
             display: flex;
             justify-content: space-between;
-            flex-wrap: wrap;
         }
 
         .loading {
             text-align: center;
-            padding: 3rem;
-            font-size: 1.2rem;
-            color: #666;
+            padding: 1.5rem;
+            color: #b3c9e6;
         }
 
         @media (max-width: 768px) {
+            .toggle-btn {
+                display: flex;
+            }
             .sidebar {
-                width: 100%;
-                height: auto;
-                border-right: none;
-                border-bottom: 1px solid #ddd;
-                position: relative;
-                top: 0;
+                position: fixed;
+                z-index: 1000;
+                transform: translateX(-100%);
             }
-            body {
-                flex-direction: column;
+            .sidebar.open {
+                transform: translateX(0);
             }
-            .container {
-                margin-top: 0;
-                padding-top: 1rem;
-            }
-            .search-container {
-                margin: 1rem auto;
+            .main-content {
+                margin-left: 0;
+                padding-top: 2.5rem;
             }
             .player {
-                height: 250px;
+                height: 180px;
             }
-            .video-list {
+            .video-grid {
                 grid-template-columns: 1fr;
-            }
-            .folder-grid {
-                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             }
         }
     </style>
 </head>
 <body>
+    <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
     <header>
-        <h1>UPN Video Directory</h1>
-        <p>Browse your folders and videos</p>
+        <h1>UPN Video Vault</h1>
     </header>
-
     <div class="sidebar" id="directory"></div>
-    <div class="container">
+    <div class="main-content">
         <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search videos by name..." autocomplete="off">
+            <input type="text" id="searchInput" placeholder="Search videos..." autocomplete="off">
         </div>
         <iframe id="player" class="player" src="" frameborder="0" allowfullscreen></iframe>
-        <div id="videoList" class="video-list"></div>
+        <div id="videoList" class="video-grid"></div>
         <div id="loading" class="loading">Loading...</div>
     </div>
-
     <script>
         const directory = document.getElementById('directory');
         const videoList = document.getElementById('videoList');
@@ -282,6 +313,11 @@
         let currentFolderId = null;
         let folders = [];
         let videos = [];
+
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('open');
+        }
 
         async function fetchData(folderId = null) {
             loading.style.display = 'block';
@@ -296,8 +332,8 @@
                 folders = result.data.folders || [];
                 videos = result.data.videos || [];
                 renderDirectory();
-                if (folderId) renderVideos(); // Only render videos if a subfolder is selected
-                else videoList.innerHTML = ''; // Clear videos for root folders
+                if (folderId) renderVideos();
+                else videoList.innerHTML = '';
             } catch (error) {
                 console.error('Error fetching data:', error);
                 loading.textContent = 'Failed to load data.';
@@ -313,7 +349,7 @@
             folderGrid.className = 'folder-grid';
             rootFolders.forEach(folder => {
                 const folderDiv = document.createElement('div');
-                folderDiv.className = 'folder';
+                folderDiv.className = 'folder-card';
                 folderDiv.innerHTML = `
                     <div class="folder-icon">📁</div>
                     <div class="folder-name">${folder.name} (${folder.videoCount || 0})</div>
@@ -322,10 +358,10 @@
                 const subfolders = folders.filter(f => f.parentId === folder.id);
                 if (subfolders.length > 0) {
                     const subDiv = document.createElement('div');
-                    subDiv.className = 'subfolders folder-grid';
+                    subDiv.className = 'subfolders';
                     subfolders.forEach(sub => {
                         const subFolderDiv = document.createElement('div');
-                        subFolderDiv.className = 'folder';
+                        subFolderDiv.className = 'folder-card';
                         subFolderDiv.innerHTML = `
                             <div class="folder-icon">📁</div>
                             <div class="folder-name">${sub.name} (${sub.videoCount || 0})</div>
@@ -349,30 +385,23 @@
                     card.onclick = () => player.src = `https://purn.upn.one/#${video.id}`;
                     const posterUrl = video.poster && video.poster.trim() !== '' 
                         ? video.poster 
-                        : 'https://via.placeholder.com/300x180/2c3e50/ffffff?text=No+Preview';
-                    const sizeMB = video.size > 0 ? (video.size / (1024*1024)).toFixed(1) + ' MB' : '—';
-                    const resolution = video.width && video.height ? `${video.width}x${video.height}` : '—';
-                    const created = new Date(video.createdAt).toLocaleDateString();
+                        : 'https://via.placeholder.com/220x130/0a1a2a/ffffff?text=No+Preview';
                     card.innerHTML = `
                         <div class="video-thumbnail">
-                            <img src="${posterUrl}" alt="${escapeHtml(video.name)}" onerror="this.src='https://via.placeholder.com/300x180/34495e/ffffff?text=No+Image'">
+                            <img src="${posterUrl}" alt="${escapeHtml(video.name)}" onerror="this.src='https://via.placeholder.com/220x130/050d1a/ffffff?text=No+Image'">
                             <div class="play-icon"></div>
                         </div>
                         <div class="video-info">
                             <div class="video-title">${escapeHtml(video.name)}</div>
                             <div class="video-meta">
                                 <span>${video.type || '—'}</span>
-                                <span>${sizeMB}</span>
-                            </div>
-                            <div class="video-meta" style="margin-top: 4px; font-size: 0.78rem;">
-                                <span>${resolution}</span>
-                                <span>${created}</span>
+                                <span>${video.size ? (video.size / (1024*1024)).toFixed(1) + ' MB' : '—'}</span>
                             </div>
                         </div>
                     `;
                     videoList.appendChild(card);
                 });
-                player.src = `https://purn.upn.one/#${videos[0].id}`; // Default to first video
+                player.src = videos.length ? `https://purn.upn.one/#${videos[0].id}` : '';
             }
         }
 
