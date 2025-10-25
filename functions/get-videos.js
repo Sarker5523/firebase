@@ -16,25 +16,24 @@ exports.handler = async (event) => {
 
         // Fetch folders: root folders if no folderId, or specific folder and subfolders if folderId
         let foldersQuery = `
-            SELECT f.id, f.parentId, f.created_at AS "createdAt",
-                   (SELECT COUNT(*) FROM videos v WHERE v.folderId = f.id) AS videoCount
-            FROM folders f
+            SELECT id, name, parentid AS "parentId", videocount AS "videoCount", created_at AS "createdAt"
+            FROM folders
         `;
         const queryParams = [];
         if (!folderId) {
-            foldersQuery += ' WHERE f.parentId IS NULL ORDER BY f.created_at DESC';
+            foldersQuery += ' WHERE parentid IS NULL ORDER BY created_at DESC';
         } else {
-            foldersQuery += ' WHERE f.id = $1 OR f.parentId = $1 ORDER BY f.created_at DESC';
+            foldersQuery += ' WHERE id = $1 OR parentid = $1 ORDER BY created_at DESC';
             queryParams.push(folderId);
         }
 
         const foldersResult = await client.query(foldersQuery, queryParams);
 
         // Fetch videos with optional folderId filter
-        let videosQuery = 'SELECT id, name, poster, size, width, height, type, created_at AS "createdAt", folderId FROM videos';
+        let videosQuery = 'SELECT id, name, poster, size, width, height, type, created_at AS "createdAt", folderid AS "folderId" FROM videos';
         const videoParams = [limit, offset];
         if (folderId) {
-            videosQuery += ' WHERE folderId = $3';
+            videosQuery += ' WHERE folderid = $3';
             videoParams.unshift(folderId);
         }
         videosQuery += ' ORDER BY created_at DESC LIMIT $1 OFFSET $2';
@@ -43,7 +42,7 @@ exports.handler = async (event) => {
 
         // Count videos for the specific folderId if provided, otherwise total
         const countResult = await client.query(
-            'SELECT COUNT(*) FROM videos' + (folderId ? ' WHERE folderId = $1' : ''),
+            'SELECT COUNT(*) FROM videos' + (folderId ? ' WHERE folderid = $1' : ''),
             folderId ? [folderId] : []
         );
         const totalVideos = parseInt(countResult.rows[0].count);
