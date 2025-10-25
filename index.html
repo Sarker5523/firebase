@@ -328,17 +328,10 @@
     </div>
 
     <footer>
-        &copy; 2025 UPN Share Video Gallery. Powered by <strong>upnshare.com</strong>
+        &copy; 2025 UPN Share Video Gallery. Powered by <strong>NeonDB & Netlify</strong>
     </footer>
 
     <script>
-        // Configuration for Hoppscotch Proxy and UPN Share API
-        const HOPPSCOTCH_PROXY_URL = 'https://proxy.hoppscotch.io/request'; // Hoppscotch proxy endpoint for server-side API calls
-        const API_BASE_URL = 'https://upnshare.com'; // Base URL for UPN Share API
-        const FOLDER_ID = 'k6xc'; // Folder ID for the video gallery
-        const API_TOKEN = 'eba55fb4d594fd8c7edc5a7f'; // Bearer token for UPN Share API authentication
-        const API_PATH = `/api/v1/video/folder/${FOLDER_ID}`; // API endpoint path
-
         // DOM Elements
         const videoGrid = document.getElementById('videoGrid');
         const searchInput = document.getElementById('searchInput');
@@ -358,7 +351,7 @@
         let allVideos = [];
         let filteredVideos = [];
 
-        // Fetch videos using Hoppscotch proxy
+        // Fetch videos from Netlify Function
         async function fetchVideos(page = 1) {
             try {
                 loading.style.display = 'block';
@@ -366,37 +359,19 @@
                 noResults.style.display = 'none';
                 pagination.style.display = 'none';
 
-                // Prepare the API request payload for Hoppscotch proxy
-                const requestPayload = {
-                    url: `${API_BASE_URL}${API_PATH}?page=${page}`, // Full API URL with pagination
-                    method: 'GET', // HTTP method
-                    headers: {
-                        'Authorization': `Bearer ${API_TOKEN}`, // Authentication header
-                        'Content-Type': 'application/json' // Required for JSON response
-                    },
-                    body: null // No body for GET requests
-                };
-
-                // Send request to Hoppscotch proxy (server-side, bypasses CORS)
-                const response = await fetch(HOPPSCOTCH_PROXY_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestPayload)
-                });
-
-                // Check for proxy errors
+                const response = await fetch(`/.netlify/functions/get-videos?page=${page}`);
                 if (!response.ok) {
-                    throw new Error(`Hoppscotch Proxy error: HTTP ${response.status} - ${response.statusText}`);
+                    throw new Error(`HTTP ${response.status} - ${response.statusText}`);
                 }
 
                 const result = await response.json();
 
-                // Validate response format (expected: { data: [], metadata: {} })
+                // Validate response format
                 if (!result.data || !Array.isArray(result.data)) {
-                    throw new Error('Invalid API response format from UPN Share');
+                    throw new Error('Invalid response format from Netlify Function');
                 }
 
-                // Update state with API response
+                // Update state with response
                 allVideos = result.data;
                 filteredVideos = [...allVideos];
 
@@ -409,7 +384,7 @@
                 updatePagination();
 
             } catch (error) {
-                console.error('Error fetching videos via Hoppscotch proxy:', error);
+                console.error('Error fetching videos from Netlify Function:', error);
                 loading.innerHTML = `<p style="color: #e74c3c;">Failed to load videos. Please try again later. (Error: ${error.message})</p>`;
             } finally {
                 loading.style.display = 'none';
@@ -490,7 +465,7 @@
             nextBtn.disabled = currentPage === totalPages;
         }
 
-        // Search functionality
+        // Search functionality (client-side filtering for now)
         function filterVideos() {
             const query = searchInput.value.trim().toLowerCase();
             
