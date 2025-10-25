@@ -5,77 +5,213 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Directory - UPN Share</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
         body {
-            background: #f4f6f9;
+            background-color: #f4f6f9;
             color: #333;
+            line-height: 1.6;
             display: flex;
             min-height: 100vh;
         }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .search-container {
+            max-width: 900px;
+            margin: 6rem auto 1rem; /* Adjusted for fixed header */
+            padding: 0 1rem;
+            text-align: center;
+        }
+
+        #searchInput {
+            width: 100%;
+            max-width: 500px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .container {
+            flex: 1;
+            padding: 1rem;
+            margin-top: 6rem; /* Offset for fixed header */
+        }
+
         .sidebar {
             width: 300px;
             background: white;
             padding: 1rem;
             overflow-y: auto;
             border-right: 1px solid #ddd;
+            position: fixed;
+            height: calc(100vh - 6rem);
+            top: 6rem;
         }
+
         .folder, .video-item {
             padding: 0.5rem;
             cursor: pointer;
             border-bottom: 1px solid #eee;
         }
+
         .folder:hover, .video-item:hover {
             background: #eef2f7;
         }
+
         .subfolders {
             margin-left: 1rem;
             display: none;
         }
+
         .open .subfolders {
             display: block;
         }
-        .content {
-            flex: 1;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-        }
-        .player {
-            width: 100%;
-            height: 400px;
-            border: none;
-            margin-bottom: 1rem;
-        }
+
         .video-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
         }
-        .search-container {
-            margin-bottom: 1rem;
+
+        .video-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
         }
-        #searchInput {
+
+        .video-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+
+        .video-thumbnail {
+            position: relative;
             width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            height: 180px;
+            overflow: hidden;
+            background: #000;
         }
-        .loading {
-            text-align: center;
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .video-card:hover .video-thumbnail img {
+            transform: scale(1.08);
+        }
+
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-card:hover .play-icon {
+            opacity: 1;
+        }
+
+        .play-icon::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 18px solid white;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            margin-left: 4px;
+        }
+
+        .video-info {
             padding: 1rem;
         }
+
+        .video-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            display: -webkit-box;
+            overflow: hidden;
+        }
+
+        .video-meta {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 width: 100%;
                 height: auto;
                 border-right: none;
                 border-bottom: 1px solid #ddd;
+                position: relative;
+                top: 0;
             }
             body {
                 flex-direction: column;
             }
-            .content {
-                padding-top: 0;
+            .container {
+                margin-top: 0;
+                padding-top: 1rem;
+            }
+            .search-container {
+                margin: 1rem auto;
             }
             .player {
                 height: 250px;
@@ -87,10 +223,15 @@
     </style>
 </head>
 <body>
+    <header>
+        <h1>UPN Video Directory</h1>
+        <p>Browse your folders and videos</p>
+    </header>
+
     <div class="sidebar" id="directory"></div>
-    <div class="content">
+    <div class="container">
         <div class="search-container">
-            <input type="text" id="searchInput" placeholder="Search videos..." autocomplete="off">
+            <input type="text" id="searchInput" placeholder="Search videos by name..." autocomplete="off">
         </div>
         <iframe id="player" class="player" src="" frameborder="0" allowfullscreen></iframe>
         <div id="videoList" class="video-list"></div>
@@ -131,20 +272,20 @@
 
         function renderDirectory() {
             directory.innerHTML = '';
-            const rootFolders = folders.filter(f => !f.parentId);
+            const rootFolders = folders.filter(f => !f.parentId || f.parentId === null);
             rootFolders.forEach(folder => {
                 const folderDiv = document.createElement('div');
                 folderDiv.className = 'folder';
-                folderDiv.textContent = folder.name + ` (${folder.videoCount})`;
+                folderDiv.textContent = `${folder.name} (${folder.videoCount || 0})`;
                 folderDiv.onclick = () => toggleFolder(folder.id);
                 const subfolders = folders.filter(f => f.parentId === folder.id);
-                if (subfolders.length) {
+                if (subfolders.length > 0) {
                     const subDiv = document.createElement('div');
                     subDiv.className = 'subfolders';
                     subfolders.forEach(sub => {
                         const subFolderDiv = document.createElement('div');
                         subFolderDiv.className = 'folder';
-                        subFolderDiv.textContent = sub.name + ` (${sub.videoCount})`;
+                        subFolderDiv.textContent = `${sub.name} (${sub.videoCount || 0})`;
                         subFolderDiv.onclick = () => fetchData(sub.id);
                         subDiv.appendChild(subFolderDiv);
                     });
@@ -158,14 +299,33 @@
             videoList.innerHTML = '';
             if (videos.length) {
                 videos.forEach(video => {
-                    const item = document.createElement('div');
-                    item.className = 'video-item';
-                    item.innerHTML = `
-                        <img src="${video.poster || 'https://via.placeholder.com/200x120'}" alt="${video.name}" style="width: 100%; height: auto;">
-                        <p>${video.name}</p>
+                    const card = document.createElement('div');
+                    card.className = 'video-card';
+                    card.onclick = () => player.src = `https://purn.upn.one/#${video.id}`;
+                    const posterUrl = video.poster && video.poster.trim() !== '' 
+                        ? video.poster 
+                        : 'https://via.placeholder.com/300x180/2c3e50/ffffff?text=No+Preview';
+                    const sizeMB = video.size > 0 ? (video.size / (1024*1024)).toFixed(1) + ' MB' : '—';
+                    const resolution = video.width && video.height ? `${video.width}x${video.height}` : '—';
+                    const created = new Date(video.createdAt).toLocaleDateString();
+                    card.innerHTML = `
+                        <div class="video-thumbnail">
+                            <img src="${posterUrl}" alt="${escapeHtml(video.name)}" onerror="this.src='https://via.placeholder.com/300x180/34495e/ffffff?text=No+Image'">
+                            <div class="play-icon"></div>
+                        </div>
+                        <div class="video-info">
+                            <div class="video-title">${escapeHtml(video.name)}</div>
+                            <div class="video-meta">
+                                <span>${video.type || '—'}</span>
+                                <span>${sizeMB}</span>
+                            </div>
+                            <div class="video-meta" style="margin-top: 4px; font-size: 0.78rem;">
+                                <span>${resolution}</span>
+                                <span>${created}</span>
+                            </div>
+                        </div>
                     `;
-                    item.onclick = () => player.src = `https://purn.upn.one/#${video.id}`;
-                    videoList.appendChild(item);
+                    videoList.appendChild(card);
                 });
                 player.src = `https://purn.upn.one/#${videos[0].id}`; // Default to first video
             }
@@ -180,33 +340,23 @@
             }
         }
 
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         searchInput.addEventListener('input', () => {
-            const query = searchInput.value.toLowerCase();
-            const filtered = videos.filter(v => v.name.toLowerCase().includes(query));
-            renderVideos(filtered);
-            if (filtered.length) {
-                player.src = `https://purn.upn.one/#${filtered[0].id}`;
+            const query = searchInput.value.trim().toLowerCase();
+            if (query === '') {
+                renderVideos();
+                player.src = videos.length ? `https://purn.upn.one/#${videos[0].id}` : '';
             } else {
-                player.src = '';
+                const filtered = videos.filter(video => video.name.toLowerCase().includes(query));
+                renderVideos(filtered);
+                player.src = filtered.length ? `https://purn.upn.one/#${filtered[0].id}` : '';
             }
         });
-
-        function renderVideos(filteredVideos = videos) {
-            videoList.innerHTML = '';
-            if (filteredVideos.length) {
-                filteredVideos.forEach(video => {
-                    const item = document.createElement('div');
-                    item.className = 'video-item';
-                    item.innerHTML = `
-                        <img src="${video.poster || 'https://via.placeholder.com/200x120'}" alt="${video.name}" style="width: 100%; height: auto;">
-                        <p>${video.name}</p>
-                    `;
-                    item.onclick = () => player.src = `https://purn.upn.one/#${video.id}`;
-                    videoList.appendChild(item);
-                });
-                player.src = `https://purn.upn.one/#${filteredVideos[0].id}`;
-            }
-        }
 
         window.addEventListener('load', () => fetchData());
     </script>
