@@ -1,21 +1,12 @@
 {
-  "name": "video-streaming-site",
+  "name": "video-gallery",
   "version": "1.0.0",
-  "description": "A simple video streaming site with playlists",
-  "main": "server.js",
+  "description": "Video gallery powered by NeonDB and Netlify",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "express": "^4.17.1"
-  },
-  "engines": {
-    "node": "14.x"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/your-username/video-streaming-site.git"
-  },
-  "author": "Sarker5523",
-  "license": "MIT"
+    "pg": "^8.11.3"
+  }
 }
