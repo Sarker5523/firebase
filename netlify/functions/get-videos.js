@@ -1,38 +1,48 @@
-// netlify/functions/get-videos.js
-import fetch from 'node-fetch';
+const { Pool } = require('pg');
 
-export const handler = async (event) => {
-  const page = event.queryStringParameters?.page || '1';
-  const API_TOKEN = 'eba55fb4d594fd8c7edc5a7f';
-  const API_URL = `https://upnshare.com/api/v1/video/folder/k6xc?page=${page}`;
+exports.handler = async (event) => {
+    const page = parseInt(event.queryStringParameters.page) || 1;
+    const limit = 10;
+    const offset = (page - 1) * limit;
 
-  try {
-    const response = await fetch(API_URL, {
-      headers: { 'api-token': API_TOKEN },
+    const pool = new Pool({
+        connectionString: process.env.NETLIFY_DATABASE_URL,
+        ssl: { rejectUnauthorized: false }
     });
 
-    if (!response.ok) {
-      return {
-        statusCode: response.status,
-        body: JSON.stringify({ error: `API error: ${response.statusText}` }),
-      };
+    try {
+        const client = await pool.connect();
+
+        const countResult = await client.query('SELECT COUNT(*) FROM videos');
+        const totalVideos = parseInt(countResult.rows[0].count);
+        const totalPages = Math.ceil(totalVideos / limit);
+
+        const result = await client.query(
+            'SELECT id, name, poster, size, width, height, type, created_at AS "createdAt" FROM videos ORDER BY created_at DESC LIMIT $1 OFFSET $2',
+            [limit, offset]
+        );
+
+        client.release();
+
+        return {
+            statusCode: 200,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                data: result.rows,
+                metadata: {
+                    currentPage: page,
+                    maxPage: totalPages,
+                    total: totalVideos
+                }
+            })
+        };
+    } catch (error) {
+        console.error('Error querying NeonDB:', error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: 'Failed to fetch videos' })
+        };
+    } finally {
+        await pool.end();
     }
-
-    const data = await response.json();
-
-    return {
-      statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'api-token',
-      },
-      body: JSON.stringify(data),
-    };
-  } catch (error) {
-    return {
-      statusCode: 500,
-      body: JSON.stringify({ error: error.message }),
-    };
-  }
 };
