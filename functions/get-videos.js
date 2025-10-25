@@ -14,28 +14,22 @@ exports.handler = async (event) => {
     try {
         const client = await pool.connect();
 
-        // Fetch only root folders (parentId is null) unless a folderId is specified
-        let foldersQuery = 'SELECT id, name, parentId, videoCount, created_at AS "createdAt" FROM folders';
-        const queryParams = [];
-        if (!folderId) {
-            foldersQuery += ' WHERE parentId IS NULL ORDER BY created_at DESC';
-        } else {
-            foldersQuery += ' WHERE id = $1 OR parentId = $1 ORDER BY created_at DESC';
-            queryParams.push(folderId);
-        }
+        // Fetch folders (simplified)
+        const foldersResult = await client.query(
+            'SELECT id, name, parentId, videoCount, created_at AS "createdAt" FROM folders ORDER BY created_at DESC'
+        );
 
-        const foldersResult = await client.query(foldersQuery, queryParams);
-
-        // Fetch videos only if folderId is provided (for subfolders)
-        let videosResult;
+        // Fetch videos with optional folderId filter
+        let videosQuery = 'SELECT id, name, poster, size, width, height, type, created_at AS "createdAt", folderId FROM videos';
+        const queryParams = [limit, offset];
         if (folderId) {
-            videosResult = await client.query(
-                'SELECT id, name, poster, size, width, height, type, created_at AS "createdAt", folderId FROM videos WHERE folderId = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
-                [folderId, limit, offset]
-            );
+            videosQuery += ' WHERE folderId = $3';
+            queryParams.unshift(folderId);
         }
+        videosQuery += ' ORDER BY created_at DESC LIMIT $1 OFFSET $2';
 
-        // Count videos for the specific folderId if provided, otherwise total videos
+        const videosResult = await client.query(videosQuery, queryParams);
+
         const countResult = await client.query(
             'SELECT COUNT(*) FROM videos' + (folderId ? ' WHERE folderId = $1' : ''),
             folderId ? [folderId] : []
@@ -51,7 +45,7 @@ exports.handler = async (event) => {
             body: JSON.stringify({
                 data: {
                     folders: foldersResult.rows,
-                    videos: videosResult ? videosResult.rows : []
+                    videos: videosResult.rows
                 },
                 metadata: {
                     currentPage: page,
