@@ -94,7 +94,7 @@
                 folderDiv.className = 'folder';
                 folderDiv.innerHTML = `
                     <div class="folder-icon">📁</div>
-                    <div class="folder-name">${folder.id} (${folder.videoCount || 0})</div>
+                    <div class="folder-name">${folder.name} (${folder.videoCount || 0})</div>
                 `;
                 folderDiv.onclick = () => toggleFolder(folder.id);
                 const subfolders = folders.filter(f => f.parentId === folder.id);
@@ -106,7 +106,7 @@
                         subFolderDiv.className = 'folder';
                         subFolderDiv.innerHTML = `
                             <div class="folder-icon">📁</div>
-                            <div class="folder-name">${sub.id} (${sub.videoCount || 0})</div>
+                            <div class="folder-name">${sub.name} (${sub.videoCount || 0})</div>
                         `;
                         subFolderDiv.onclick = () => fetchData(sub.id);
                         subDiv.appendChild(subFolderDiv);
