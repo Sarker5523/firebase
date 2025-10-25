@@ -5,36 +5,256 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Directory - UPN Share</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-        body { background: #f4f6f9; color: #333; display: flex; min-height: 100vh; }
-        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 1.5rem 0; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; position: fixed; top: 0; z-index: 1000; }
-        header h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
-        .search-container { max-width: 900px; margin: 6rem auto 1rem; padding: 0 1rem; text-align: center; }
-        #searchInput { width: 100%; max-width: 500px; padding: 12px 20px; font-size: 1rem; border: 2px solid #ddd; border-radius: 50px; outline: none; transition: all 0.3s ease; }
-        #searchInput:focus { border-color: #667eea; box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2); }
-        .container { flex: 1; padding: 1rem; margin-top: 6rem; }
-        .sidebar { width: 300px; background: white; padding: 1rem; overflow-y: auto; border-right: 1px solid #ddd; position: fixed; height: calc(100vh - 6rem); top: 6rem; }
-        .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 1rem; }
-        .folder { display: flex; flex-direction: column; align-items: center; padding: 0.5rem; cursor: pointer; border: 1px solid #eee; border-radius: 8px; background: #fff; transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .folder:hover { transform: translateY(-5px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .folder-icon { width: 64px; height: 64px; background: #667eea; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem; }
-        .folder-name { margin-top: 0.5rem; font-size: 0.9rem; text-align: center; color: #2c3e50; }
-        .subfolders { margin-left: 1rem; display: none; }
-        .open .subfolders { display: grid; }
-        .video-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
-        .video-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: transform 0.3s ease, box-shadow 0.3s ease; cursor: pointer; }
-        .video-card:hover { transform: translateY(-8px); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
-        .video-thumbnail { position: relative; width: 100%; height: 180px; overflow: hidden; background: #000; }
-        .video-thumbnail img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
-        .video-card:hover .video-thumbnail img { transform: scale(1.08); }
-        .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: rgba(0,0,0,0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; }
-        .video-card:hover .play-icon { opacity: 1; }
-        .play-icon::after { content: ''; width: 0; height: 0; border-left: 18px solid white; border-top: 12px solid transparent; border-bottom: 12px solid transparent; margin-left: 4px; }
-        .video-info { padding: 1rem; }
-        .video-title { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem; color: #2c3e50; display: -webkit-box; overflow: hidden; }
-        .video-meta { font-size: 0.85rem; color: #7f8c8d; display: flex; justify-content: space-between; flex-wrap: wrap; }
-        .loading { text-align: center; padding: 3rem; font-size: 1.2rem; color: #666; }
-        @media (max-width: 768px) { .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #ddd; position: relative; top: 0; } body { flex-direction: column; } .container { margin-top: 0; padding-top: 1rem; } .search-container { margin: 1rem auto; } .player { height: 250px; } .video-list { grid-template-columns: 1fr; } .folder-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            width: 100%;
+            position: fixed;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .search-container {
+            max-width: 900px;
+            margin: 6rem auto 1rem;
+            padding: 0 1rem;
+            text-align: center;
+        }
+
+        #searchInput {
+            width: 100%;
+            max-width: 500px;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 50px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #searchInput:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .container {
+            flex: 1;
+            padding: 1rem;
+            margin-top: 6rem;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: white;
+            padding: 1rem;
+            overflow-y: auto;
+            border-right: 1px solid #ddd;
+            position: fixed;
+            height: calc(100vh - 6rem);
+            top: 6rem;
+        }
+
+        .folder-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 1rem;
+        }
+
+        .folder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem;
+            cursor: pointer;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            background: #fff;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .folder:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .folder-icon {
+            width: 64px;
+            height: 64px;
+            background: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .folder-name {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .subfolders {
+            margin-left: 1rem;
+            display: none;
+        }
+
+        .open .subfolders {
+            display: grid;
+        }
+
+        .video-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .video-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .video-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+
+        .video-thumbnail {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .video-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .video-card:hover .video-thumbnail img {
+            transform: scale(1.08);
+        }
+
+        .play-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .video-card:hover .play-icon {
+            opacity: 1;
+        }
+
+        .play-icon::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-left: 18px solid white;
+            border-top: 12px solid transparent;
+            border-bottom: 12px solid transparent;
+            margin-left: 4px;
+        }
+
+        .video-info {
+            padding: 1rem;
+        }
+
+        .video-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            display: -webkit-box;
+            overflow: hidden;
+        }
+
+        .video-meta {
+            font-size: 0.85rem;
+            color: #7f8c8d;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            font-size: 1.2rem;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid #ddd;
+                position: relative;
+                top: 0;
+            }
+            body {
+                flex-direction: column;
+            }
+            .container {
+                margin-top: 0;
+                padding-top: 1rem;
+            }
+            .search-container {
+                margin: 1rem auto;
+            }
+            .player {
+                height: 250px;
+            }
+            .video-list {
+                grid-template-columns: 1fr;
+            }
+            .folder-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+        }
     </style>
 </head>
 <body>
@@ -42,6 +262,7 @@
         <h1>UPN Video Directory</h1>
         <p>Browse your folders and videos</p>
     </header>
+
     <div class="sidebar" id="directory"></div>
     <div class="container">
         <div class="search-container">
@@ -51,6 +272,7 @@
         <div id="videoList" class="video-list"></div>
         <div id="loading" class="loading">Loading...</div>
     </div>
+
     <script>
         const directory = document.getElementById('directory');
         const videoList = document.getElementById('videoList');
@@ -74,7 +296,7 @@
                 folders = result.data.folders || [];
                 videos = result.data.videos || [];
                 renderDirectory();
-                if (folderId) renderVideos(); // Render videos only for subfolders
+                if (folderId) renderVideos(); // Only render videos if a subfolder is selected
                 else videoList.innerHTML = ''; // Clear videos for root folders
             } catch (error) {
                 console.error('Error fetching data:', error);
