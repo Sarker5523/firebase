@@ -1,8 +1,4 @@
 [build]
-  functions = "netlify/functions"
+  command = "npm install"
+  functions = "functions"
   publish = "."
-
-[[redirects]]
-  from = "/api/videos"
-  to = "/.netlify/functions/get-videos"
-  status = 200
